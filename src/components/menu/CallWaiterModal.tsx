@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Loader2 } from 'lucide-react';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useRestaurant } from '@/hooks/useRestaurant';
+import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
 
 interface CallWaiterModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Prevent body scroll when modal is open and reset selections
   useEffect(() => {
@@ -26,6 +28,7 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
       // Reset all selections when modal opens
       setReason('');
       setSelectedOptions([]);
+      setShowSuccessAnimation(false);
     } else {
       document.body.style.overflow = '';
     }
@@ -33,6 +36,11 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const handleAnimationComplete = useCallback(() => {
+    setShowSuccessAnimation(false);
+    onClose();
+  }, [onClose]);
 
   const quickOptions = [
     t('waiter.quickOptions.orderQuestion'),
@@ -81,19 +89,24 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success(t('waiter.success'));
       setReason('');
-      onClose();
+      setShowSuccessAnimation(true);
     } catch (error) {
       toast.error(t('waiter.error'));
-    } finally {
       setIsSubmitting(false);
+    } finally {
+      if (!showSuccessAnimation) {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {showSuccessAnimation && (
+        <WaiterSuccessAnimation onComplete={handleAnimationComplete} />
+      )}
+      {isOpen && !showSuccessAnimation && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}

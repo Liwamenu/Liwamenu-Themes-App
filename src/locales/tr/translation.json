@@ -135,7 +135,8 @@
     "reason": "Neden",
     "reasonPlaceholder": "Örn: Hesap istiyorum, Menü istiyorum...",
     "calling": "Çağırılıyor...",
-    "success": "Garson çağrıldı! Kısa süre içinde masanıza gelecek.",
+    "success": "Garson çağrıldı!",
+    "coming": "Kısa süre içinde masanıza gelecek...",
     "error": "Garson çağrılırken bir hata oluştu.",
     "quickOptions": {
       "orderQuestion": "Siparişle ilgili sorum var",
