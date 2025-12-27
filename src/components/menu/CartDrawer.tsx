@@ -211,7 +211,10 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter }: CartDr
                         <span className="text-destructive font-medium">
                           {t('order.minOrderProgress', { remaining: formatPrice(remaining) })}
                         </span>
-                        <span className="text-muted-foreground">{formatPrice(minOrderAmount)}</span>
+                        <div className="text-right">
+                          <span className="text-xs text-muted-foreground block">{t('order.minOrderLabel')}</span>
+                          <span className="text-muted-foreground">{formatPrice(minOrderAmount)}</span>
+                        </div>
                       </div>
                       <Progress value={progress} className="h-2" />
                     </div>

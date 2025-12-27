@@ -105,6 +105,7 @@
     "minOrderError": "Minimum order amount is {{min}} for online orders.",
     "cannotAddOutsideHours": "Cannot add items outside working hours or when restaurant is not active.",
     "minOrderProgress": "Your order is below the minimum, please add {{remaining}} worth of items",
+    "minOrderLabel": "Minimum Amount",
     "tableOrderOutOfRange": "You are too far from the restaurant for table order. Please move closer (within {{max}} meters)."
   },
   "orderReceipt": {
