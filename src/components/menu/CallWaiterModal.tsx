@@ -17,6 +17,7 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   const { restaurant } = useRestaurant();
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const quickOptions = [
     t('waiter.quickOptions.orderQuestion'),
@@ -25,7 +26,25 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   ];
 
   const handleQuickOptionClick = (option: string) => {
+    setSelectedOptions((prev) => {
+      if (prev.includes(option)) {
+        // Remove if already selected
+        return prev.filter((o) => o !== option);
+      } else {
+        // Add if not selected
+        return [...prev, option];
+      }
+    });
+
     setReason((prev) => {
+      if (prev.includes(option)) {
+        // Remove from reason
+        const newReason = prev
+          .split(', ')
+          .filter((o) => o !== option)
+          .join(', ');
+        return newReason;
+      }
       if (!prev.trim()) return option;
       return `${prev}, ${option}`;
     });
@@ -113,7 +132,11 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
                         key={option}
                         type="button"
                         onClick={() => handleQuickOptionClick(option)}
-                        className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 rounded-full transition-colors"
+                        className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+                          selectedOptions.includes(option)
+                            ? 'bg-green-100 text-green-700 border border-green-300'
+                            : 'bg-secondary hover:bg-secondary/80'
+                        }`}
                       >
                         {option}
                       </button>
