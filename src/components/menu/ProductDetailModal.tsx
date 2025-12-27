@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Check, MessageSquare } from 'lucide-react';
@@ -23,6 +23,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const [quantity, setQuantity] = useState(1);
   const [selectedTags, setSelectedTags] = useState<Record<string, SelectedTagItem[]>>({});
   const [productNote, setProductNote] = useState('');
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const canAddToCart = isRestaurantActive && isCurrentlyOpen;
 
