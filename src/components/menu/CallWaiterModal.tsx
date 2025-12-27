@@ -19,10 +19,13 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal is open and reset selections
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Reset all selections when modal opens
+      setReason('');
+      setSelectedOptions([]);
     } else {
       document.body.style.overflow = '';
     }

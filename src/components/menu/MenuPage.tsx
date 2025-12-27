@@ -263,7 +263,7 @@ export function MenuPage() {
       <div className="fixed bottom-24 right-4 z-40">
         <button
           onClick={() => setShowCallWaiter(true)}
-          className="h-10 px-3 rounded-full bg-amber-500 text-white shadow-md flex items-center gap-2 hover:bg-amber-600 transition-colors text-sm font-medium"
+          className="h-10 px-3 rounded-full bg-sky-400 text-white shadow-md flex items-center gap-2 hover:bg-sky-500 transition-colors text-sm font-medium"
           aria-label={t("waiter.title")}
         >
           <Bell className="w-4 h-4" />
