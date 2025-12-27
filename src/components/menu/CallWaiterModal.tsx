@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Loader2 } from 'lucide-react';
@@ -18,6 +18,18 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const quickOptions = [
     t('waiter.quickOptions.orderQuestion'),
@@ -79,21 +91,22 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60"
+            style={{ WebkitBackdropFilter: 'blur(4px)', backdropFilter: 'blur(4px)' }}
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-4 z-50 max-w-md mx-auto my-auto h-fit"
+            className="fixed inset-4 z-50 max-w-md mx-auto my-auto h-fit pointer-events-none"
           >
-            <div className="bg-card rounded-3xl overflow-hidden shadow-elegant">
+            <div className="bg-card rounded-3xl overflow-hidden shadow-elegant pointer-events-auto">
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 <div className="flex items-center gap-3">
@@ -172,7 +185,7 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
               </div>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
