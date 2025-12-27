@@ -135,7 +135,8 @@
     "reason": "Reason",
     "reasonPlaceholder": "E.g.: Need the bill, Need menu...",
     "calling": "Calling...",
-    "success": "Waiter called! Someone will be with you shortly.",
+    "success": "Waiter called!",
+    "coming": "Someone will be with you shortly...",
     "error": "An error occurred while calling the waiter.",
     "quickOptions": {
       "orderQuestion": "I have a question about my order",
