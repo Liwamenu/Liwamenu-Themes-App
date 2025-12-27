@@ -52,7 +52,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
 
   const [step, setStep] = useState<CheckoutStep>("type");
   const [orderType, setOrderType] = useState<OrderType | null>(null);
-  const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "", address: "" });
+  const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "+90", address: "" });
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [orderNote, setOrderNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -267,13 +267,14 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
   const showBackButton = step !== "type";
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+    <>
+      <div
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-foreground/60"
+        style={{ 
+          WebkitBackdropFilter: 'blur(4px)', 
+          backdropFilter: 'blur(4px)' 
+        }}
       />
       <motion.div
         initial={{ opacity: 0, y: "100%" }}
@@ -281,6 +282,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
         exit={{ opacity: 0, y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] overflow-y-auto bg-card rounded-t-3xl"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 bg-card border-b border-border">
@@ -408,8 +410,9 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                       <PhoneInput
                         international
                         defaultCountry="TR"
-                        value={customerInfo.phone}
-                        onChange={(value) => setCustomerInfo((prev) => ({ ...prev, phone: value }))}
+                        countryCallingCodeEditable={false}
+                        value={customerInfo.phone || "+90"}
+                        onChange={(value) => setCustomerInfo((prev) => ({ ...prev, phone: value || "+90" }))}
                         className="phone-input-container"
                       />
                     </div>
@@ -619,6 +622,6 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
         onTableChange={handleTableChange}
         currentTable={tableNumber}
       />
-    </AnimatePresence>
+    </>
   );
 }
