@@ -208,7 +208,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter }: CartDr
                   {remaining > 0 && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">
+                        <span className="text-destructive font-medium">
                           {t('order.minOrderProgress', { remaining: formatPrice(remaining) })}
                         </span>
                         <span className="text-muted-foreground">{formatPrice(minOrderAmount)}</span>
