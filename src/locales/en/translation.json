@@ -104,7 +104,7 @@
     "deliveryFee": "Delivery Fee",
     "minOrderError": "Minimum order amount is {{min}} for online orders.",
     "cannotAddOutsideHours": "Cannot add items outside working hours or when restaurant is not active.",
-    "minOrderProgress": "Add {{remaining}} more for delivery",
+    "minOrderProgress": "Your order is below the minimum, please add {{remaining}} worth of items",
     "tableOrderOutOfRange": "You are too far from the restaurant for table order. Please move closer (within {{max}} meters)."
   },
   "orderReceipt": {

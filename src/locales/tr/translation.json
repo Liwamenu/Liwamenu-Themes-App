@@ -104,7 +104,7 @@
     "deliveryFee": "Teslimat Ücreti",
     "minOrderError": "Paket Servisler için minimum sipariş tutarı {{min}}.",
     "cannotAddOutsideHours": "Çalışma saatleri dışında veya restoran aktif değilken ürün ekleyemezsiniz.",
-    "minOrderProgress": "Paket Servisi için {{remaining}} daha ekleyin",
+    "minOrderProgress": "Siparişiniz minimum tutarın altında, lütfen {{remaining}} değerinde ürün ekleyin",
     "tableOrderOutOfRange": "Masa siparişi için restorandan çok uzaktasınız. Lütfen yaklaşın ({{max}} metre içinde)."
   },
   "orderReceipt": {
