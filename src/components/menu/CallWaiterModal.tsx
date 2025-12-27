@@ -18,6 +18,19 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const quickOptions = [
+    t('waiter.quickOptions.orderQuestion'),
+    t('waiter.quickOptions.requestBill'),
+    t('waiter.quickOptions.cleanTable'),
+  ];
+
+  const handleQuickOptionClick = (option: string) => {
+    setReason((prev) => {
+      if (!prev.trim()) return option;
+      return `${prev}, ${option}`;
+    });
+  };
+
   const handleCallWaiter = async () => {
     setIsSubmitting(true);
 
@@ -90,10 +103,22 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
+                <div className="space-y-3">
+                  <label className="text-sm font-medium block">
                     {t('waiter.reason')} ({t('common.optional')})
                   </label>
+                  <div className="flex flex-wrap gap-2">
+                    {quickOptions.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleQuickOptionClick(option)}
+                        className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 rounded-full transition-colors"
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
                   <Textarea
                     placeholder={t('waiter.reasonPlaceholder')}
                     value={reason}

@@ -136,7 +136,12 @@
     "reasonPlaceholder": "Örn: Hesap istiyorum, Menü istiyorum...",
     "calling": "Çağırılıyor...",
     "success": "Garson çağrıldı! Kısa süre içinde masanıza gelecek.",
-    "error": "Garson çağrılırken bir hata oluştu."
+    "error": "Garson çağrılırken bir hata oluştu.",
+    "quickOptions": {
+      "orderQuestion": "Siparişle ilgili sorum var",
+      "requestBill": "Hesap istiyorum",
+      "cleanTable": "Masa temizlensin lütfen"
+    }
   },
   "changeTable": {
     "title": "Masa Değiştir",

@@ -136,7 +136,12 @@
     "reasonPlaceholder": "E.g.: Need the bill, Need menu...",
     "calling": "Calling...",
     "success": "Waiter called! Someone will be with you shortly.",
-    "error": "An error occurred while calling the waiter."
+    "error": "An error occurred while calling the waiter.",
+    "quickOptions": {
+      "orderQuestion": "I have a question about my order",
+      "requestBill": "I'd like the bill",
+      "cleanTable": "Please clean the table"
+    }
   },
   "changeTable": {
     "title": "Change Table",
