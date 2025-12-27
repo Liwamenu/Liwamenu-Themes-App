@@ -129,7 +129,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-[3px] right-[3px] bottom-[15%] z-50 max-h-[75vh] overflow-y-auto bg-card rounded-3xl"
+        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[92vh] bg-card rounded-3xl flex flex-col"
       >
         {/* Header Image */}
         <div className="relative h-56">
@@ -147,7 +147,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           </button>
         </div>
 
-        <div className="px-5 pb-6 -mt-8 relative">
+        <div className="px-4 pb-20 -mt-8 relative flex-1 overflow-y-auto">
           {/* Product Info */}
           <div className="bg-card rounded-2xl p-4 shadow-card mb-4">
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">
@@ -285,11 +285,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </div>
           </div>
 
-          {/* Add to Cart Button */}
+        </div>
+
+        {/* Sticky Add to Cart Button */}
+        <div className="sticky bottom-0 left-0 right-0 px-4 py-3 bg-card border-t border-border">
           <Button
             onClick={handleAddToCart}
-            size="lg"
-            className="w-full h-14 text-lg font-semibold rounded-2xl shadow-glow"
+            size="default"
+            className="w-full h-11 text-base font-semibold rounded-xl shadow-glow"
           >
             {t('product.addToCart')} - {formatPrice(totalPrice)}
           </Button>
