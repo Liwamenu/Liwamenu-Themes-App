@@ -34,7 +34,17 @@ export function MenuPage() {
   const [showSoundPermission, setShowSoundPermission] = useState(false);
   const [showCallWaiter, setShowCallWaiter] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
+  const [waiterCooldown, setWaiterCooldown] = useState(0);
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // Waiter cooldown timer
+  useEffect(() => {
+    if (waiterCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setWaiterCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [waiterCooldown]);
 
   // Handle category scroll sync
   useEffect(() => {
@@ -254,7 +264,11 @@ export function MenuPage() {
       />
 
       {/* Call Waiter Modal */}
-      <CallWaiterModal isOpen={showCallWaiter} onClose={() => setShowCallWaiter(false)} />
+      <CallWaiterModal 
+        isOpen={showCallWaiter} 
+        onClose={() => setShowCallWaiter(false)} 
+        onSuccess={() => setWaiterCooldown(60)}
+      />
 
       {/* Reservation Modal */}
       <ReservationModal isOpen={showReservation} onClose={() => setShowReservation(false)} />
@@ -263,11 +277,18 @@ export function MenuPage() {
       <div className="fixed bottom-24 right-4 z-40">
         <button
           onClick={() => setShowCallWaiter(true)}
-          className="h-10 px-3 rounded-full bg-sky-400 text-white shadow-md flex items-center gap-2 hover:bg-sky-500 transition-colors text-sm font-medium"
+          disabled={waiterCooldown > 0}
+          className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-colors ${
+            waiterCooldown > 0
+              ? "bg-muted text-muted-foreground cursor-not-allowed"
+              : "bg-sky-400 text-white hover:bg-sky-500"
+          }`}
           aria-label={t("waiter.title")}
         >
           <Bell className="w-4 h-4" />
-          <span>{t("waiter.button")}</span>
+          <span>
+            {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
+          </span>
         </button>
       </div>
     </div>

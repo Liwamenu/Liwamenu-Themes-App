@@ -11,9 +11,10 @@ import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
 interface CallWaiterModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
+export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalProps) {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
   const [reason, setReason] = useState('');
@@ -39,8 +40,9 @@ export function CallWaiterModal({ isOpen, onClose }: CallWaiterModalProps) {
 
   const handleAnimationComplete = useCallback(() => {
     setShowSuccessAnimation(false);
+    onSuccess?.();
     onClose();
-  }, [onClose]);
+  }, [onClose, onSuccess]);
 
   const quickOptions = [
     t('waiter.quickOptions.orderQuestion'),
