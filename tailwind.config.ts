@@ -63,6 +63,10 @@ export default {
           DEFAULT: "hsl(var(--special))",
           foreground: "hsl(var(--special-foreground))",
         },
+        cart: {
+          DEFAULT: "hsl(var(--cart))",
+          foreground: "hsl(var(--cart-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

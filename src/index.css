@@ -44,6 +44,10 @@
     --special: 271 81% 56%;
     --special-foreground: 0 0% 100%;
 
+    /* Cart button color - bright purple */
+    --cart: 280 85% 55%;
+    --cart-foreground: 0 0% 100%;
+
     --border: 35 20% 88%;
     --input: 35 20% 88%;
     --ring: 24 95% 53%;
@@ -105,6 +109,9 @@
 
     --special: 271 81% 56%;
     --special-foreground: 0 0% 100%;
+
+    --cart: 280 85% 55%;
+    --cart-foreground: 0 0% 100%;
 
     --border: 25 15% 20%;
     --input: 25 15% 20%;
@@ -266,6 +273,22 @@
   50% {
     opacity: 0.7;
   }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px) rotate(-3deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px) rotate(3deg);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }
 
 /* Phone input styles */

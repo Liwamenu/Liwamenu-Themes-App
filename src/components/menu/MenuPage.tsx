@@ -220,8 +220,7 @@ export function MenuPage() {
       {/* Footer */}
       <Footer />
 
-      {/* Cart Button */}
-      {canOrder && <CartButton onClick={() => setIsCartOpen(true)} />}
+      {/* Cart Button - moved to floating container below */}
 
       {/* Product Detail Modal */}
       <AnimatePresence>
@@ -283,8 +282,9 @@ export function MenuPage() {
         onComplete={hideFlyingEmoji}
       />
 
-      {/* Floating Call Waiter Button */}
-      <div className="fixed bottom-24 right-4 z-40">
+      {/* Floating Buttons Container */}
+      <div className="fixed bottom-24 right-4 z-40 flex flex-col gap-3 items-end">
+        {/* Call Waiter Button */}
         <button
           onClick={() => setShowCallWaiter(true)}
           disabled={waiterCooldown > 0}
@@ -300,6 +300,9 @@ export function MenuPage() {
             {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
           </span>
         </button>
+
+        {/* Cart Button */}
+        {canOrder && <CartButton onClick={() => setIsCartOpen(true)} />}
       </div>
     </div>
   );
