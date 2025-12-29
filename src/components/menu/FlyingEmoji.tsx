@@ -47,14 +47,14 @@ export function FlyingEmoji({ isVisible, startPosition, onComplete }: FlyingEmoj
           }}
           animate={{
             left: targetPosition.x - 20,
-            top: [startPosition.y, startPosition.y - 80, targetPosition.y],
-            scale: [1, 1.3, 0.6],
+            top: [startPosition.y, startPosition.y - 150, targetPosition.y],
+            scale: [1, 1.4, 0.5],
             opacity: [1, 1, 0],
           }}
           transition={{
             duration: 1.2,
             ease: "easeInOut",
-            times: [0, 0.4, 1],
+            times: [0, 0.35, 1],
           }}
           onAnimationComplete={onComplete}
           className="pointer-events-none text-4xl"
