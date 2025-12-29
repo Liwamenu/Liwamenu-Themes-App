@@ -39,6 +39,18 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCo
 
   const canOrder = canOrderOnline || canOrderInPerson;
 
+  // Prevent background scroll when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Close drawer when cart becomes empty
   useEffect(() => {
     if (isOpen && items.length === 0) {
