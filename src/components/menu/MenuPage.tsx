@@ -300,8 +300,8 @@ export function MenuPage() {
         onComplete={hideFlyingEmoji}
       />
 
-      {/* Floating Buttons Container - Top Right (hidden when cart is open) */}
-      {!isCartOpen && (
+      {/* Floating Buttons Container - Top Right (hidden when cart or product modal is open) */}
+      {!isCartOpen && !selectedProduct && (
         <div className="fixed top-[138px] right-4 z-50 flex flex-col gap-3 items-end">
           {/* Call Waiter Button */}
           <button
