@@ -46,14 +46,15 @@ export function FlyingEmoji({ isVisible, startPosition, onComplete }: FlyingEmoj
             zIndex: 9999,
           }}
           animate={{
-            left: targetPosition.x,
-            top: targetPosition.y,
-            scale: [1, 1.5, 0.5],
+            left: targetPosition.x - 20,
+            top: [startPosition.y, startPosition.y - 80, targetPosition.y],
+            scale: [1, 1.3, 0.6],
             opacity: [1, 1, 0],
           }}
           transition={{
-            duration: 0.8,
-            ease: [0.25, 0.46, 0.45, 0.94],
+            duration: 1.2,
+            ease: "easeInOut",
+            times: [0, 0.4, 1],
           }}
           onAnimationComplete={onComplete}
           className="pointer-events-none text-4xl"
