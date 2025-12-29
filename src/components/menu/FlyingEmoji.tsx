@@ -12,7 +12,7 @@ export function FlyingEmoji({ isVisible, startPosition, onComplete }: FlyingEmoj
 
   useEffect(() => {
     if (isVisible) {
-      // Find cart button position (bottom right corner area)
+      // Find cart button position (top right corner area)
       const cartButton = document.querySelector('[data-cart-button]');
       if (cartButton) {
         const rect = cartButton.getBoundingClientRect();
@@ -21,10 +21,10 @@ export function FlyingEmoji({ isVisible, startPosition, onComplete }: FlyingEmoj
           y: rect.top + rect.height / 2,
         });
       } else {
-        // Fallback to bottom right
+        // Fallback to top right
         setTargetPosition({
           x: window.innerWidth - 60,
-          y: window.innerHeight - 100,
+          y: 150,
         });
       }
     }
