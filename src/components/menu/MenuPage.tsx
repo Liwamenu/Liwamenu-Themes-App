@@ -132,12 +132,18 @@ export function MenuPage() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Restaurant Header */}
-      <RestaurantHeader />
+      <RestaurantHeader 
+        orders={orders}
+        onViewOrder={(order) => {
+          setViewingOrder(order);
+          setCurrentView("order");
+        }}
+      />
 
       {/* Search Bar */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg">
         <div className="container px-4 py-3">
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
@@ -154,20 +160,9 @@ export function MenuPage() {
               )}
             </div>
 
-            {/* My Orders Button */}
-            {orders.length > 0 && (
-              <button
-                onClick={() => {
-                  if (orders.length > 0) {
-                    setViewingOrder(orders[0]);
-                    setCurrentView("order");
-                  }
-                }}
-                className="h-12 px-4 rounded-full bg-primary text-primary-foreground flex items-center gap-2 font-medium hover:bg-primary/90 transition-colors"
-              >
-                {/* <Receipt className="w-5 h-5" /> */}
-                <span className="sm:inline">{t("menu.myOrder")}</span>
-              </button>
+            {/* Cart Button - next to search */}
+            {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && (
+              <CartButton onClick={() => setIsCartOpen(true)} />
             )}
           </div>
         </div>
@@ -300,10 +295,9 @@ export function MenuPage() {
         onComplete={hideFlyingEmoji}
       />
 
-      {/* Floating Buttons Container - Top Right (hidden when modals are open) */}
+      {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
       {!isCartOpen && !selectedProduct && !showCallWaiter && (
-        <div className="fixed top-[138px] right-4 z-50 flex flex-col gap-3 items-end">
-          {/* Call Waiter Button */}
+        <div className="fixed top-[138px] right-4 z-50">
           <button
             onClick={() => setShowCallWaiter(true)}
             disabled={waiterCooldown > 0}
@@ -319,9 +313,6 @@ export function MenuPage() {
               {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
             </span>
           </button>
-
-          {/* Cart Button */}
-          {canOrder && <CartButton onClick={() => setIsCartOpen(true)} />}
         </div>
       )}
     </div>
