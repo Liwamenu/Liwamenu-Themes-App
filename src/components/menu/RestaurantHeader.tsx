@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, MapPin, Phone, AlertTriangle, CalendarDays } from "lucide-react";
+import { Clock, MapPin, Phone, AlertTriangle, CalendarDays, Receipt } from "lucide-react";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ReservationModal } from "./ReservationModal";
 import { Button } from "@/components/ui/button";
+import { Order } from "@/types/restaurant";
 
-export function RestaurantHeader() {
+interface RestaurantHeaderProps {
+  orders?: Order[];
+  onViewOrder?: (order: Order) => void;
+}
+
+export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderProps) {
   const { restaurant, isRestaurantActive, isCurrentlyOpen, getCurrentWorkingHour } = useRestaurant();
   const { t } = useTranslation();
   const [isReservationOpen, setIsReservationOpen] = useState(false);
@@ -85,18 +91,30 @@ export function RestaurantHeader() {
             )}
           </div>
 
-          {/* Reservation Button - Only show if license is active */}
-          {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
-            <Button
-              onClick={() => setIsReservationOpen(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 rounded-full my-2"
-            >
-              <CalendarDays className="w-4 h-4" />
-              <span>{t("reservation.button")}</span>
-            </Button>
-          )}
+          {/* Reservation and My Order Buttons */}
+          <div className="flex gap-2 my-2">
+            {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
+              <Button
+                onClick={() => setIsReservationOpen(true)}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 rounded-full"
+              >
+                <CalendarDays className="w-4 h-4" />
+                <span>{t("reservation.button")}</span>
+              </Button>
+            )}
+            {orders.length > 0 && onViewOrder && (
+              <Button
+                onClick={() => onViewOrder(orders[0])}
+                size="sm"
+                className="flex items-center gap-2 rounded-full"
+              >
+                <Receipt className="w-4 h-4" />
+                <span>{t("menu.myOrder")}</span>
+              </Button>
+            )}
+          </div>
 
           {/* Info Row */}
           <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
