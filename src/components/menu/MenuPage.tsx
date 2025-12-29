@@ -285,7 +285,7 @@ export function MenuPage() {
 
       {/* Floating Buttons Container - Top Right (hidden when cart is open) */}
       {!isCartOpen && (
-        <div className="fixed top-24 right-4 z-50 flex flex-col gap-3 items-end">
+        <div className="fixed top-32 right-4 z-50 flex flex-col gap-3 items-end">
           {/* Call Waiter Button */}
           <button
             onClick={() => setShowCallWaiter(true)}
