@@ -161,7 +161,7 @@ export function MenuPage() {
             </div>
 
             {/* Cart Button - next to search */}
-            {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && (
+            {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
               <CartButton onClick={() => setIsCartOpen(true)} />
             )}
           </div>
@@ -296,7 +296,7 @@ export function MenuPage() {
       />
 
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && (
+      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
         <div className="fixed top-[138px] right-4 z-50">
           <button
             onClick={() => setShowCallWaiter(true)}
