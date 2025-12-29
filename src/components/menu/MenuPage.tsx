@@ -37,17 +37,34 @@ export function MenuPage() {
   const [showSoundPermission, setShowSoundPermission] = useState(false);
   const [showCallWaiter, setShowCallWaiter] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
-  const [waiterCooldown, setWaiterCooldown] = useState(0);
+  const [waiterCooldown, setWaiterCooldown] = useState(() => {
+    const savedEndTime = localStorage.getItem('waiterCooldownEnd');
+    if (savedEndTime) {
+      const remaining = Math.ceil((parseInt(savedEndTime) - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    }
+    return 0;
+  });
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
-  // Waiter cooldown timer
+  // Waiter cooldown timer with localStorage persistence
   useEffect(() => {
-    if (waiterCooldown <= 0) return;
+    if (waiterCooldown <= 0) {
+      localStorage.removeItem('waiterCooldownEnd');
+      return;
+    }
     const timer = setInterval(() => {
       setWaiterCooldown((prev) => Math.max(0, prev - 1));
     }, 1000);
     return () => clearInterval(timer);
   }, [waiterCooldown]);
+
+  // Save cooldown end time when it starts
+  const handleWaiterSuccess = () => {
+    const endTime = Date.now() + 60 * 1000;
+    localStorage.setItem('waiterCooldownEnd', endTime.toString());
+    setWaiterCooldown(60);
+  };
 
   // Handle category scroll sync
   useEffect(() => {
@@ -270,7 +287,7 @@ export function MenuPage() {
       <CallWaiterModal 
         isOpen={showCallWaiter} 
         onClose={() => setShowCallWaiter(false)} 
-        onSuccess={() => setWaiterCooldown(60)}
+        onSuccess={handleWaiterSuccess}
       />
 
       {/* Reservation Modal */}
