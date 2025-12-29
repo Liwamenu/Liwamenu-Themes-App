@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
@@ -37,6 +37,13 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter }: CartDr
   const progress = Math.min((total / minOrderAmount) * 100, 100);
 
   const canOrder = canOrderOnline || canOrderInPerson;
+
+  // Close drawer when cart becomes empty
+  useEffect(() => {
+    if (isOpen && items.length === 0) {
+      onClose();
+    }
+  }, [isOpen, items.length, onClose]);
 
   const handleRemoveItem = (itemId: string, itemName: string) => {
     setItemToRemove({ id: itemId, name: itemName });
