@@ -47,7 +47,10 @@
     "removeItemTitle": "Remove Item?",
     "removeItemDescription": "Are you sure you want to remove this item from your cart?",
     "viewCart": "View Cart",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "tableChanged": "Changed to Table {{table}}!",
+    "tableChanged?": "Has Your Table Changed?",
+    "scanNewQr": "Scan your new table's QR code"
   },
   "productCard": {
     "recommended": "Recommended",
@@ -133,6 +136,7 @@
     "title": "Call Waiter",
     "button": "Call Waiter",
     "tableNumber": "Table Number",
+    "currentTable": "Your Current Table",
     "reason": "Reason",
     "reasonPlaceholder": "E.g.: Need the bill, Need menu...",
     "calling": "Calling...",

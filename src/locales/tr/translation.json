@@ -47,7 +47,10 @@
     "removeItemTitle": "Ürünü Kaldır?",
     "removeItemDescription": "Bu ürünü sepetinizden kaldırmak istediğinize emin misiniz?",
     "viewCart": "Sepeti Görüntüle",
-    "checkout": "Siparişi Tamamla"
+    "checkout": "Siparişi Tamamla",
+    "tableChanged": "Masa {{table}} olarak değiştirildi!",
+    "tableChanged?": "Masanız Değişti mi?",
+    "scanNewQr": "Yeni masanızın QR kodunu tarayın"
   },
   "productCard": {
     "recommended": "Önerilen",
@@ -133,6 +136,7 @@
     "title": "Garson Çağır",
     "button": "Garson Çağır",
     "tableNumber": "Masa Numarası",
+    "currentTable": "Geçerli Masanız",
     "reason": "Neden",
     "reasonPlaceholder": "Örn: Hesap istiyorum, Menü istiyorum...",
     "calling": "Çağırılıyor...",

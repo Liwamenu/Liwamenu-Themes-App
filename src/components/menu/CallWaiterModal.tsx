@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Bell, Loader2 } from 'lucide-react';
+import { X, Bell, Loader2, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { useRestaurant } from '@/hooks/useRestaurant';
+import { useRestaurant, useRestaurantStore } from '@/hooks/useRestaurant';
 import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
+import { ChangeTableModal } from './ChangeTableModal';
 
 interface CallWaiterModalProps {
   isOpen: boolean;
@@ -17,10 +18,17 @@ interface CallWaiterModalProps {
 export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalProps) {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
+  const setTableNumber = useRestaurantStore((state) => state.setTableNumber);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [showChangeTableModal, setShowChangeTableModal] = useState(false);
+
+  const handleTableChange = (newTable: number) => {
+    setTableNumber(newTable);
+    toast.success(t('cart.tableChanged', { table: newTable }));
+  };
 
   // Prevent body scroll when modal is open and reset selections
   useEffect(() => {
@@ -148,10 +156,25 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
                     <Bell className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">{t('waiter.tableNumber')}</p>
+                    <p className="text-sm text-muted-foreground">{t('waiter.currentTable')}</p>
                     <p className="text-xl font-bold">{restaurant.tableNumber}</p>
                   </div>
                 </div>
+
+                {/* Change Table Option */}
+                <button
+                  type="button"
+                  onClick={() => setShowChangeTableModal(true)}
+                  className="w-full flex items-center gap-4 p-4 bg-secondary/50 hover:bg-secondary rounded-2xl transition-colors text-left"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                    <QrCode className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{t('cart.tableChanged?')}</p>
+                    <p className="text-sm text-muted-foreground">{t('cart.scanNewQr')}</p>
+                  </div>
+                </button>
 
                 <div className="space-y-3">
                   <label className="text-sm font-medium block">
@@ -205,6 +228,12 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
           </motion.div>
         </div>
       )}
+      <ChangeTableModal
+        isOpen={showChangeTableModal}
+        onClose={() => setShowChangeTableModal(false)}
+        onTableChange={handleTableChange}
+        currentTable={restaurant.tableNumber}
+      />
     </AnimatePresence>
   );
 }
