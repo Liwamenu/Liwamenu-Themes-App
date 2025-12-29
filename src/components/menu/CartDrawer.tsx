@@ -22,9 +22,10 @@ interface CartDrawerProps {
   onClose: () => void;
   onCheckout: () => void;
   onCallWaiter?: () => void;
+  waiterCooldown?: number;
 }
 
-export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter }: CartDrawerProps) {
+export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCooldown = 0 }: CartDrawerProps) {
   const { t } = useTranslation();
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
   const { formatPrice, restaurant, canOrderOnline, canOrderInPerson } = useRestaurant();
@@ -225,24 +226,43 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter }: CartDr
                     </div>
                   </div>
 
-                  {canOrder ? (
-                    <Button
-                      onClick={onCheckout}
-                      size="lg"
-                      className="w-full h-14 text-lg font-semibold rounded-2xl shadow-glow"
-                    >
-                      {t('cart.checkout')}
-                    </Button>
-                  ) : (
-                    <Button
+                  <div className="flex gap-3">
+                    {/* Call Waiter Button in Cart */}
+                    <button
                       onClick={onCallWaiter}
-                      size="lg"
-                      className="w-full h-14 text-lg font-semibold rounded-2xl bg-amber-500 hover:bg-amber-600"
+                      disabled={waiterCooldown > 0}
+                      className={`h-14 px-4 rounded-2xl flex items-center gap-2 font-semibold transition-all ${
+                        waiterCooldown > 0
+                          ? "bg-muted text-muted-foreground cursor-not-allowed"
+                          : "bg-sky-400 text-white hover:bg-sky-500"
+                      }`}
                     >
-                      <Bell className="w-5 h-5 mr-2" />
-                      {t('waiter.button')}
-                    </Button>
-                  )}
+                      <Bell className="w-5 h-5" />
+                      <span>
+                        {waiterCooldown > 0 ? `${waiterCooldown}s` : t('waiter.button')}
+                      </span>
+                    </button>
+
+                    {canOrder ? (
+                      <Button
+                        onClick={onCheckout}
+                        size="lg"
+                        className="flex-1 h-14 text-lg font-semibold rounded-2xl shadow-glow"
+                      >
+                        {t('cart.checkout')}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={onCallWaiter}
+                        disabled={waiterCooldown > 0}
+                        size="lg"
+                        className="flex-1 h-14 text-lg font-semibold rounded-2xl bg-amber-500 hover:bg-amber-600"
+                      >
+                        <Bell className="w-5 h-5 mr-2" />
+                        {t('waiter.button')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.div>

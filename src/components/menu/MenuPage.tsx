@@ -239,6 +239,7 @@ export function MenuPage() {
           setIsCartOpen(false);
           setShowCallWaiter(true);
         }}
+        waiterCooldown={waiterCooldown}
       />
 
       {/* Checkout Modal */}
@@ -282,28 +283,30 @@ export function MenuPage() {
         onComplete={hideFlyingEmoji}
       />
 
-      {/* Floating Buttons Container - Top Right */}
-      <div className="fixed top-24 right-4 z-50 flex flex-col gap-3 items-end">
-        {/* Call Waiter Button */}
-        <button
-          onClick={() => setShowCallWaiter(true)}
-          disabled={waiterCooldown > 0}
-          className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-            waiterCooldown > 0
-              ? "bg-muted text-muted-foreground cursor-not-allowed"
-              : "bg-sky-400 text-white hover:bg-sky-500 animate-pulse"
-          }`}
-          aria-label={t("waiter.title")}
-        >
-          <Bell className="w-4 h-4" />
-          <span>
-            {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
-          </span>
-        </button>
+      {/* Floating Buttons Container - Top Right (hidden when cart is open) */}
+      {!isCartOpen && (
+        <div className="fixed top-24 right-4 z-50 flex flex-col gap-3 items-end">
+          {/* Call Waiter Button */}
+          <button
+            onClick={() => setShowCallWaiter(true)}
+            disabled={waiterCooldown > 0}
+            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+              waiterCooldown > 0
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-sky-400 text-white hover:bg-sky-500 animate-pulse"
+            }`}
+            aria-label={t("waiter.title")}
+          >
+            <Bell className="w-4 h-4" />
+            <span>
+              {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
+            </span>
+          </button>
 
-        {/* Cart Button */}
-        {canOrder && <CartButton onClick={() => setIsCartOpen(true)} />}
-      </div>
+          {/* Cart Button */}
+          {canOrder && <CartButton onClick={() => setIsCartOpen(true)} />}
+        </div>
+      )}
     </div>
   );
 }
