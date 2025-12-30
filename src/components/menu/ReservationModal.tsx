@@ -61,7 +61,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     email: "",
     date: undefined,
     time: "",
-    guests: 2,
+    guests: 0,
     notes: "",
   });
 
@@ -232,7 +232,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       email: "",
       date: undefined,
       time: "",
-      guests: 2,
+      guests: 0,
       notes: "",
     });
   };
@@ -295,7 +295,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   placeholder={t("reservation.fullNamePlaceholder")}
                   value={formData.fullName}
                   onChange={(e) => handleInputChange("fullName", e.target.value)}
-                  className="h-12"
+                  className="h-12 leading-normal"
                 />
               </div>
 
@@ -323,7 +323,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   placeholder={t("reservation.emailPlaceholder")}
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="h-12"
+                  className="h-12 leading-normal"
                 />
                 <p className="text-xs text-amber-600 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />
@@ -394,12 +394,23 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   {t("reservation.guests")}
                 </label>
                 <Input
-                  type="number"
-                  min={1}
-                  max={50}
-                  value={formData.guests}
-                  onChange={(e) => handleInputChange("guests", parseInt(e.target.value) || 1)}
-                  className="h-12"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="2"
+                  value={formData.guests === 0 ? "" : formData.guests.toString()}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      handleInputChange("guests", 0);
+                    } else {
+                      const num = parseInt(val);
+                      if (!isNaN(num) && num >= 0 && num <= 50) {
+                        handleInputChange("guests", num);
+                      }
+                    }
+                  }}
+                  className="h-12 leading-normal"
                 />
               </div>
 
