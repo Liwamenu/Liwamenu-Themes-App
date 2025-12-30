@@ -10,10 +10,11 @@ const resources = {
   en: { translation: enTranslation },
 };
 
-// Get initial language from restaurant data (will be updated later)
+// Get initial language from browser
 const getInitialLanguage = (): string => {
-  // Default to Turkish, will be synced with restaurant data
-  return 'tr';
+  const browserLang = navigator.language.split('-')[0].toLowerCase();
+  // Support English and Turkish, default to Turkish for unsupported languages
+  return browserLang === 'en' ? 'en' : 'tr';
 };
 
 i18n
