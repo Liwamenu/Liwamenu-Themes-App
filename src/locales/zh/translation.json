@@ -41,7 +41,7 @@
     "searchPlaceholder": "搜索菜品...",
     "myOrder": "我的订单",
     "recommended": "推荐菜品",
-    "noResults": "未找到"{{query}}"的结果"
+    "noResults": "未找到 {{query}} 的结果"
   },
   "cart": {
     "title": "我的购物车",
@@ -70,7 +70,7 @@
     "quantity": "数量",
     "maxSelection": "最多{{max}}个",
     "maxSelectionError": "最多可选择{{max}}项",
-    "minSelectionError": "请为"{{name}}"选择至少{{min}}项",
+    "minSelectionError": "请为 {{name}} 选择至少{{min}}项",
     "note": "商品备注",
     "notePlaceholder": "添加此商品的特殊要求..."
   },
@@ -120,7 +120,7 @@
     "retryLocation": "重试",
     "locationPermissionGuide": "如何开启位置权限？",
     "locationPermissionStep1": "点击地址栏中的锁/位置图标",
-    "locationPermissionStep2": "将位置访问权限改为"允许"",
+    "locationPermissionStep2": "将位置访问权限改为允许",
     "locationPermissionStep3": "刷新页面并重试"
   },
   "orderReceipt": {
