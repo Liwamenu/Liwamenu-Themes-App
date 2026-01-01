@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck } from "lucide-react";
+import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck, X } from "lucide-react";
 import PhoneInput, { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,7 +207,12 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 overflow-x-hidden">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 overflow-x-hidden [&>button:last-child]:hidden">
+        {/* Custom Close Button */}
+        <DialogClose className="absolute left-4 top-8 z-50 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-100 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+          <X className="h-4 w-4 text-red-600 dark:text-red-400" />
+          <span className="sr-only">Kapat</span>
+        </DialogClose>
         {/* Flying Emojis */}
         <AnimatePresence>
           {flyingEmojis.map((emoji) => (
@@ -283,7 +289,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                       transition={{ delay: index * 0.1 }}
                       className="bg-secondary/50 rounded-xl p-4"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-start gap-3">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                             {category.icon}
