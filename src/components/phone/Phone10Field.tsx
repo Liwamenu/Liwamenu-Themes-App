@@ -79,15 +79,17 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
         <Input
           value={value.subscriber}
           onChange={(e) => {
-            const digits = onlyDigits(e.target.value).slice(0, 10);
-            onChange({ country: value.country, subscriber: digits });
+            const digits = onlyDigits(e.target.value);
+            // If autofill includes country code (more than 10 digits), take last 10
+            const subscriber = digits.length > 10 ? digits.slice(-10) : digits.slice(0, 10);
+            onChange({ country: value.country, subscriber });
           }}
           disabled={disabled}
           inputMode="numeric"
-          autoComplete="tel"
+          autoComplete="tel-national"
           placeholder={subscriberPlaceholder || "XXXXXXXXXX"}
           className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal"
-          maxLength={10}
+          maxLength={15}
         />
       </div>
     </div>
