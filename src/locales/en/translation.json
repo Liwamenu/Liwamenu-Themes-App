@@ -104,7 +104,7 @@
     "orderError": "An error occurred while placing your order.",
     "fillAllFields": "Please fill in all fields",
     "outOfRange": "You are outside the delivery area. ({{distance}} km away, max: {{max}} km)",
-    "locationError": "Could not get location. Location permission is required for online orders.",
+    "locationError": "You must be within the restaurant's service area for delivery orders.",
     "locationErrorTitle": "Location Error",
     "noOrdersAvailable": "Orders are not being accepted at this time. Outside of business hours. Please try again later.",
     "subtotal": "Subtotal",
