@@ -2,8 +2,9 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck } from "lucide-react";
-import PhoneInput from "react-phone-number-input";
+import PhoneInput, { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 
 import {
   Dialog,
@@ -62,6 +63,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   
   const [step, setStep] = useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
   
   const [ratings, setRatings] = useState<Record<string, number>>({
     food: 0,
@@ -76,7 +78,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   
   const [formData, setFormData] = useState({
     name: "",
-    phone: "",
+    phone: getE164Prefix("TR"),
     email: "",
     feedback: "",
   });
@@ -343,9 +345,16 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                           international
                           defaultCountry="TR"
                           countryCallingCodeEditable={false}
-                          limitMaxLength
                           value={formData.phone}
-                          onChange={(value) => setFormData((prev) => ({ ...prev, phone: value || "" }))}
+                          onCountryChange={(c) => {
+                            if (!c) return;
+                            setPhoneCountry(c);
+                            setFormData((prev) => ({ ...prev, phone: getE164Prefix(c) }));
+                          }}
+                          onChange={(value) => {
+                            const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
+                            setFormData((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) }));
+                          }}
                           placeholder={t("survey.phonePlaceholder")}
                         />
                       </div>
