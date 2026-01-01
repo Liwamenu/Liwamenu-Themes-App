@@ -110,7 +110,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCo
                   {items.length > 0 && (
                     <button
                       onClick={handleClearCart}
-                      className="text-sm text-destructive/80 hover:text-destructive bg-destructive/10 hover:bg-destructive/20 px-3 py-1.5 rounded-lg transition-colors"
+                      className="text-sm text-destructive hover:text-destructive dark:text-red-400 dark:hover:text-red-300 bg-destructive/10 hover:bg-destructive/20 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       {t('cart.clearCart')}
                     </button>
