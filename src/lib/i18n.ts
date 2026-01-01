@@ -29,6 +29,14 @@ const resources = {
 };
 
 const supportedLanguages = ['tr', 'en', 'de', 'fr', 'it', 'es', 'ar', 'az', 'ru', 'el', 'zh'];
+const rtlLanguages = ['ar'];
+
+// Update document direction based on language
+const updateDirection = (lang: string) => {
+  const dir = rtlLanguages.includes(lang) ? 'rtl' : 'ltr';
+  document.documentElement.dir = dir;
+  document.documentElement.lang = lang;
+};
 
 // Get initial language from browser
 const getInitialLanguage = (): string => {
@@ -36,11 +44,13 @@ const getInitialLanguage = (): string => {
   return supportedLanguages.includes(browserLang) ? browserLang : 'tr';
 };
 
+const initialLang = getInitialLanguage();
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: getInitialLanguage(),
+    lng: initialLang,
     fallbackLng: 'tr',
     interpolation: {
       escapeValue: false,
@@ -50,13 +60,18 @@ i18n
     },
   });
 
+// Set initial direction
+updateDirection(initialLang);
+
 // Function to change language dynamically
 export const changeLanguage = (lang: string) => {
   const normalizedLang = lang.toLowerCase();
   if (supportedLanguages.includes(normalizedLang)) {
     i18n.changeLanguage(normalizedLang);
+    updateDirection(normalizedLang);
   } else {
     i18n.changeLanguage('tr');
+    updateDirection('tr');
   }
 };
 
