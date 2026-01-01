@@ -24,9 +24,20 @@ export function limitPhoneAfterCallingCode(
   const callingCodeDigits = prefix.replace(/\D/g, "");
 
   // If user typed/pasted with calling code, remove it; otherwise treat all digits as national part.
-  const restDigits = digitsOnly.startsWith(callingCodeDigits)
-    ? digitsOnly.slice(callingCodeDigits.length)
-    : digitsOnly;
+  let restDigits = "";
+  
+  if (digitsOnly.startsWith(callingCodeDigits)) {
+    restDigits = digitsOnly.slice(callingCodeDigits.length);
+  } else {
+    // Check if the value might be from a different country code - if so, don't include those digits
+    // Only include digits that don't look like a country code (typically > 3 digits remaining after potential code)
+    const potentialRest = digitsOnly;
+    // If the number is just a country code (1-4 digits), don't add it as rest digits
+    if (potentialRest.length > 4) {
+      restDigits = potentialRest;
+    }
+    // Otherwise restDigits stays empty - just return the prefix
+  }
 
   return `+${callingCodeDigits}${restDigits.slice(0, maxDigitsAfterCode)}`;
 }
