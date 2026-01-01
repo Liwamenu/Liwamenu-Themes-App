@@ -215,7 +215,7 @@ export function SurveyModal({
       }} className="p-0.5 focus:outline-none touch-manipulation cursor-pointer" style={{
         WebkitTapHighlightColor: 'transparent'
       }}>
-            <Star className={`w-5 h-5 transition-all duration-200 ${star <= currentRating ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" : "text-muted-foreground/30"}`} />
+            <Star className={`w-6 h-6 transition-all duration-200 ${star <= currentRating ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" : "text-muted-foreground/30"}`} />
           </motion.button>)}
       </div>;
   };
