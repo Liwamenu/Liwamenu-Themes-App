@@ -77,7 +77,7 @@
     "placeOrder": "Sipariş Ver",
     "selectType": "Sipariş Türü Seçin",
     "inPerson": "Masada Sipariş",
-    "inPersonDesc": "Siparişinizi masanızda teslim alın ve garson çağırın",
+    "inPersonDesc": "Siparişiniz masanıza teslim edilecek",
     "online": "Paket Servis",
     "onlineDesc": "Adresinize teslim ({{distance}} km içinde)",
     "orderInfo": "Sipariş Bilgisi",
