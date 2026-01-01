@@ -88,8 +88,9 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
           inputMode="numeric"
           autoComplete="tel-national"
           placeholder={subscriberPlaceholder || "XXXXXXXXXX"}
-          className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal"
+          className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal text-base"
           maxLength={15}
+          style={{ fontSize: '16px', lineHeight: '1.5' }}
         />
       </div>
     </div>
