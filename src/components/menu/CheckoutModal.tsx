@@ -65,7 +65,9 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
   const [locationErrorModal, setLocationErrorModal] = useState<{
     isOpen: boolean;
     message: string;
-  }>({ isOpen: false, message: "" });
+    errorType: "permission" | "outOfRange" | "tableOutOfRange";
+    orderTypeAttempted: OrderType | null;
+  }>({ isOpen: false, message: "", errorType: "permission", orderTypeAttempted: null });
 
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
@@ -113,6 +115,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
           setLocationErrorModal({
             isOpen: true,
             message: t("order.outOfRange", { distance: distance.toFixed(1), max: restaurant.maxDistance }),
+            errorType: "outOfRange",
+            orderTypeAttempted: "online",
           });
           return;
         }
@@ -121,6 +125,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
         setLocationErrorModal({
           isOpen: true,
           message: t("order.locationError"),
+          errorType: "permission",
+          orderTypeAttempted: "online",
         });
         return;
       }
@@ -143,6 +149,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
             setLocationErrorModal({
               isOpen: true,
               message: t("order.tableOrderOutOfRange"),
+              errorType: "tableOutOfRange",
+              orderTypeAttempted: "inPerson",
             });
             return;
           }
@@ -150,6 +158,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
           setLocationErrorModal({
             isOpen: true,
             message: t("order.tableOrderOutOfRange"),
+            errorType: "permission",
+            orderTypeAttempted: "inPerson",
           });
           return;
         }
@@ -679,7 +689,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
           <>
             <div
               className="fixed inset-0 z-[60] bg-foreground/60"
-              onClick={() => setLocationErrorModal({ isOpen: false, message: "" })}
+              onClick={() => setLocationErrorModal({ isOpen: false, message: "", errorType: "permission", orderTypeAttempted: null })}
               style={{ WebkitBackdropFilter: "blur(4px)", backdropFilter: "blur(4px)" }}
             />
             <motion.div
@@ -689,19 +699,48 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
               className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none"
             >
               <div className="bg-card rounded-2xl p-6 shadow-xl w-full max-w-sm pointer-events-auto">
-              <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
-                  <MapPin className="w-8 h-8 text-destructive" />
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-destructive" />
+                  </div>
+                  <h3 className="text-lg font-bold">{t("order.locationErrorTitle")}</h3>
+                  <p className="text-muted-foreground">{locationErrorModal.message}</p>
+                  
+                  {/* Location Permission Guide - only show for permission errors */}
+                  {locationErrorModal.errorType === "permission" && (
+                    <div className="w-full p-4 bg-secondary rounded-xl text-left space-y-2">
+                      <p className="text-sm font-semibold">{t("order.locationPermissionGuide")}</p>
+                      <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                        <li>{t("order.locationPermissionStep1")}</li>
+                        <li>{t("order.locationPermissionStep2")}</li>
+                        <li>{t("order.locationPermissionStep3")}</li>
+                      </ul>
+                    </div>
+                  )}
+                  
+                  <div className="w-full flex flex-col gap-2">
+                    {/* Retry button */}
+                    <Button
+                      onClick={() => {
+                        setLocationErrorModal({ isOpen: false, message: "", errorType: "permission", orderTypeAttempted: null });
+                        if (locationErrorModal.orderTypeAttempted) {
+                          handleSelectOrderType(locationErrorModal.orderTypeAttempted);
+                        }
+                      }}
+                      className="w-full h-12 rounded-xl"
+                    >
+                      {t("order.retryLocation")}
+                    </Button>
+                    {/* Close button */}
+                    <Button
+                      variant="outline"
+                      onClick={() => setLocationErrorModal({ isOpen: false, message: "", errorType: "permission", orderTypeAttempted: null })}
+                      className="w-full h-12 rounded-xl"
+                    >
+                      {t("common.close")}
+                    </Button>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold">{t("order.locationErrorTitle")}</h3>
-                <p className="text-muted-foreground">{locationErrorModal.message}</p>
-                <Button
-                  onClick={() => setLocationErrorModal({ isOpen: false, message: "" })}
-                  className="w-full h-12 rounded-xl"
-                >
-                  {t("common.okay")}
-                </Button>
-              </div>
               </div>
             </motion.div>
           </>

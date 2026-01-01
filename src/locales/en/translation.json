@@ -116,7 +116,12 @@
     "cannotAddOutsideHours": "Cannot add items outside working hours or when restaurant is not active.",
     "minOrderProgress": "Your cart is below the minimum for delivery. Please add {{remaining}} more.",
     "minOrderLabel": "Minimum Amount",
-    "tableOrderOutOfRange": "You are too far from the restaurant for table order. Please move closer (within {{max}} meters)."
+    "tableOrderOutOfRange": "You must be within the restaurant boundaries for table orders.",
+    "retryLocation": "Try Again",
+    "locationPermissionGuide": "How to enable location?",
+    "locationPermissionStep1": "Click the lock/location icon in the browser address bar",
+    "locationPermissionStep2": "Change location access to 'Allow'",
+    "locationPermissionStep3": "Refresh the page and try again"
   },
   "orderReceipt": {
     "title": "Order Details",
