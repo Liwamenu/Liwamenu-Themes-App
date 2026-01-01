@@ -307,6 +307,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                 <PhoneInput
                   international
                   defaultCountry="TR"
+                  limitMaxLength
                   value={formData.phone}
                   onChange={(value) => handleInputChange("phone", value || "")}
                   className="phone-input-container"

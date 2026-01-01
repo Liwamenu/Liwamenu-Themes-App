@@ -343,6 +343,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                           international
                           defaultCountry="TR"
                           countryCallingCodeEditable={false}
+                          limitMaxLength
                           value={formData.phone}
                           onChange={(value) => setFormData((prev) => ({ ...prev, phone: value || "" }))}
                           placeholder={t("survey.phonePlaceholder")}

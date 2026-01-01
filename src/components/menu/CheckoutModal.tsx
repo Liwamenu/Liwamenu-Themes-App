@@ -425,6 +425,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                         international
                         defaultCountry="TR"
                         countryCallingCodeEditable={false}
+                        limitMaxLength
                         value={customerInfo.phone || "+90"}
                         onChange={(value) => setCustomerInfo((prev) => ({ ...prev, phone: value || "+90" }))}
                         className="phone-input-container"
