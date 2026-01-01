@@ -223,7 +223,7 @@ export function SurveyModal({
   return <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 overflow-x-hidden [&>button:last-child]:hidden">
         {/* Custom Close Button */}
-        <DialogClose className="absolute left-4 top-8 z-50 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-100 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+        <DialogClose className="absolute right-4 top-8 z-50 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-100 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
           <X className="h-4 w-4 text-red-600 dark:text-red-400" />
           <span className="sr-only">Kapat</span>
         </DialogClose>
