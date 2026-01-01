@@ -197,7 +197,7 @@ export function SurveyModal({
   };
   const renderStars = (category: string) => {
     const currentRating = hoveredRating[category] || ratings[category];
-    return <div className="flex gap-1.5">
+    return <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map(star => <motion.button key={star} type="button" whileHover={{
         scale: 1.2
       }} whileTap={{
@@ -212,10 +212,10 @@ export function SurveyModal({
         e.preventDefault();
         e.stopPropagation();
         handleRatingChange(category, star, e as unknown as React.MouseEvent);
-      }} className="p-1 focus:outline-none touch-manipulation cursor-pointer" style={{
+      }} className="p-0.5 focus:outline-none touch-manipulation cursor-pointer" style={{
         WebkitTapHighlightColor: 'transparent'
       }}>
-            <Star className={`w-7 h-7 sm:w-8 sm:h-8 transition-all duration-200 ${star <= currentRating ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" : "text-muted-foreground/30"}`} />
+            <Star className={`w-5 h-5 transition-all duration-200 ${star <= currentRating ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" : "text-muted-foreground/30"}`} />
           </motion.button>)}
       </div>;
   };
@@ -302,13 +302,13 @@ export function SurveyModal({
                 x: 0
               }} transition={{
                 delay: index * 0.1
-              }} className="bg-secondary/50 rounded-xl p-4">
-                      <div className="flex flex-col items-start gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              }} className="bg-secondary/50 rounded-xl p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                             {category.icon}
                           </div>
-                          <span className="font-medium">{t(category.labelKey)}</span>
+                          <span className="font-medium text-sm">{t(category.labelKey)}</span>
                         </div>
                         {renderStars(category.key)}
                       </div>
