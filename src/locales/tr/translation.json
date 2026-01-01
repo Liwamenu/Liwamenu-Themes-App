@@ -104,7 +104,7 @@
     "orderError": "Sipariş oluşturulurken bir hata oluştu.",
     "fillAllFields": "Lütfen tüm bilgileri doldurun",
     "outOfRange": "Teslimat alanı dışındasınız. ({{distance}} km uzaktasınız, max: {{max}} km)",
-    "locationError": "Konum alınamadı. Paket Servis için konum izni gereklidir.",
+    "locationError": "Paket servis siparişi için restoranın hizmet verdiği alan içerisinde olmalısınız.",
     "locationErrorTitle": "Konum Hatası",
     "noOrdersAvailable": "Şu an sipariş alınmıyor. Mesai saatleri dışında. Lütfen daha sonra tekrar deneyin.",
     "subtotal": "Ara Toplam",
