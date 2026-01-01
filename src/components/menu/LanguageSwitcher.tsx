@@ -8,20 +8,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { changeLanguage } from '@/lib/i18n';
+import type { Country } from 'react-phone-number-input';
+import flags from 'react-phone-number-input/flags';
 
-const languages = [
-  { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'az', label: 'Azərbaycan', flag: '🇦🇿' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-  { code: 'el', label: 'Ελληνικά', flag: '🇬🇷' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
+// Map language codes to country codes for flags
+const languages: { code: string; label: string; countryCode: Country }[] = [
+  { code: 'tr', label: 'Türkçe', countryCode: 'TR' },
+  { code: 'en', label: 'English', countryCode: 'GB' },
+  { code: 'de', label: 'Deutsch', countryCode: 'DE' },
+  { code: 'fr', label: 'Français', countryCode: 'FR' },
+  { code: 'it', label: 'Italiano', countryCode: 'IT' },
+  { code: 'es', label: 'Español', countryCode: 'ES' },
+  { code: 'ar', label: 'العربية', countryCode: 'SA' },
+  { code: 'az', label: 'Azərbaycan', countryCode: 'AZ' },
+  { code: 'ru', label: 'Русский', countryCode: 'RU' },
+  { code: 'el', label: 'Ελληνικά', countryCode: 'GR' },
+  { code: 'zh', label: '中文', countryCode: 'CN' },
 ];
+
+// Flag component using react-phone-number-input flags
+function CountryFlag({ country }: { country: Country }) {
+  const FlagComponent = flags[country];
+  if (!FlagComponent) return null;
+  return (
+    <span className="inline-flex w-5 h-4 overflow-hidden rounded-[2px] shrink-0">
+      <FlagComponent title={country} />
+    </span>
+  );
+}
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
@@ -40,18 +54,19 @@ export function LanguageSwitcher() {
           className="gap-2 text-muted-foreground hover:text-foreground"
         >
           <Globe className="w-4 h-4" />
-          <span className="text-sm">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
+          <CountryFlag country={currentLang.countryCode} />
+          <span className="text-sm">{currentLang.code.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[120px]">
+      <DropdownMenuContent align="end" className="min-w-[140px]">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
             className={`cursor-pointer ${i18n.language === lang.code ? 'bg-accent' : ''}`}
           >
-            <span className="mr-2">{lang.flag}</span>
-            {lang.label}
+            <CountryFlag country={lang.countryCode} />
+            <span className="ml-2">{lang.label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
