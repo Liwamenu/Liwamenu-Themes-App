@@ -218,6 +218,101 @@
   }
 }
 
+/* RTL Support */
+[dir="rtl"] {
+  /* Flip flex row directions */
+  .flex-row {
+    flex-direction: row-reverse;
+  }
+  
+  .flex-row-reverse {
+    flex-direction: row;
+  }
+
+  /* Flip margins */
+  .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+  .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+  .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+  .ml-4 { margin-left: 0; margin-right: 1rem; }
+  .ml-auto { margin-left: 0; margin-right: auto; }
+  .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+  .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+  .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+  .mr-4 { margin-right: 0; margin-left: 1rem; }
+  .mr-auto { margin-right: 0; margin-left: auto; }
+
+  /* Flip paddings */
+  .pl-1 { padding-left: 0; padding-right: 0.25rem; }
+  .pl-2 { padding-left: 0; padding-right: 0.5rem; }
+  .pl-3 { padding-left: 0; padding-right: 0.75rem; }
+  .pl-4 { padding-left: 0; padding-right: 1rem; }
+  .pr-1 { padding-right: 0; padding-left: 0.25rem; }
+  .pr-2 { padding-right: 0; padding-left: 0.5rem; }
+  .pr-3 { padding-right: 0; padding-left: 0.75rem; }
+  .pr-4 { padding-right: 0; padding-left: 1rem; }
+
+  /* Flip positioning */
+  .left-0 { left: auto; right: 0; }
+  .left-1 { left: auto; right: 0.25rem; }
+  .left-2 { left: auto; right: 0.5rem; }
+  .left-3 { left: auto; right: 0.75rem; }
+  .left-4 { left: auto; right: 1rem; }
+  .right-0 { right: auto; left: 0; }
+  .right-1 { right: auto; left: 0.25rem; }
+  .right-2 { right: auto; left: 0.5rem; }
+  .right-3 { right: auto; left: 0.75rem; }
+  .right-4 { right: auto; left: 1rem; }
+
+  /* Flip text alignment */
+  .text-left { text-align: right; }
+  .text-right { text-align: left; }
+
+  /* Flip rounded corners */
+  .rounded-l { border-radius: 0; border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+  .rounded-r { border-radius: 0; border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+  .rounded-l-lg { border-radius: 0; border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; }
+  .rounded-r-lg { border-radius: 0; border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem; }
+
+  /* Flip borders */
+  .border-l { border-left: 0; border-right-width: 1px; }
+  .border-r { border-right: 0; border-left-width: 1px; }
+
+  /* Flip space utilities */
+  .space-x-1 > :not([hidden]) ~ :not([hidden]) { margin-left: 0; margin-right: 0.25rem; }
+  .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0; margin-right: 0.5rem; }
+  .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0; margin-right: 0.75rem; }
+  .space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 0; margin-right: 1rem; }
+
+  /* Flip gap doesn't need change, but flex items do */
+  
+  /* Flip translate */
+  .translate-x-full { transform: translateX(-100%); }
+  .-translate-x-full { transform: translateX(100%); }
+
+  /* Flip icons that indicate direction */
+  .lucide-chevron-right,
+  .lucide-arrow-right,
+  .lucide-chevron-left,
+  .lucide-arrow-left {
+    transform: scaleX(-1);
+  }
+
+  /* Phone input RTL */
+  .phone-input-container {
+    direction: ltr;
+    text-align: right;
+  }
+  
+  .phone-input-container .PhoneInputCountry {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+
+  .phone-input-container .PhoneInputInput {
+    text-align: right;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
