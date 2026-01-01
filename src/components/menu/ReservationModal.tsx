@@ -11,10 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { toast } from "sonner";
 import { API_URLS, isTurkishPhone } from "@/lib/api";
-import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -55,9 +56,10 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
   const [formData, setFormData] = useState<ReservationFormData>({
     fullName: "",
-    phone: "",
+    phone: getE164Prefix("TR"),
     email: "",
     date: undefined,
     time: "",
@@ -307,9 +309,17 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                 <PhoneInput
                   international
                   defaultCountry="TR"
-                  limitMaxLength
+                  countryCallingCodeEditable={false}
                   value={formData.phone}
-                  onChange={(value) => handleInputChange("phone", value || "")}
+                  onCountryChange={(c) => {
+                    if (!c) return;
+                    setPhoneCountry(c);
+                    handleInputChange("phone", getE164Prefix(c));
+                  }}
+                  onChange={(value) => {
+                    const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
+                    handleInputChange("phone", next || getE164Prefix(phoneCountry));
+                  }}
                   className="phone-input-container"
                 />
               </div>

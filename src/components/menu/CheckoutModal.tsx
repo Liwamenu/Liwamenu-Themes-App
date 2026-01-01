@@ -30,8 +30,9 @@ import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import confetti from "canvas-confetti";
-import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -52,6 +53,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
 
   const [step, setStep] = useState<CheckoutStep>("type");
   const [orderType, setOrderType] = useState<OrderType | null>(null);
+  const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
   const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "+90", address: "" });
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [orderNote, setOrderNote] = useState("");
@@ -425,9 +427,16 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                         international
                         defaultCountry="TR"
                         countryCallingCodeEditable={false}
-                        limitMaxLength
-                        value={customerInfo.phone || "+90"}
-                        onChange={(value) => setCustomerInfo((prev) => ({ ...prev, phone: value || "+90" }))}
+                        value={customerInfo.phone || getE164Prefix(phoneCountry) || "+90"}
+                        onCountryChange={(c) => {
+                          if (!c) return;
+                          setPhoneCountry(c);
+                          setCustomerInfo((prev) => ({ ...prev, phone: getE164Prefix(c) }));
+                        }}
+                        onChange={(value) => {
+                          const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
+                          setCustomerInfo((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) || "+90" }));
+                        }}
                         className="phone-input-container"
                       />
                     </div>
