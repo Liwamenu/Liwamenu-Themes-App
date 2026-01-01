@@ -34,7 +34,7 @@ function CountryFlag({ country }: { country: Country }) {
   const FlagComponent = flags[country];
   if (!FlagComponent) return null;
   return (
-    <span className="inline-flex w-5 h-4 overflow-hidden rounded-sm shrink-0">
+    <span className="inline-flex w-5 h-4 overflow-hidden rounded-[3px] shrink-0">
       <FlagComponent title={country} />
     </span>
   );
@@ -57,7 +57,7 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
         <PopoverTrigger asChild disabled={disabled}>
           <button
             type="button"
-            className="h-12 rounded-xl border border-border bg-background px-3 flex items-center gap-2 hover:bg-accent/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-12 rounded-[3px] border border-border bg-background px-3 flex items-center gap-2 hover:bg-accent/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CountryFlag country={value.country} />
             <span className="text-sm flex-1 text-left">
@@ -94,7 +94,7 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
       </Popover>
 
       {/* Phone number input (10 digits) */}
-      <div className="h-12 rounded-xl border border-border bg-background px-3 flex items-center">
+      <div className="h-12 rounded-[3px] border border-border bg-background px-3 flex items-center">
         <Input
           value={value.subscriber}
           onChange={(e) => {
