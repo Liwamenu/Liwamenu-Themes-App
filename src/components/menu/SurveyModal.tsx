@@ -1,12 +1,10 @@
-import { useMemo, useState, useRef } from "react";
+import { useState, useRef } from "react";
+import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck, X } from "lucide-react";
-import PhoneInput, { Country } from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
-import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
-import { validatePhoneSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { Phone10Field } from "@/components/phone/Phone10Field";
 
 import {
   Dialog,
@@ -66,9 +64,11 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   
   const [step, setStep] = useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
-  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
-  
+  const [phoneSubscriber, setPhoneSubscriber] = useState("");
+
   const [ratings, setRatings] = useState<Record<string, number>>({
     food: 0,
     service: 0,
@@ -79,17 +79,17 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   const [hoveredRating, setHoveredRating] = useState<Record<string, number>>({});
   const [flyingEmojis, setFlyingEmojis] = useState<FlyingEmoji[]>([]);
   const emojiIdRef = useRef(0);
-  
+
   const [formData, setFormData] = useState({
     name: "",
-    phone: getE164Prefix("TR"),
+    phone: buildE164Phone("TR", ""),
     email: "",
     feedback: "",
   });
 
   // Phone validation (optional field - only validate if user started entering)
-  const hasPhoneInput = formData.phone && formData.phone !== getE164Prefix(phoneCountry);
-  const isPhoneValid = !hasPhoneInput || validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
+  const hasPhoneInput = phoneSubscriber.length > 0;
+  const isPhoneValid = !hasPhoneInput || phoneSubscriber.length === 10;
 
   const spawnEmojis = (rating: number, event: React.MouseEvent) => {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -356,26 +356,16 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                     
                     <div className="space-y-1.5">
                       <Label className="text-sm">{t("survey.phone")}</Label>
-                      <div className="phone-input-container">
-                        <PhoneInput
-                          international
-                          defaultCountry="TR"
-                          countryCallingCodeEditable={false}
-                          limitMaxLength
-                          inputComponent={limitedPhoneInput}
-                          value={formData.phone || getE164Prefix(phoneCountry)}
-                          onCountryChange={(c) => {
-                            if (!c) return;
-                            setPhoneCountry(c);
-                            setFormData((prev) => ({ ...prev, phone: getE164Prefix(c) }));
-                          }}
-                          onChange={(value) => {
-                            const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
-                            setFormData((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) }));
-                          }}
-                          placeholder={t("survey.phonePlaceholder")}
-                        />
-                      </div>
+                      <Phone10Field
+                        value={{ country: phoneCountry, subscriber: phoneSubscriber }}
+                        onChange={(next) => {
+                          const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                          setPhoneCountry(next.country);
+                          setPhoneSubscriber(subscriber);
+                          setFormData((prev) => ({ ...prev, phone: buildE164Phone(next.country, subscriber) }));
+                        }}
+                        subscriberPlaceholder={t("survey.phonePlaceholder")}
+                      />
                     </div>
                   </div>
                 </div>

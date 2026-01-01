@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import type { Country } from "react-phone-number-input";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, Users, User, Phone, Mail, MessageSquare, AlertTriangle, Check, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,13 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { toast } from "sonner";
 import { API_URLS, isTurkishPhone } from "@/lib/api";
-import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-input";
-import "react-phone-number-input/style.css";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
-import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
-import { validatePhoneSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { Phone10Field } from "@/components/phone/Phone10Field";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -58,11 +56,14 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
-  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
+  const [phoneSubscriber, setPhoneSubscriber] = useState("");
+
   const [formData, setFormData] = useState<ReservationFormData>({
     fullName: "",
-    phone: getE164Prefix("TR"),
+    phone: buildE164Phone("TR", ""),
     email: "",
     date: undefined,
     time: "",
@@ -88,7 +89,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const isPhoneValid = validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
+  const isPhoneValid = phoneSubscriber.length === 10;
 
   const validateForm = (): boolean => {
     if (!formData.fullName.trim()) {
@@ -311,23 +312,15 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   <Phone className="w-4 h-4 text-muted-foreground" />
                   {t("reservation.phone")}
                 </label>
-                <PhoneInput
-                  international
-                  defaultCountry="TR"
-                  countryCallingCodeEditable={false}
-                  limitMaxLength
-                  inputComponent={limitedPhoneInput}
-                  value={formData.phone || getE164Prefix(phoneCountry)}
-                  onCountryChange={(c) => {
-                    if (!c) return;
-                    setPhoneCountry(c);
-                    handleInputChange("phone", getE164Prefix(c));
+                <Phone10Field
+                  value={{ country: phoneCountry, subscriber: phoneSubscriber }}
+                  onChange={(next) => {
+                    const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                    setPhoneCountry(next.country);
+                    setPhoneSubscriber(subscriber);
+                    handleInputChange("phone", buildE164Phone(next.country, subscriber));
                   }}
-                  onChange={(value) => {
-                    const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
-                    handleInputChange("phone", next || getE164Prefix(phoneCountry));
-                  }}
-                  className="phone-input-container"
+                  subscriberPlaceholder="XXXXXXXXXX"
                 />
               </div>
 
