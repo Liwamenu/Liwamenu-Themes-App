@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Star, Send, CheckCircle, X, Sparkles, UtensilsCrossed, Users, MessageSquare } from "lucide-react";
+import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare } from "lucide-react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -29,11 +29,30 @@ interface RatingCategory {
   labelKey: string;
 }
 
+interface FlyingEmoji {
+  id: number;
+  emoji: string;
+  x: number;
+  y: number;
+}
+
 const ratingCategories: RatingCategory[] = [
   { key: "food", icon: <UtensilsCrossed className="w-5 h-5" />, labelKey: "survey.categories.food" },
   { key: "service", icon: <Users className="w-5 h-5" />, labelKey: "survey.categories.service" },
   { key: "ambiance", icon: <Sparkles className="w-5 h-5" />, labelKey: "survey.categories.ambiance" },
 ];
+
+// Emoji based on rating
+const getRatingEmoji = (rating: number): string => {
+  switch (rating) {
+    case 1: return "😞";
+    case 2: return "😕";
+    case 3: return "😊";
+    case 4: return "😃";
+    case 5: return "🤩";
+    default: return "⭐";
+  }
+};
 
 export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   const { t } = useTranslation();
@@ -48,6 +67,8 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
     ambiance: 0,
   });
   const [hoveredRating, setHoveredRating] = useState<Record<string, number>>({});
+  const [flyingEmojis, setFlyingEmojis] = useState<FlyingEmoji[]>([]);
+  const emojiIdRef = useRef(0);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -56,8 +77,39 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
     feedback: "",
   });
 
-  const handleRatingChange = (category: string, rating: number) => {
+  const spawnEmojis = (rating: number, event: React.MouseEvent) => {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const modalContent = document.querySelector('[role="dialog"]');
+    const modalRect = modalContent?.getBoundingClientRect() || { left: 0, top: 0 };
+    
+    const baseX = rect.left - modalRect.left + rect.width / 2;
+    const baseY = rect.top - modalRect.top + rect.height / 2;
+    
+    const emoji = getRatingEmoji(rating);
+    const count = Math.min(rating + 2, 7); // More emojis for higher ratings
+    
+    const newEmojis: FlyingEmoji[] = [];
+    for (let i = 0; i < count; i++) {
+      emojiIdRef.current += 1;
+      newEmojis.push({
+        id: emojiIdRef.current,
+        emoji,
+        x: baseX + (Math.random() - 0.5) * 40,
+        y: baseY,
+      });
+    }
+    
+    setFlyingEmojis((prev) => [...prev, ...newEmojis]);
+    
+    // Remove emojis after animation
+    setTimeout(() => {
+      setFlyingEmojis((prev) => prev.filter((e) => !newEmojis.find((ne) => ne.id === e.id)));
+    }, 1500);
+  };
+
+  const handleRatingChange = (category: string, rating: number, event: React.MouseEvent) => {
     setRatings((prev) => ({ ...prev, [category]: rating }));
+    spawnEmojis(rating, event);
   };
 
   const handleSubmit = async () => {
@@ -104,30 +156,36 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
       setRatings({ food: 0, service: 0, ambiance: 0 });
       setHoveredRating({});
       setFormData({ name: "", phone: "", email: "", feedback: "" });
+      setFlyingEmojis([]);
     }, 300);
   };
 
   const renderStars = (category: string) => {
-    const currentRating = hoveredRating[category] ?? ratings[category];
+    const currentRating = hoveredRating[category] || ratings[category];
     
     return (
-      <div className="flex gap-1">
+      <div className="flex gap-1.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <motion.button
             key={star}
             type="button"
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setHoveredRating((prev) => ({ ...prev, [category]: star }))}
-            onMouseLeave={() => setHoveredRating((prev) => ({ ...prev, [category]: 0 }))}
-            onClick={() => handleRatingChange(category, star)}
-            className="focus:outline-none transition-colors"
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            onPointerEnter={() => setHoveredRating((prev) => ({ ...prev, [category]: star }))}
+            onPointerLeave={() => setHoveredRating((prev) => ({ ...prev, [category]: 0 }))}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleRatingChange(category, star, e as unknown as React.MouseEvent);
+            }}
+            className="p-1 focus:outline-none touch-manipulation cursor-pointer"
+            style={{ WebkitTapHighlightColor: 'transparent' }}
           >
             <Star
-              className={`w-8 h-8 transition-all duration-200 ${
+              className={`w-7 h-7 sm:w-8 sm:h-8 transition-all duration-200 ${
                 star <= currentRating
                   ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
-                  : "text-muted-foreground/30 hover:text-muted-foreground/50"
+                  : "text-muted-foreground/30"
               }`}
             />
           </motion.button>
@@ -140,7 +198,38 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-0 overflow-x-hidden">
+        {/* Flying Emojis */}
+        <AnimatePresence>
+          {flyingEmojis.map((emoji) => (
+            <motion.div
+              key={emoji.id}
+              initial={{ 
+                x: emoji.x, 
+                y: emoji.y, 
+                scale: 0,
+                opacity: 1 
+              }}
+              animate={{ 
+                x: emoji.x + (Math.random() - 0.5) * 100,
+                y: emoji.y - 120 - Math.random() * 60, 
+                scale: [0, 1.5, 1],
+                opacity: [1, 1, 0],
+                rotate: (Math.random() - 0.5) * 60,
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ 
+                duration: 1.2,
+                ease: "easeOut",
+              }}
+              className="absolute pointer-events-none text-3xl z-50"
+              style={{ left: 0, top: 0 }}
+            >
+              {emoji.emoji}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        
         <AnimatePresence mode="wait">
           {step === "form" && (
             <motion.div
