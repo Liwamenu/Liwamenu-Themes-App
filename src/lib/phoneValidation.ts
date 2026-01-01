@@ -28,9 +28,11 @@ export function splitDigitsAfterCallingCode(value: string | undefined, country?:
     return { codeDigits: "", restDigits: digitsOnly };
   }
 
+  // Only extract rest digits if value starts with the correct country code
+  // If it doesn't match, return empty restDigits (clean slate for country switch)
   const restDigits = digitsOnly.startsWith(codeDigits)
     ? digitsOnly.slice(codeDigits.length)
-    : digitsOnly;
+    : "";
 
   return { codeDigits, restDigits };
 }

@@ -479,15 +479,9 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                           const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
                           setCustomerInfo((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) || "+90" }));
                         }}
-                        className={cn("phone-input-container", showPhoneError && "border-red-500")}
+                        className="phone-input-container"
                       />
                     </div>
-                    {showPhoneError && (
-                      <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                        <AlertCircle className="w-3 h-3" />
-                        {t("common.phoneError")} ({phoneDigitCount}/10)
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="address">{t("order.deliveryAddress")}</Label>

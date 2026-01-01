@@ -381,11 +381,6 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                           placeholder={t("survey.phonePlaceholder")}
                         />
                       </div>
-                      {showPhoneError && (
-                        <p className="text-xs text-red-500 mt-1">
-                          {t("common.phoneError")} ({phoneDigitCount}/10)
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
