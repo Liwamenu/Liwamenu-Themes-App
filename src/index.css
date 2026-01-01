@@ -409,10 +409,17 @@
 }
 
 .phone-input-container .PhoneInputCountrySelect {
-  background: transparent;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+.phone-input-container .PhoneInputCountrySelect option {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 0.5rem;
 }
 
 .phone-input-container .PhoneInputCountryIcon {
@@ -438,6 +445,16 @@
 
 .dark .phone-input-container {
   background-color: hsl(var(--card));
+}
+
+.dark .phone-input-container .PhoneInputCountrySelect {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+.dark .phone-input-container .PhoneInputCountrySelect option {
+  background-color: hsl(25, 15%, 12%);
+  color: hsl(35, 30%, 95%);
 }
 
 /* Print styles - only show receipt */
