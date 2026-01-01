@@ -457,6 +457,17 @@
   color: hsl(35, 30%, 95%);
 }
 
+/* Phone10Field dropdown dark mode */
+select option {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark select option {
+  background-color: hsl(25, 15%, 12%);
+  color: hsl(35, 30%, 95%);
+}
+
 /* Print styles - only show receipt */
 @media print {
   body * {

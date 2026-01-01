@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Country } from "react-phone-number-input";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -22,9 +23,20 @@ type Props = {
   subscriberPlaceholder?: string;
 };
 
+// Flag component using react-phone-number-input flags
+function CountryFlag({ country }: { country: Country }) {
+  const FlagComponent = flags[country];
+  if (!FlagComponent) return null;
+  return (
+    <span className="inline-flex w-5 h-4 overflow-hidden rounded-sm">
+      <FlagComponent title={country} />
+    </span>
+  );
+}
+
 /**
  * Two-part phone field:
- * 1) Country selector (calling code)
+ * 1) Country selector with flag (calling code)
  * 2) Subscriber number input (EXACTLY 10 digits required by validation)
  */
 export function Phone10Field({ value, onChange, className, disabled, subscriberPlaceholder }: Props) {
@@ -32,28 +44,37 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
   const callingCode = useMemo(() => getCountryCallingCode(value.country), [value.country]);
 
   return (
-    <div className={cn("grid grid-cols-[140px_1fr] gap-2", className)}>
-      <div className="h-12 rounded-xl border border-border bg-background px-3 flex items-center">
+    <div className={cn("grid grid-cols-[160px_1fr] gap-2", className)}>
+      {/* Country selector with flag */}
+      <div className="h-12 rounded-xl border border-border bg-background px-3 flex items-center gap-2">
+        <CountryFlag country={value.country} />
         <select
-          className="w-full bg-transparent text-sm outline-none"
+          className="flex-1 bg-transparent text-sm outline-none cursor-pointer appearance-none"
           value={value.country}
           disabled={disabled}
           onChange={(e) => {
             const nextCountry = e.target.value as Country;
-            // Clean slate: keep subscriber digits, but country code will change.
             onChange({ country: nextCountry, subscriber: value.subscriber });
           }}
+          style={{ backgroundImage: 'none' }}
         >
           {countries.map((c) => (
-            <option key={c} value={c}>
-              {c} (+{getCountryCallingCode(c)})
+            <option 
+              key={c} 
+              value={c}
+              className="bg-background text-foreground"
+            >
+              {c} +{getCountryCallingCode(c)}
             </option>
           ))}
         </select>
+        <svg className="w-4 h-4 text-muted-foreground pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
 
-      <div className="h-12 rounded-xl border border-border bg-background px-3 flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">+{callingCode}</span>
+      {/* Phone number input (10 digits) */}
+      <div className="h-12 rounded-xl border border-border bg-background px-3 flex items-center">
         <Input
           value={value.subscriber}
           onChange={(e) => {
@@ -63,7 +84,7 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
           disabled={disabled}
           inputMode="numeric"
           autoComplete="tel"
-          placeholder={subscriberPlaceholder}
+          placeholder={subscriberPlaceholder || "XXXXXXXXXX"}
           className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal"
           maxLength={10}
         />
