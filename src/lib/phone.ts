@@ -7,7 +7,9 @@ export function getE164Prefix(country?: Country) {
 
 /**
  * Limits the digits AFTER the country calling code.
- * Example (TR): +90 5xx xxx xx xx -> keeps +90 and max 10 digits after it.
+ * Example (TR +90): +90 5xx xxx xx xx -> keeps +90 and max 10 digits after it.
+ * Example (US +1): +1 xxx xxx xxxx -> keeps +1 and max 10 digits after it.
+ * Example (UK +44): +44 xxx xxx xxxx -> keeps +44 and max 10 digits after it.
  * Works correctly for all country code lengths (1, 2, 3 digits).
  */
 export function limitPhoneAfterCallingCode(
@@ -29,15 +31,12 @@ export function limitPhoneAfterCallingCode(
   let restDigits = "";
   
   if (digitsOnly.startsWith(callingCodeDigits)) {
-    // Value starts with the correct country code
+    // Value starts with the correct country code - extract the rest
     restDigits = digitsOnly.slice(codeLen);
-  } else if (digitsOnly.length > codeLen) {
-    // Value doesn't start with country code but has enough digits
-    // This handles cases where country changed but old digits remain
-    // Only keep digits if they look like a phone number (not just a country code)
-    restDigits = "";
   }
-  // If digitsOnly.length <= codeLen and doesn't match, restDigits stays empty
+  // If value doesn't start with country code, restDigits stays empty
+  // This ensures clean slate when switching countries
 
+  // Return country code + limited local number digits
   return `+${callingCodeDigits}${restDigits.slice(0, maxDigitsAfterCode)}`;
 }

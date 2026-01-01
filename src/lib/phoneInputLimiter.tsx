@@ -7,14 +7,17 @@ function countDigitsAfterCallingCode(value: string, country: Country, maxDigitsA
   const codeDigits = String(getCountryCallingCode(country));
   const codeLen = codeDigits.length;
   
-  // Check if the digits start with the country code
+  // The value from react-phone-number-input always includes the country code
+  // So we need to check if it starts with the country code and extract the rest
   let restDigits = "";
+  
   if (digits.startsWith(codeDigits)) {
+    // Normal case: value starts with country code
     restDigits = digits.slice(codeLen);
   } else {
-    // If digits don't start with country code, all are considered "rest"
-    // But only if there are more than just potential code digits
-    restDigits = digits.length > codeLen ? digits : "";
+    // Edge case: might be during country switch or empty
+    // Treat entire digits as rest only if it's clearly a phone number being typed
+    restDigits = "";
   }
   
   return {
