@@ -6,6 +6,7 @@ import PhoneInput, { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
+import { validatePhoneSubscriberDigits, getSubscriberDigitCount } from "@/lib/phoneValidation";
 
 import {
   Dialog,
@@ -85,6 +86,12 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
     email: "",
     feedback: "",
   });
+
+  // Phone validation (optional field - only validate if user started entering)
+  const hasPhoneInput = formData.phone && formData.phone !== getE164Prefix(phoneCountry);
+  const isPhoneValid = !hasPhoneInput || validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
+  const phoneDigitCount = getSubscriberDigitCount(formData.phone, phoneCountry);
+  const showPhoneError = hasPhoneInput && phoneDigitCount > 0 && !validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
 
   const spawnEmojis = (rating: number, event: React.MouseEvent) => {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -374,6 +381,11 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                           placeholder={t("survey.phonePlaceholder")}
                         />
                       </div>
+                      {showPhoneError && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {t("common.phoneError")} ({phoneDigitCount}/10)
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

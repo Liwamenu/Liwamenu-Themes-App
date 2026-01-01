@@ -26,7 +26,8 @@
     "remove": "Remove",
     "selectDate": "Select date",
     "selectTime": "Select time",
-    "okay": "OK"
+    "okay": "OK",
+    "phoneError": "Please enter exactly 10 digits after the country code"
   },
   "days": {
     "monday": "Monday",

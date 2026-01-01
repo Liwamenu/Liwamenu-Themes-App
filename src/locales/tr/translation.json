@@ -26,7 +26,8 @@
     "remove": "Kaldır",
     "selectDate": "Tarih seçin",
     "selectTime": "Saat seçin",
-    "okay": "Tamam"
+    "okay": "Tamam",
+    "phoneError": "Ülke kodundan sonra tam 10 rakam giriniz"
   },
   "days": {
     "monday": "Pazartesi",

@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
+import { validatePhoneSubscriberDigits, getSubscriberDigitCount } from "@/lib/phoneValidation";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -87,6 +88,10 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const isPhoneValid = validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
+  const phoneDigitCount = getSubscriberDigitCount(formData.phone, phoneCountry);
+  const showPhoneError = formData.phone && formData.phone !== getE164Prefix(phoneCountry) && !isPhoneValid;
+
   const validateForm = (): boolean => {
     if (!formData.fullName.trim()) {
       toast.error(t("validation.enterName"));
@@ -96,8 +101,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       toast.error(t("validation.enterPhone"));
       return false;
     }
-    if (!isValidPhoneNumber(formData.phone)) {
-      toast.error(t("validation.invalidPhone"));
+    if (!isPhoneValid) {
+      toast.error(t("common.phoneError"));
       return false;
     }
     if (!formData.email.trim() || !formData.email.includes("@")) {
@@ -330,8 +335,14 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                     const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
                     handleInputChange("phone", next || getE164Prefix(phoneCountry));
                   }}
-                  className="phone-input-container"
+                  className={cn("phone-input-container", showPhoneError && "border-red-500")}
                 />
+                {showPhoneError && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    {t("common.phoneError")} ({phoneDigitCount}/10)
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

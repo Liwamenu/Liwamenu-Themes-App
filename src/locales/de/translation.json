@@ -26,7 +26,8 @@
     "remove": "Entfernen",
     "selectDate": "Datum wählen",
     "selectTime": "Uhrzeit wählen",
-    "okay": "OK"
+    "okay": "OK",
+    "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein"
   },
   "days": {
     "monday": "Montag",

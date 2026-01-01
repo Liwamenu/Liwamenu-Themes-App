@@ -26,7 +26,8 @@
     "remove": "Rimuovi",
     "selectDate": "Seleziona data",
     "selectTime": "Seleziona ora",
-    "okay": "OK"
+    "okay": "OK",
+    "phoneError": "Inserisci esattamente 10 cifre dopo il prefisso del paese"
   },
   "days": {
     "monday": "Lunedì",

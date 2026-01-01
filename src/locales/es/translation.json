@@ -26,7 +26,8 @@
     "remove": "Eliminar",
     "selectDate": "Seleccionar fecha",
     "selectTime": "Seleccionar hora",
-    "okay": "OK"
+    "okay": "OK",
+    "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país"
   },
   "days": {
     "monday": "Lunes",

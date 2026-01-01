@@ -47,3 +47,29 @@ export function toE164WithSubscriberLimit(
   if (!codeDigits) return value;
   return `+${codeDigits}${restDigits.slice(0, maxSubscriberDigits)}`;
 }
+
+/**
+ * Validates that the phone number has exactly the required number of subscriber digits.
+ * Returns true if valid, false if invalid.
+ */
+export function validatePhoneSubscriberDigits(
+  value: string | undefined,
+  country: Country | undefined,
+  requiredDigits = 10,
+): boolean {
+  if (!value || !country) return false;
+  const { restDigits } = splitDigitsAfterCallingCode(value, country);
+  return restDigits.length === requiredDigits;
+}
+
+/**
+ * Gets the current count of subscriber digits in the phone value.
+ */
+export function getSubscriberDigitCount(
+  value: string | undefined,
+  country: Country | undefined,
+): number {
+  if (!value || !country) return 0;
+  const { restDigits } = splitDigitsAfterCallingCode(value, country);
+  return restDigits.length;
+}

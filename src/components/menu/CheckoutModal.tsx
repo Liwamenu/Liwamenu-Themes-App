@@ -34,6 +34,7 @@ import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-inpu
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
+import { validatePhoneSubscriberDigits, getSubscriberDigitCount } from "@/lib/phoneValidation";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -71,6 +72,11 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
 
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
+
+  // Phone validation
+  const isPhoneValid = validatePhoneSubscriberDigits(customerInfo.phone, phoneCountry, 10);
+  const phoneDigitCount = getSubscriberDigitCount(customerInfo.phone, phoneCountry);
+  const showPhoneError = customerInfo.phone && customerInfo.phone !== getE164Prefix(phoneCountry) && customerInfo.phone !== "+90" && !isPhoneValid;
 
   // Calculate discount and final total
   const getDiscountRate = () => {
@@ -177,8 +183,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
         toast.error(t("order.fillAllFields"));
         return;
       }
-      if (!isValidPhoneNumber(customerInfo.phone)) {
-        toast.error(t("validation.invalidPhone"));
+      if (!isPhoneValid) {
+        toast.error(t("common.phoneError"));
         return;
       }
       setStep("payment");
@@ -450,7 +456,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                   <div>
                     <Label htmlFor="phone">{t("order.phone")}</Label>
                     <div className="relative mt-2">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
                       <PhoneInput
                         international
                         defaultCountry="TR"
@@ -473,9 +479,15 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                           const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
                           setCustomerInfo((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) || "+90" }));
                         }}
-                        className="phone-input-container"
+                        className={cn("phone-input-container", showPhoneError && "border-red-500")}
                       />
                     </div>
+                    {showPhoneError && (
+                      <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {t("common.phoneError")} ({phoneDigitCount}/10)
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="address">{t("order.deliveryAddress")}</Label>
