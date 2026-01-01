@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -33,6 +33,7 @@ import confetti from "canvas-confetti";
 import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
+import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -54,8 +55,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
   const [step, setStep] = useState<CheckoutStep>("type");
   const [orderType, setOrderType] = useState<OrderType | null>(null);
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
+  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
   const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "+90", address: "" });
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [orderNote, setOrderNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWithinRange, setIsWithinRange] = useState(false);
@@ -427,6 +428,8 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                         international
                         defaultCountry="TR"
                         countryCallingCodeEditable={false}
+                        limitMaxLength
+                        inputComponent={limitedPhoneInput}
                         value={
                           limitPhoneAfterCallingCode(
                             customerInfo.phone || getE164Prefix(phoneCountry) || "+90",

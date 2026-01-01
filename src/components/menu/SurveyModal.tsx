@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck } from "lucide-react";
 import PhoneInput, { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
+import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
 
 import {
   Dialog,
@@ -64,6 +65,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
   const [step, setStep] = useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
+  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
   
   const [ratings, setRatings] = useState<Record<string, number>>({
     food: 0,
@@ -345,6 +347,8 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
                           international
                           defaultCountry="TR"
                           countryCallingCodeEditable={false}
+                          limitMaxLength
+                          inputComponent={limitedPhoneInput}
                           value={
                             limitPhoneAfterCallingCode(
                               formData.phone || getE164Prefix(phoneCountry),

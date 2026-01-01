@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, Users, User, Phone, Mail, MessageSquare, AlertTriangle, Check, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -16,6 +16,7 @@ import "react-phone-number-input/style.css";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
+import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -57,6 +58,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
+  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
   const [formData, setFormData] = useState<ReservationFormData>({
     fullName: "",
     phone: getE164Prefix("TR"),
@@ -310,6 +312,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   international
                   defaultCountry="TR"
                   countryCallingCodeEditable={false}
+                  limitMaxLength
+                  inputComponent={limitedPhoneInput}
                   value={
                     limitPhoneAfterCallingCode(
                       formData.phone || getE164Prefix(phoneCountry),
