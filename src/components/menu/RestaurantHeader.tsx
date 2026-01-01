@@ -4,6 +4,7 @@ import { Clock, MapPin, Phone, AlertTriangle, CalendarDays, Receipt, Star } from
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
 import { Button } from "@/components/ui/button";
@@ -37,8 +38,9 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
       <div className="relative container px-4 pt-8 pb-6">
-        {/* Language Switcher */}
-        <div className="absolute top-2 right-2 z-10">
+        {/* Language & Theme Switcher */}
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+          <ThemeSwitcher />
           <LanguageSwitcher />
         </div>
 

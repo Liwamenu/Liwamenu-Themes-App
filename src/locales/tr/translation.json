@@ -1,4 +1,9 @@
 {
+  "theme": {
+    "auto": "Otomatik",
+    "light": "Açık",
+    "dark": "Koyu"
+  },
   "common": {
     "continue": "Devam Et",
     "confirm": "Onayla",

@@ -1,4 +1,9 @@
 {
+  "theme": {
+    "auto": "Auto",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "common": {
     "continue": "Continue",
     "confirm": "Confirm",
