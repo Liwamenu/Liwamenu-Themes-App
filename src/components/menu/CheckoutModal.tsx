@@ -58,9 +58,14 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
   const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
   const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "+90", address: "" });
   const [orderNote, setOrderNote] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWithinRange, setIsWithinRange] = useState(false);
   const [isChangeTableOpen, setIsChangeTableOpen] = useState(false);
+  const [locationErrorModal, setLocationErrorModal] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({ isOpen: false, message: "" });
 
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
@@ -105,12 +110,18 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
             restaurant.latitude,
             restaurant.longitude,
           );
-          toast.error(t("order.outOfRange", { distance: distance.toFixed(1), max: restaurant.maxDistance }));
+          setLocationErrorModal({
+            isOpen: true,
+            message: t("order.outOfRange", { distance: distance.toFixed(1), max: restaurant.maxDistance }),
+          });
           return;
         }
         setStep("details");
       } catch (error) {
-        toast.error(t("order.locationError"));
+        setLocationErrorModal({
+          isOpen: true,
+          message: t("order.locationError"),
+        });
         return;
       }
     } else if (type === "inPerson") {
@@ -129,11 +140,17 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
           );
 
           if (!withinTableRange) {
-            toast.error(t("order.tableOrderOutOfRange"));
+            setLocationErrorModal({
+              isOpen: true,
+              message: t("order.tableOrderOutOfRange"),
+            });
             return;
           }
         } catch (error) {
-          toast.error(t("order.tableOrderOutOfRange"));
+          setLocationErrorModal({
+            isOpen: true,
+            message: t("order.tableOrderOutOfRange"),
+          });
           return;
         }
       }
@@ -655,6 +672,39 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
         onTableChange={handleTableChange}
         currentTable={tableNumber}
       />
+
+      {/* Location Error Modal */}
+      <AnimatePresence>
+        {locationErrorModal.isOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-[60] bg-foreground/60"
+              onClick={() => setLocationErrorModal({ isOpen: false, message: "" })}
+              style={{ WebkitBackdropFilter: "blur(4px)", backdropFilter: "blur(4px)" }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="fixed left-1/2 top-1/2 z-[60] -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-card rounded-2xl p-6 shadow-xl"
+            >
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <MapPin className="w-8 h-8 text-destructive" />
+                </div>
+                <h3 className="text-lg font-bold">{t("order.locationErrorTitle")}</h3>
+                <p className="text-muted-foreground">{locationErrorModal.message}</p>
+                <Button
+                  onClick={() => setLocationErrorModal({ isOpen: false, message: "" })}
+                  className="w-full h-12 rounded-xl"
+                >
+                  {t("common.okay")}
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }
