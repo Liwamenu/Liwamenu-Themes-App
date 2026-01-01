@@ -326,7 +326,7 @@ export function SurveyModal({
 
                 {/* Optional Contact Info */}
                 <div className="space-y-4 pt-2 border-t border-border">
-                  <p className="text-xs text-center pt-2 text-lime-400 font-normal">
+                  <p className="text-[11px] text-center pt-2 text-lime-400 font-normal">
                     {t("survey.optionalInfo")}
                   </p>
                   
