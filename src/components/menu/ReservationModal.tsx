@@ -310,7 +310,13 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   international
                   defaultCountry="TR"
                   countryCallingCodeEditable={false}
-                  value={formData.phone}
+                  value={
+                    limitPhoneAfterCallingCode(
+                      formData.phone || getE164Prefix(phoneCountry),
+                      phoneCountry,
+                      10,
+                    ) || getE164Prefix(phoneCountry)
+                  }
                   onCountryChange={(c) => {
                     if (!c) return;
                     setPhoneCountry(c);

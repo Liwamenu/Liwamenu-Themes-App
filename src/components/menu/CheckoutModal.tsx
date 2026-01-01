@@ -427,7 +427,13 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                         international
                         defaultCountry="TR"
                         countryCallingCodeEditable={false}
-                        value={customerInfo.phone || getE164Prefix(phoneCountry) || "+90"}
+                        value={
+                          limitPhoneAfterCallingCode(
+                            customerInfo.phone || getE164Prefix(phoneCountry) || "+90",
+                            phoneCountry,
+                            10,
+                          ) || getE164Prefix(phoneCountry) || "+90"
+                        }
                         onCountryChange={(c) => {
                           if (!c) return;
                           setPhoneCountry(c);
