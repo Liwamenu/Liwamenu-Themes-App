@@ -128,7 +128,6 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
     const allSelectedTags = Object.values(selectedTags).flat();
     addItem(product, selectedPortion, allSelectedTags, quantity, productNote.trim() || undefined);
-    toast.success(t('product.addedToCart', { name: product.name }));
     onClose();
   };
 
