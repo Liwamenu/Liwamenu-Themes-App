@@ -14,15 +14,19 @@ export function limitPhoneAfterCallingCode(
   country: Country | undefined,
   maxDigitsAfterCode = 10,
 ) {
-  if (!value) return value;
-
   const prefix = getE164Prefix(country);
+  if (!prefix) return value;
 
-  // Remove spaces / dashes, keep only + and digits.
-  const normalized = value.replace(/(?!^)\+/g, "").replace(/[^\d+]/g, "");
+  // Normalize: keep only digits and '+' (single leading plus)
+  const normalized = (value ?? "").replace(/(?!^)\+/g, "").replace(/[^\d+]/g, "");
+  const digitsOnly = normalized.replace(/\D/g, "");
 
-  if (!prefix || !normalized.startsWith(prefix)) return normalized;
+  const callingCodeDigits = prefix.replace(/\D/g, "");
 
-  const rest = normalized.slice(prefix.length).replace(/\D/g, "");
-  return prefix + rest.slice(0, maxDigitsAfterCode);
+  // If user typed/pasted with calling code, remove it; otherwise treat all digits as national part.
+  const restDigits = digitsOnly.startsWith(callingCodeDigits)
+    ? digitsOnly.slice(callingCodeDigits.length)
+    : digitsOnly;
+
+  return `+${callingCodeDigits}${restDigits.slice(0, maxDigitsAfterCode)}`;
 }
