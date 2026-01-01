@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -30,11 +31,8 @@ import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import confetti from "canvas-confetti";
-import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
-import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
-import { validatePhoneSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { Phone10Field } from "@/components/phone/Phone10Field";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -55,9 +53,12 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
 
   const [step, setStep] = useState<CheckoutStep>("type");
   const [orderType, setOrderType] = useState<OrderType | null>(null);
+
+  // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
-  const limitedPhoneInput = useMemo(() => createLimitedPhoneInput(phoneCountry, 10), [phoneCountry]);
-  const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "+90", address: "" });
+  const [phoneSubscriber, setPhoneSubscriber] = useState("");
+
+  const [customerInfo, setCustomerInfo] = useState({ name: "", phone: buildE164Phone("TR", ""), address: "" });
   const [orderNote, setOrderNote] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +75,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
   const tableNumber = restaurant.tableNumber;
 
   // Phone validation
-  const isPhoneValid = validatePhoneSubscriberDigits(customerInfo.phone, phoneCountry, 10);
+  const isPhoneValid = phoneSubscriber.length === 10;
 
   // Calculate discount and final total
   const getDiscountRate = () => {
@@ -177,7 +178,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
       // For in-person, skip payment and go to confirm
       setStep("confirm");
     } else {
-      if (!customerInfo.name.trim() || !customerInfo.phone.trim() || !customerInfo.address.trim()) {
+      if (!customerInfo.name.trim() || phoneSubscriber.length !== 10 || !customerInfo.address.trim()) {
         toast.error(t("order.fillAllFields"));
         return;
       }
@@ -451,30 +452,24 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                       />
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="phone">{t("order.phone")}</Label>
-                    <div className="relative mt-2">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
-                      <PhoneInput
-                        international
-                        defaultCountry="TR"
-                        countryCallingCodeEditable={false}
-                        limitMaxLength
-                        inputComponent={limitedPhoneInput}
-                        value={customerInfo.phone || getE164Prefix(phoneCountry) || "+90"}
-                        onCountryChange={(c) => {
-                          if (!c) return;
-                          setPhoneCountry(c);
-                          setCustomerInfo((prev) => ({ ...prev, phone: getE164Prefix(c) }));
-                        }}
-                        onChange={(value) => {
-                          const next = limitPhoneAfterCallingCode(value || getE164Prefix(phoneCountry), phoneCountry, 10);
-                          setCustomerInfo((prev) => ({ ...prev, phone: next || getE164Prefix(phoneCountry) || "+90" }));
-                        }}
-                        className="phone-input-container"
-                      />
+                    <div>
+                      <Label htmlFor="phone">{t("order.phone")}</Label>
+                      <div className="relative mt-2">
+                        <Phone className="absolute left-4 top-6 w-5 h-5 text-muted-foreground z-10" />
+                        <div className="pl-12">
+                          <Phone10Field
+                            value={{ country: phoneCountry, subscriber: phoneSubscriber }}
+                            onChange={(next) => {
+                              const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                              setPhoneCountry(next.country);
+                              setPhoneSubscriber(subscriber);
+                              setCustomerInfo((prev) => ({ ...prev, phone: buildE164Phone(next.country, subscriber) }));
+                            }}
+                            subscriberPlaceholder="XXXXXXXXXX"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
                   <div>
                     <Label htmlFor="address">{t("order.deliveryAddress")}</Label>
                     <div className="relative mt-2">

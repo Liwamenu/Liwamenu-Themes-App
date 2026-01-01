@@ -13,11 +13,22 @@ export function getCallingCodeDigits(country?: Country) {
   return String(getCountryCallingCode(country));
 }
 
+export function sanitizeSubscriberDigits(value: string | undefined, maxDigits = 10) {
+  return (value ?? "").replace(/\D/g, "").slice(0, maxDigits);
+}
+
+export function buildE164Phone(country: Country | undefined, subscriberDigits: string | undefined) {
+  const codeDigits = getCallingCodeDigits(country);
+  if (!codeDigits) return "";
+  const subscriber = sanitizeSubscriberDigits(subscriberDigits, 10);
+  return `+${codeDigits}${subscriber}`;
+}
+
 /**
  * Splits an input value into { codeDigits, restDigits }.
  *
  * - If the value already includes the selected calling code, it is removed from the front.
- * - Otherwise, all digits are treated as subscriber digits.
+ * - Otherwise, returns empty restDigits (to avoid carrying over digits across country switches).
  */
 export function splitDigitsAfterCallingCode(value: string | undefined, country?: Country) {
   const codeDigits = getCallingCodeDigits(country);
@@ -28,8 +39,6 @@ export function splitDigitsAfterCallingCode(value: string | undefined, country?:
     return { codeDigits: "", restDigits: digitsOnly };
   }
 
-  // Only extract rest digits if value starts with the correct country code
-  // If it doesn't match, return empty restDigits (clean slate for country switch)
   const restDigits = digitsOnly.startsWith(codeDigits)
     ? digitsOnly.slice(codeDigits.length)
     : "";
@@ -52,7 +61,6 @@ export function toE164WithSubscriberLimit(
 
 /**
  * Validates that the phone number has exactly the required number of subscriber digits.
- * Returns true if valid, false if invalid.
  */
 export function validatePhoneSubscriberDigits(
   value: string | undefined,
@@ -64,14 +72,3 @@ export function validatePhoneSubscriberDigits(
   return restDigits.length === requiredDigits;
 }
 
-/**
- * Gets the current count of subscriber digits in the phone value.
- */
-export function getSubscriberDigitCount(
-  value: string | undefined,
-  country: Country | undefined,
-): number {
-  if (!value || !country) return 0;
-  const { restDigits } = splitDigitsAfterCallingCode(value, country);
-  return restDigits.length;
-}
