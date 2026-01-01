@@ -17,7 +17,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
-import { validatePhoneSubscriberDigits, getSubscriberDigitCount } from "@/lib/phoneValidation";
+import { validatePhoneSubscriberDigits } from "@/lib/phoneValidation";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -89,8 +89,6 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   };
 
   const isPhoneValid = validatePhoneSubscriberDigits(formData.phone, phoneCountry, 10);
-  const phoneDigitCount = getSubscriberDigitCount(formData.phone, phoneCountry);
-  const showPhoneError = formData.phone && formData.phone !== getE164Prefix(phoneCountry) && !isPhoneValid;
 
   const validateForm = (): boolean => {
     if (!formData.fullName.trim()) {
@@ -319,13 +317,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   countryCallingCodeEditable={false}
                   limitMaxLength
                   inputComponent={limitedPhoneInput}
-                  value={
-                    limitPhoneAfterCallingCode(
-                      formData.phone || getE164Prefix(phoneCountry),
-                      phoneCountry,
-                      10,
-                    ) || getE164Prefix(phoneCountry)
-                  }
+                  value={formData.phone || getE164Prefix(phoneCountry)}
                   onCountryChange={(c) => {
                     if (!c) return;
                     setPhoneCountry(c);

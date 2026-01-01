@@ -34,7 +34,7 @@ import PhoneInput, { Country, isValidPhoneNumber } from "react-phone-number-inpu
 import "react-phone-number-input/style.css";
 import { getE164Prefix, limitPhoneAfterCallingCode } from "@/lib/phone";
 import { createLimitedPhoneInput } from "@/lib/phoneInputLimiter";
-import { validatePhoneSubscriberDigits, getSubscriberDigitCount } from "@/lib/phoneValidation";
+import { validatePhoneSubscriberDigits } from "@/lib/phoneValidation";
 
 interface CheckoutModalProps {
   onClose: () => void;
@@ -75,8 +75,6 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
 
   // Phone validation
   const isPhoneValid = validatePhoneSubscriberDigits(customerInfo.phone, phoneCountry, 10);
-  const phoneDigitCount = getSubscriberDigitCount(customerInfo.phone, phoneCountry);
-  const showPhoneError = customerInfo.phone && customerInfo.phone !== getE164Prefix(phoneCountry) && customerInfo.phone !== "+90" && !isPhoneValid;
 
   // Calculate discount and final total
   const getDiscountRate = () => {
@@ -463,13 +461,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                         countryCallingCodeEditable={false}
                         limitMaxLength
                         inputComponent={limitedPhoneInput}
-                        value={
-                          limitPhoneAfterCallingCode(
-                            customerInfo.phone || getE164Prefix(phoneCountry) || "+90",
-                            phoneCountry,
-                            10,
-                          ) || getE164Prefix(phoneCountry) || "+90"
-                        }
+                        value={customerInfo.phone || getE164Prefix(phoneCountry) || "+90"}
                         onCountryChange={(c) => {
                           if (!c) return;
                           setPhoneCountry(c);
