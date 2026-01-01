@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare } from "lucide-react";
+import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck } from "lucide-react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -40,6 +40,8 @@ const ratingCategories: RatingCategory[] = [
   { key: "food", icon: <UtensilsCrossed className="w-5 h-5" />, labelKey: "survey.categories.food" },
   { key: "service", icon: <Users className="w-5 h-5" />, labelKey: "survey.categories.service" },
   { key: "ambiance", icon: <Sparkles className="w-5 h-5" />, labelKey: "survey.categories.ambiance" },
+  { key: "hygiene", icon: <SprayCan className="w-5 h-5" />, labelKey: "survey.categories.hygiene" },
+  { key: "staff", icon: <UserCheck className="w-5 h-5" />, labelKey: "survey.categories.staff" },
 ];
 
 // Emoji based on rating
@@ -65,6 +67,8 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
     food: 0,
     service: 0,
     ambiance: 0,
+    hygiene: 0,
+    staff: 0,
   });
   const [hoveredRating, setHoveredRating] = useState<Record<string, number>>({});
   const [flyingEmojis, setFlyingEmojis] = useState<FlyingEmoji[]>([]);
@@ -153,7 +157,7 @@ export function SurveyModal({ isOpen, onClose }: SurveyModalProps) {
     // Reset after animation
     setTimeout(() => {
       setStep("form");
-      setRatings({ food: 0, service: 0, ambiance: 0 });
+      setRatings({ food: 0, service: 0, ambiance: 0, hygiene: 0, staff: 0 });
       setHoveredRating({});
       setFormData({ name: "", phone: "", email: "", feedback: "" });
       setFlyingEmojis([]);

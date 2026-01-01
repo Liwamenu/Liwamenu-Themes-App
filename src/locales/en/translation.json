@@ -244,7 +244,9 @@
     "categories": {
       "food": "Food",
       "service": "Service",
-      "ambiance": "Ambiance"
+      "ambiance": "Ambiance",
+      "hygiene": "Hygiene",
+      "staff": "Staff"
     },
     "feedback": "Your Feedback",
     "feedbackPlaceholder": "Share your thoughts about your experience...",
