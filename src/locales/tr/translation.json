@@ -114,7 +114,7 @@
     "cannotAddOutsideHours": "Çalışma saatleri dışında veya restoran aktif değilken ürün ekleyemezsiniz.",
     "minOrderProgress": "Paket Servis için sepet tutarı minimum tutarın altındadır. Lütfen {{remaining}} daha ürün ekleyin.",
     "minOrderLabel": "Minimum Tutar",
-    "tableOrderOutOfRange": "Masa siparişi için restorandan çok uzaktasınız. Lütfen yaklaşın ({{max}} metre içinde)."
+    "tableOrderOutOfRange": "Masada sipariş vermek için restoran sınırları içinde olmalısınız."
   },
   "orderReceipt": {
     "title": "Sipariş Detayı",
