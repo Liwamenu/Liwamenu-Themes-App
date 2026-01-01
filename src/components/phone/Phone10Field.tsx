@@ -68,8 +68,8 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
             </svg>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
-          <ScrollArea className="h-[300px]">
+        <PopoverContent className="w-[200px] p-0 z-[9999]" align="start">
+          <div className="h-[300px] overflow-y-auto overscroll-contain">
             <div className="p-1">
               {countries.map((c) => (
                 <button
@@ -89,7 +89,7 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
                 </button>
               ))}
             </div>
-          </ScrollArea>
+          </div>
         </PopoverContent>
       </Popover>
 
