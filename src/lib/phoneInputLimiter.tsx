@@ -1,28 +1,11 @@
 import React from "react";
 import type { Country } from "react-phone-number-input";
-import { getCountryCallingCode } from "react-phone-number-input";
+import { splitDigitsAfterCallingCode } from "@/lib/phoneValidation";
 
 function countDigitsAfterCallingCode(value: string, country: Country, maxDigitsAfterCode: number) {
-  const digits = value.replace(/\D/g, "");
-  const codeDigits = String(getCountryCallingCode(country));
-  const codeLen = codeDigits.length;
-  
-  // The value from react-phone-number-input always includes the country code
-  // So we need to check if it starts with the country code and extract the rest
-  let restDigits = "";
-  
-  if (digits.startsWith(codeDigits)) {
-    // Normal case: value starts with country code
-    restDigits = digits.slice(codeLen);
-  } else {
-    // Edge case: might be during country switch or empty
-    // Treat entire digits as rest only if it's clearly a phone number being typed
-    restDigits = "";
-  }
-  
+  const { codeDigits, restDigits } = splitDigitsAfterCallingCode(value, country);
   return {
     codeDigits,
-    codeLen,
     restLen: restDigits.length,
     remaining: Math.max(0, maxDigitsAfterCode - restDigits.length),
   };
