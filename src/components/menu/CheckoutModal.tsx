@@ -686,8 +686,9 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed left-1/2 top-1/2 z-[60] -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-card rounded-2xl p-6 shadow-xl"
+              className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none"
             >
+              <div className="bg-card rounded-2xl p-6 shadow-xl w-full max-w-sm pointer-events-auto">
               <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
                   <MapPin className="w-8 h-8 text-destructive" />
@@ -700,6 +701,7 @@ export function CheckoutModal({ onClose, onOrderComplete, onShowSoundPermission 
                 >
                   {t("common.okay")}
                 </Button>
+              </div>
               </div>
             </motion.div>
           </>

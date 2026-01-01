@@ -332,6 +332,9 @@
   outline: none;
   font-size: 1rem;
   color: hsl(var(--foreground));
+  line-height: normal;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .phone-input-container .PhoneInputInput::placeholder {
