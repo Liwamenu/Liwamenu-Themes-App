@@ -259,10 +259,10 @@ export function MenuPage() {
                 onClick={() => handleSelectProduct(product)}
                 className="flex-shrink-0 w-40 cursor-pointer"
               >
-                <div className="relative aspect-square rounded-2xl overflow-hidden mb-2">
+                <div className="relative aspect-square rounded-[4px] overflow-hidden mb-2">
                   <img src={product.imageURL} alt={product.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
-                  <span className="absolute bottom-2 left-2 right-2 bg-card/80 backdrop-blur-sm text-foreground text-sm font-semibold line-clamp-1 px-2 py-1 rounded-lg">
+                  <span className="absolute bottom-2 left-2 right-2 bg-sky-100/90 dark:bg-sky-900/80 backdrop-blur-sm text-foreground text-sm font-thin text-center line-clamp-1 px-2 py-1 rounded-[4px]">
                     {product.name}
                   </span>
                 </div>
