@@ -262,7 +262,7 @@ export function MenuPage() {
                 <div className="relative aspect-square rounded-[4px] overflow-hidden mb-2">
                   <img src={product.imageURL} alt={product.name} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
-                  <span className="absolute bottom-2 left-2 right-2 bg-amber-500/80 dark:bg-amber-600/80 backdrop-blur-sm text-white text-sm font-medium text-center line-clamp-1 px-2 py-1 rounded-[4px] shadow-sm">
+                  <span className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm text-white text-sm font-medium text-center line-clamp-1 px-2 py-1 rounded-[4px]">
                     {product.name}
                   </span>
                 </div>
