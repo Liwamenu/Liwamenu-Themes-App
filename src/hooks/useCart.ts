@@ -72,8 +72,8 @@ export const useCart = create<CartState>((set, get) => ({
   },
   
   updateQuantity: (itemId, quantity) => {
-    if (quantity <= 0) {
-      get().removeItem(itemId);
+    // Don't allow quantity below 1 - deletion should only happen via removeItem
+    if (quantity < 1) {
       return;
     }
     set((state) => ({
