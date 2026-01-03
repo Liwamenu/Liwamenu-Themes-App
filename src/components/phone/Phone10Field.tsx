@@ -80,8 +80,15 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
           value={value.subscriber}
           onChange={(e) => {
             const digits = onlyDigits(e.target.value);
-            // If autofill includes country code (more than 10 digits), take last 10
+            // Hard-stop at 10 digits while typing (do NOT shift digits).
+            onChange({ country: value.country, subscriber: digits.slice(0, 10) });
+          }}
+          onPaste={(e) => {
+            const pasted = e.clipboardData.getData("text");
+            const digits = onlyDigits(pasted);
+            // If pasted value includes country/extra digits, keep the last 10.
             const subscriber = digits.length > 10 ? digits.slice(-10) : digits.slice(0, 10);
+            e.preventDefault();
             onChange({ country: value.country, subscriber });
           }}
           disabled={disabled}
@@ -89,8 +96,8 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
           autoComplete="tel-national"
           placeholder={subscriberPlaceholder || "XXXXXXXXXX"}
           className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal text-base"
-          maxLength={15}
-          style={{ fontSize: '16px', lineHeight: '1.5' }}
+          maxLength={10}
+          style={{ fontSize: "16px", lineHeight: "1.5" }}
         />
       </div>
     </div>
