@@ -211,6 +211,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       //     guests: formData.guests,
       //     notes: formData.notes,
       //     verificationCode: verificationCode,
+      //     language: i18n.language, // Send current UI language for localized confirmation
       //   }),
       // });
       // if (!response.ok) {
