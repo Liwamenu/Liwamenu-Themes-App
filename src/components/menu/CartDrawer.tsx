@@ -22,10 +22,11 @@ interface CartDrawerProps {
   onClose: () => void;
   onCheckout: () => void;
   onCallWaiter?: () => void;
+  onTableRequired?: () => void;
   waiterCooldown?: number;
 }
 
-export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCooldown = 0 }: CartDrawerProps) {
+export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableRequired, waiterCooldown = 0 }: CartDrawerProps) {
   const { t } = useTranslation();
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
   const { formatPrice, restaurant, canOrderOnline, canOrderInPerson } = useRestaurant();
@@ -246,7 +247,13 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCo
                   <div className="flex gap-2">
                     {/* Call Waiter Button in Cart */}
                     <button
-                      onClick={onCallWaiter}
+                      onClick={() => {
+                        if (!restaurant.tableNumber) {
+                          onTableRequired?.();
+                          return;
+                        }
+                        onCallWaiter?.();
+                      }}
                       disabled={waiterCooldown > 0}
                       className={`h-10 px-3 rounded-xl flex items-center gap-1.5 text-sm font-medium transition-all ${
                         waiterCooldown > 0
@@ -270,7 +277,13 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, waiterCo
                       </Button>
                     ) : (
                       <Button
-                        onClick={onCallWaiter}
+                        onClick={() => {
+                          if (!restaurant.tableNumber) {
+                            onTableRequired?.();
+                            return;
+                          }
+                          onCallWaiter?.();
+                        }}
                         disabled={waiterCooldown > 0}
                         size="default"
                         className="flex-1 h-10 text-sm font-semibold rounded-xl bg-amber-500 hover:bg-amber-600"

@@ -343,6 +343,7 @@ export function MenuPage() {
         onClose={handleCloseCart}
         onCheckout={handleOpenCheckout}
         onCallWaiter={handleOpenCallWaiter}
+        onTableRequired={() => setShowTableSelection(true)}
         waiterCooldown={waiterCooldown}
       />
 
