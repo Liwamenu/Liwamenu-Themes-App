@@ -37,7 +37,7 @@ export const restaurantData: FullRestaurantInfo = {
     maxTableOrderDistanceMeter: 100,
     checkTableOrderDistance: true,
     isReservationLicenseActive: true,
-    tableNumber: undefined,
+    tableNumber: 5, // Test için geçici değer
     moneySign: "₺",
     isReservationActive: true,
     WorkingHours: [

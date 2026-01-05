@@ -328,7 +328,13 @@ export function CheckoutModal({
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">{t("order.selectType")}</h3>
 
-              {canOrderInPerson && <button onClick={() => handleSelectOrderType("inPerson")} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+              {canOrderInPerson && <button onClick={() => {
+                  if (!tableNumber) {
+                    setIsChangeTableOpen(true);
+                    return;
+                  }
+                  handleSelectOrderType("inPerson");
+                }} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                     {locationLoading && orderType === "inPerson" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Bell className="w-7 h-7 text-primary" />}
                   </div>
