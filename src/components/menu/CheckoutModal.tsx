@@ -415,9 +415,7 @@ export function CheckoutModal({
                   </div>
                     <div>
                       <Label htmlFor="phone">{t("order.phone")}</Label>
-                      <div className="relative mt-2">
-                        <Phone className="absolute left-4 top-6 w-5 h-5 text-muted-foreground z-10" />
-                        <div className="pl-12">
+                      <div className="mt-2">
                           <Phone10Field value={{
                     country: phoneCountry,
                     subscriber: phoneSubscriber
@@ -430,17 +428,18 @@ export function CheckoutModal({
                       phone: buildE164Phone(next.country, subscriber)
                     }));
                   }} subscriberPlaceholder="XXXXXXXXXX" />
-                        </div>
                       </div>
                     </div>
                   <div>
-                    <Label htmlFor="address">{t("order.deliveryAddress")}</Label>
-                    <div className="relative mt-2">
-                      <MapPin className="absolute left-4 top-4 w-5 h-5 text-muted-foreground" />
+                    <Label htmlFor="address" className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {t("order.deliveryAddress")}
+                    </Label>
+                    <div className="mt-2">
                       <textarea id="address" placeholder={t("order.addressPlaceholder")} value={customerInfo.address} onChange={e => setCustomerInfo(prev => ({
                   ...prev,
                   address: e.target.value
-                }))} className="w-full min-h-[100px] pl-12 p-4 rounded-xl bg-secondary border-0 resize-none" />
+                }))} className="w-full min-h-[100px] p-4 rounded-xl bg-secondary border-0 resize-none" />
                     </div>
                   </div>
                 </div>}
