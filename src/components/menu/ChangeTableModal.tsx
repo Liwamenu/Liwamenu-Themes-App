@@ -10,7 +10,7 @@ interface ChangeTableModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTableChange: (tableNumber: number) => void;
-  currentTable: number;
+  currentTable?: number;
 }
 
 export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable }: ChangeTableModalProps) {
@@ -127,15 +127,22 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
   };
 
   const handleConfirmTable = () => {
-    if (scannedTable && scannedTable !== currentTable) {
-      onTableChange(scannedTable);
-      toast.success(t("changeTable.tableChanged", { table: scannedTable }));
-      onClose();
-    } else if (scannedTable === currentTable) {
-      toast.info(t("changeTable.sameTable"));
-      onClose();
+    if (scannedTable) {
+      if (currentTable !== undefined && scannedTable === currentTable) {
+        toast.info(t("changeTable.sameTable"));
+        onClose();
+      } else {
+        onTableChange(scannedTable);
+        if (currentTable !== undefined) {
+          toast.success(t("changeTable.tableChanged", { table: scannedTable }));
+        }
+        onClose();
+      }
     }
   };
+
+  // Masa seçilmemiş mi kontrolü
+  const isSelectingTable = currentTable === undefined;
 
   const handleClose = () => {
     stopScanner();
@@ -166,7 +173,9 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <QrCode className="w-5 h-5 text-primary" />
                   </div>
-                  <h2 className="text-lg font-bold">{t("changeTable.title")}</h2>
+                  <h2 className="text-lg font-bold">
+                    {isSelectingTable ? t("changeTable.noTableTitle") : t("changeTable.title")}
+                  </h2>
                 </div>
                 <button
                   onClick={handleClose}
@@ -178,22 +187,33 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
 
               {/* Content */}
               <div className="p-5 space-y-4">
-                {/* Current Table */}
-                <div className="flex items-center gap-4 p-4 bg-secondary rounded-2xl">
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground">{t("changeTable.currentTable")}</p>
-                    <p className="text-xl font-bold">{currentTable}</p>
+                {/* Current Table - sadece masa seçiliyse göster */}
+                {!isSelectingTable && (
+                  <div className="flex items-center gap-4 p-4 bg-secondary rounded-2xl">
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">{t("changeTable.currentTable")}</p>
+                      <p className="text-xl font-bold">{currentTable}</p>
+                    </div>
+                    {scannedTable && (
+                      <>
+                        <div className="text-muted-foreground">→</div>
+                        <div className="flex-1 text-right">
+                          <p className="text-sm text-muted-foreground">{t("changeTable.newTable")}</p>
+                          <p className="text-xl font-bold text-primary">{scannedTable}</p>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {scannedTable && (
-                    <>
-                      <div className="text-muted-foreground">→</div>
-                      <div className="flex-1 text-right">
-                        <p className="text-sm text-muted-foreground">{t("changeTable.newTable")}</p>
-                        <p className="text-xl font-bold text-primary">{scannedTable}</p>
-                      </div>
-                    </>
-                  )}
-                </div>
+                )}
+
+                {/* Masa seçimi gerekli uyarısı */}
+                {isSelectingTable && !scannedTable && (
+                  <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-800">
+                    <p className="text-sm text-orange-700 dark:text-orange-300 text-center">
+                      {t("changeTable.noTableDesc")}
+                    </p>
+                  </div>
+                )}
 
                 {!scannedTable ? (
                   <>

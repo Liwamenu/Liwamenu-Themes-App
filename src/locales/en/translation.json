@@ -178,7 +178,10 @@
     "scanAgain": "Scan Again",
     "tableChanged": "Changed to Table {{table}}!",
     "sameTable": "You are already at this table.",
-    "scanInfo": "You need to scan the QR code at your new table to change tables."
+    "scanInfo": "You need to scan the QR code at your new table to change tables.",
+    "noTableTitle": "No Table Selected",
+    "noTableDesc": "Please scan your table's QR code to call a waiter.",
+    "selectTable": "Select Table"
   },
   "reservation": {
     "title": "Make Reservation",

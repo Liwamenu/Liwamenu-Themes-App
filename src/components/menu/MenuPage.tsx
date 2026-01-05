@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Bell } from "lucide-react";
 import { RestaurantHeader } from "@/components/menu/RestaurantHeader";
@@ -13,6 +14,7 @@ import { Footer } from "@/components/menu/Footer";
 import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
 import { ReservationModal } from "@/components/menu/ReservationModal";
+import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -36,7 +38,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export function MenuPage() {
   const { t } = useTranslation();
-  const { categories, recommendedProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice } = useRestaurant();
+  const { categories, recommendedProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
@@ -49,6 +51,7 @@ export function MenuPage() {
   const [showSoundPermission, setShowSoundPermission] = useState(false);
   const [showCallWaiter, setShowCallWaiter] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
+  const [showTableSelection, setShowTableSelection] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem('waiterCooldownEnd');
     if (savedEndTime) {
@@ -180,8 +183,21 @@ export function MenuPage() {
   }, []);
 
   const handleOpenCallWaiterFloating = useCallback(() => {
+    // Masa seçilmemişse QR tarama modalı göster
+    if (!restaurant.tableNumber) {
+      setShowTableSelection(true);
+      return;
+    }
     setShowCallWaiter(true);
-  }, []);
+  }, [restaurant.tableNumber]);
+
+  const handleTableSelected = useCallback((newTable: number) => {
+    setTableNumber(newTable);
+    toast.success(t('cart.tableChanged', { table: newTable }));
+    setShowTableSelection(false);
+    // Masa seçildikten sonra garson çağır modalını aç
+    setShowCallWaiter(true);
+  }, [setTableNumber, t]);
 
   const handleShowSoundPermission = useCallback(() => {
     setShowSoundPermission(true);
@@ -357,6 +373,14 @@ export function MenuPage() {
 
       {/* Reservation Modal */}
       <ReservationModal isOpen={showReservation} onClose={handleCloseReservation} />
+
+      {/* Table Selection Modal - Masa seçilmeden garson çağırma */}
+      <ChangeTableModal
+        isOpen={showTableSelection}
+        onClose={() => setShowTableSelection(false)}
+        onTableChange={handleTableSelected}
+        currentTable={undefined}
+      />
 
       {/* Flying Emoji Animation */}
       <FlyingEmoji

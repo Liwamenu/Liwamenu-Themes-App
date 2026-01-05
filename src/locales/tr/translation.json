@@ -178,7 +178,10 @@
     "scanAgain": "Tekrar Tara",
     "tableChanged": "Masa {{table}} olarak değiştirildi!",
     "sameTable": "Zaten bu masadasınız.",
-    "scanInfo": "Masa değiştirmek için yeni masanızdaki QR kodu taramanız gerekmektedir."
+    "scanInfo": "Masa değiştirmek için yeni masanızdaki QR kodu taramanız gerekmektedir.",
+    "noTableTitle": "Masa Seçilmedi",
+    "noTableDesc": "Garson çağırmak için önce masanızın QR kodunu taramalısınız.",
+    "selectTable": "Masa Seç"
   },
   "reservation": {
     "title": "Rezervasyon Yap",
