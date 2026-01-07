@@ -27,7 +27,8 @@
     "selectDate": "Seleziona data",
     "selectTime": "Seleziona ora",
     "okay": "OK",
-    "phoneError": "Inserisci esattamente 10 cifre dopo il prefisso del paese"
+    "phoneError": "Inserisci esattamente 10 cifre dopo il prefisso del paese",
+    "callWaiter": "Chiama cameriere"
   },
   "days": {
     "monday": "Lunedì",
@@ -135,7 +136,8 @@
     "orderDetails": "Dettagli ordine",
     "note": "Nota",
     "orderNote": "Nota ordine",
-    "paymentMethod": "Metodo di pagamento"
+    "paymentMethod": "Metodo di pagamento",
+    "backToMenu": "Torna al menu"
   },
   "status": {
     "pending": "In attesa",

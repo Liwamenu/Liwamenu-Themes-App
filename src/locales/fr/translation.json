@@ -27,7 +27,8 @@
     "selectDate": "Sélectionner une date",
     "selectTime": "Sélectionner une heure",
     "okay": "OK",
-    "phoneError": "Veuillez entrer exactement 10 chiffres après l'indicatif du pays"
+    "phoneError": "Veuillez entrer exactement 10 chiffres après l'indicatif du pays",
+    "callWaiter": "Appeler le serveur"
   },
   "days": {
     "monday": "Lundi",
@@ -135,7 +136,8 @@
     "orderDetails": "Détails de commande",
     "note": "Note",
     "orderNote": "Note de commande",
-    "paymentMethod": "Mode de paiement"
+    "paymentMethod": "Mode de paiement",
+    "backToMenu": "Retour au menu"
   },
   "status": {
     "pending": "En attente",

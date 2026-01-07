@@ -27,7 +27,8 @@
     "selectDate": "Seleccionar fecha",
     "selectTime": "Seleccionar hora",
     "okay": "OK",
-    "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país"
+    "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país",
+    "callWaiter": "Llamar camarero"
   },
   "days": {
     "monday": "Lunes",
@@ -135,7 +136,8 @@
     "orderDetails": "Detalles del pedido",
     "note": "Nota",
     "orderNote": "Nota del pedido",
-    "paymentMethod": "Método de pago"
+    "paymentMethod": "Método de pago",
+    "backToMenu": "Volver al menú"
   },
   "status": {
     "pending": "Pendiente",

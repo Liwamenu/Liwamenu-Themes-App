@@ -27,7 +27,8 @@
     "selectDate": "Tarix seçin",
     "selectTime": "Vaxt seçin",
     "okay": "Tamam",
-    "phoneError": "Ölkə kodundan sonra tam 10 rəqəm daxil edin"
+    "phoneError": "Ölkə kodundan sonra tam 10 rəqəm daxil edin",
+    "callWaiter": "Ofisiant çağır"
   },
   "days": {
     "monday": "Bazar ertəsi",
@@ -135,7 +136,8 @@
     "orderDetails": "Sifariş detalları",
     "note": "Qeyd",
     "orderNote": "Sifariş qeydi",
-    "paymentMethod": "Ödəniş üsulu"
+    "paymentMethod": "Ödəniş üsulu",
+    "backToMenu": "Menyuya qayıt"
   },
   "status": {
     "pending": "Gözləyir",

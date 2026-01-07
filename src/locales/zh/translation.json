@@ -27,7 +27,8 @@
     "selectDate": "选择日期",
     "selectTime": "选择时间",
     "okay": "好的",
-    "phoneError": "请在国家代码后输入正好10位数字"
+    "phoneError": "请在国家代码后输入正好10位数字",
+    "callWaiter": "呼叫服务员"
   },
   "days": {
     "monday": "星期一",
@@ -135,7 +136,8 @@
     "orderDetails": "订单详情",
     "note": "备注",
     "orderNote": "订单备注",
-    "paymentMethod": "支付方式"
+    "paymentMethod": "支付方式",
+    "backToMenu": "返回菜单"
   },
   "status": {
     "pending": "待处理",

@@ -27,7 +27,8 @@
     "selectDate": "اختر التاريخ",
     "selectTime": "اختر الوقت",
     "okay": "حسناً",
-    "phoneError": "يرجى إدخال 10 أرقام بالضبط بعد رمز الدولة"
+    "phoneError": "يرجى إدخال 10 أرقام بالضبط بعد رمز الدولة",
+    "callWaiter": "استدعاء النادل"
   },
   "days": {
     "monday": "الإثنين",
@@ -135,7 +136,8 @@
     "orderDetails": "تفاصيل الطلب",
     "note": "ملاحظة",
     "orderNote": "ملاحظة الطلب",
-    "paymentMethod": "طريقة الدفع"
+    "paymentMethod": "طريقة الدفع",
+    "backToMenu": "العودة للقائمة"
   },
   "status": {
     "pending": "قيد الانتظار",

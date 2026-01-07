@@ -27,7 +27,8 @@
     "selectDate": "Datum wählen",
     "selectTime": "Uhrzeit wählen",
     "okay": "OK",
-    "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein"
+    "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein",
+    "callWaiter": "Kellner rufen"
   },
   "days": {
     "monday": "Montag",
@@ -135,7 +136,8 @@
     "orderDetails": "Bestelldetails",
     "note": "Notiz",
     "orderNote": "Bestellnotiz",
-    "paymentMethod": "Zahlungsmethode"
+    "paymentMethod": "Zahlungsmethode",
+    "backToMenu": "Zurück zum Menü"
   },
   "status": {
     "pending": "Ausstehend",
