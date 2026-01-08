@@ -321,8 +321,8 @@ export function MenuPage() {
 
       {/* Menu Categories */}
       <div className="container px-4 pb-8">
-        {/* Campaign Products Section */}
-        {!searchQuery && campaignProducts.length > 0 && (
+        {/* Campaign Products Section - Only show when campaign tab is active */}
+        {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section 
             ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)} 
             className="mb-8"
@@ -348,7 +348,8 @@ export function MenuPage() {
           </section>
         )}
 
-        {filteredCategories.map((category) => (
+        {/* Regular Categories - Hide when campaign tab is active */}
+        {activeCategory !== CAMPAIGN_CATEGORY_ID && filteredCategories.map((category) => (
           <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)} className="mb-8">
             <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
               {category.name}
