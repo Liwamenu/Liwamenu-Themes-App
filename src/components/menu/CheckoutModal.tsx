@@ -155,7 +155,7 @@ export function CheckoutModal({
         } catch (error) {
           setLocationErrorModal({
             isOpen: true,
-            message: t("order.tableOrderOutOfRange"),
+            message: t("order.locationError"),
             errorType: "permission",
             orderTypeAttempted: "inPerson"
           });
