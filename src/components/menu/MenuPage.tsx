@@ -15,6 +15,7 @@ import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
+import { AnnouncementModal, getNewYearAnnouncementContent } from "@/components/menu/AnnouncementModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -52,6 +53,7 @@ export function MenuPage() {
   const [showCallWaiter, setShowCallWaiter] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem('waiterCooldownEnd');
     if (savedEndTime) {
@@ -61,6 +63,19 @@ export function MenuPage() {
     return 0;
   });
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // Auto-show announcement modal after 30 seconds
+  useEffect(() => {
+    const hasSeenAnnouncement = sessionStorage.getItem('hasSeenAnnouncement');
+    if (hasSeenAnnouncement) return;
+    
+    const timer = setTimeout(() => {
+      setShowAnnouncement(true);
+      sessionStorage.setItem('hasSeenAnnouncement', 'true');
+    }, 30000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Waiter cooldown timer with localStorage persistence
   useEffect(() => {
@@ -440,6 +455,13 @@ export function MenuPage() {
         isVisible={isFlyingEmojiVisible}
         startPosition={flyingEmojiPosition}
         onComplete={hideFlyingEmoji}
+      />
+
+      {/* Announcement Modal */}
+      <AnnouncementModal
+        isOpen={showAnnouncement}
+        onClose={() => setShowAnnouncement(false)}
+        htmlContent={getNewYearAnnouncementContent()}
       />
 
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
