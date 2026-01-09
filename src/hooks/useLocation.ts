@@ -41,34 +41,46 @@ export function useLocation() {
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setState({ latitude, longitude, error: null, loading: false });
-          resolve({ latitude, longitude });
-        },
-        (error) => {
-          let errorMessage = 'Konum alınamadı.';
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = 'Konum izni reddedildi. Lütfen tarayıcı ayarlarından konum iznini verin.';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Konum bilgisi alınamıyor.';
-              break;
-            case error.TIMEOUT:
-              errorMessage = 'Konum isteği zaman aşımına uğradı.';
-              break;
+      // Try with high accuracy first, fallback to low accuracy for Opera and some mobile browsers
+      const tryGetPosition = (highAccuracy: boolean) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setState({ latitude, longitude, error: null, loading: false });
+            resolve({ latitude, longitude });
+          },
+          (error) => {
+            // If high accuracy fails with timeout or unavailable, try low accuracy
+            if (highAccuracy && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
+              console.log('High accuracy failed, trying low accuracy...');
+              tryGetPosition(false);
+              return;
+            }
+            
+            let errorMessage = 'Konum alınamadı.';
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage = 'Konum izni reddedildi. Lütfen tarayıcı ayarlarından konum iznini verin.';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage = 'Konum bilgisi alınamıyor. Lütfen konum servislerinin açık olduğundan emin olun.';
+                break;
+              case error.TIMEOUT:
+                errorMessage = 'Konum isteği zaman aşımına uğradı. Lütfen tekrar deneyin.';
+                break;
+            }
+            setState((prev) => ({ ...prev, loading: false, error: errorMessage }));
+            reject(new Error(errorMessage));
+          },
+          {
+            enableHighAccuracy: highAccuracy,
+            timeout: highAccuracy ? 10000 : 15000,
+            maximumAge: 0,
           }
-          setState((prev) => ({ ...prev, loading: false, error: errorMessage }));
-          reject(new Error(errorMessage));
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
-      );
+        );
+      };
+
+      tryGetPosition(true);
     });
   }, []);
 
