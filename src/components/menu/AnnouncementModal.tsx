@@ -112,6 +112,12 @@ export const getNewYearAnnouncementContent = (): string => {
       <p class="text-xs text-muted-foreground italic">
         Kampanya 31 Ocak 2025 tarihine kadar geçerlidir.
       </p>
+      
+      <div class="mt-6 p-4 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700">
+        <p class="text-sm text-emerald-800 dark:text-emerald-200">
+          💡 Müşterileriniz menüye eriştikten belli bir süre sonra otomatik olarak bu şekilde bir duyuru penceresi gösterebilir ve özel günlerde kutlama veya kampanya mesajları yayınlayabilirsiniz.
+        </p>
+      </div>
     </div>
   `;
 };
