@@ -264,6 +264,16 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
             </div>
           )}
 
+          {/* Subtotal */}
+          {discountRate > 0 && (
+            <div className="px-6 py-2 text-base border-b border-dashed border-border">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{t("common.subtotal")}</span>
+                <span className="font-medium">{formatPrice(subtotal)}</span>
+              </div>
+            </div>
+          )}
+
           {/* Discount */}
           {discountRate > 0 && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border">
