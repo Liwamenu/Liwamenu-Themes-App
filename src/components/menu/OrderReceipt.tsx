@@ -55,9 +55,8 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
   const currentStepIndex = statusSteps.indexOf(order.status);
   const isCancelled = order.status === "cancelled";
   const dateLocale = i18n.language === "tr" ? tr : enUS;
-  const subtotal = order.totalAmount;
 
-  // Calculate discount and final total
+  // Calculate discount rate
   const getDiscountRate = () => {
     if (order.orderType === "inPerson") return restaurant.tableOrderDiscountRate;
     if (order.orderType === "online") return restaurant.onlineOrderDiscountRate;
@@ -65,6 +64,18 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
   };
 
   const discountRate = getDiscountRate();
+  
+  // For online orders, we need to subtract deliveryPrice first to get the items total
+  const deliveryFee = order.orderType === "online" ? (restaurant.deliveryFee || 0) : 0;
+  
+  // order.totalAmount is the final amount after discount + delivery
+  // We need to reverse-calculate the original subtotal (before discount)
+  // finalAmount = subtotal * (1 - discountRate/100) + deliveryFee
+  // So: subtotal = (finalAmount - deliveryFee) / (1 - discountRate/100)
+  const subtotal = discountRate > 0 
+    ? (order.totalAmount - deliveryFee) / (1 - discountRate / 100)
+    : order.totalAmount - deliveryFee;
+  
   const discountAmount = (subtotal * discountRate) / 100;
 
   return (
