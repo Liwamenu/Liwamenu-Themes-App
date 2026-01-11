@@ -28,7 +28,8 @@
     "selectTime": "Seleccionar hora",
     "okay": "OK",
     "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país",
-    "callWaiter": "Llamar camarero"
+    "callWaiter": "Llamar camarero",
+    "closedHours": "Actualmente estamos fuera del horario de trabajo."
   },
   "days": {
     "monday": "Lunes",

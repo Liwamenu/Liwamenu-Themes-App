@@ -28,7 +28,8 @@
     "selectTime": "选择时间",
     "okay": "好的",
     "phoneError": "请在国家代码后输入正好10位数字",
-    "callWaiter": "呼叫服务员"
+    "callWaiter": "呼叫服务员",
+    "closedHours": "我们目前不在工作时间。"
   },
   "days": {
     "monday": "星期一",

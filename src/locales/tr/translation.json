@@ -29,7 +29,8 @@
     "selectTime": "Saat seçin",
     "okay": "Tamam",
     "phoneError": "Ülke kodundan sonra tam 10 rakam giriniz",
-    "callWaiter": "Garson Çağır"
+    "callWaiter": "Garson Çağır",
+    "closedHours": "Şu anda çalışma saatleri dışındayız."
   },
   "days": {
     "monday": "Pazartesi",

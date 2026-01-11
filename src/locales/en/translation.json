@@ -29,7 +29,8 @@
     "selectTime": "Select time",
     "okay": "OK",
     "phoneError": "Please enter exactly 10 digits after the country code",
-    "callWaiter": "Call Waiter"
+    "callWaiter": "Call Waiter",
+    "closedHours": "We are currently outside of working hours."
   },
   "days": {
     "monday": "Monday",

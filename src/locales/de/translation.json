@@ -28,7 +28,8 @@
     "selectTime": "Uhrzeit wählen",
     "okay": "OK",
     "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein",
-    "callWaiter": "Kellner rufen"
+    "callWaiter": "Kellner rufen",
+    "closedHours": "Wir befinden uns derzeit außerhalb der Öffnungszeiten."
   },
   "days": {
     "monday": "Montag",
