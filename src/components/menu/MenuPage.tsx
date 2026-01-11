@@ -204,30 +204,42 @@ export function MenuPage() {
   }, []);
 
   const handleOpenCallWaiter = useCallback(() => {
+    // Çalışma saatleri dışında garson çağırma engelle
+    if (!isCurrentlyOpen) {
+      toast.error(t('common.closedHours'));
+      return;
+    }
     setIsCartOpen(false);
     setShowCallWaiter(true);
-  }, []);
+  }, [isCurrentlyOpen, t]);
 
   const handleCloseCallWaiter = useCallback(() => {
     setShowCallWaiter(false);
   }, []);
 
   const handleOpenCallWaiterFloating = useCallback(() => {
+    // Çalışma saatleri dışında garson çağırma engelle
+    if (!isCurrentlyOpen) {
+      toast.error(t('common.closedHours'));
+      return;
+    }
     // Masa seçilmemişse QR tarama modalı göster
     if (!restaurant.tableNumber) {
       setShowTableSelection(true);
       return;
     }
     setShowCallWaiter(true);
-  }, [restaurant.tableNumber]);
+  }, [restaurant.tableNumber, isCurrentlyOpen, t]);
 
   const handleTableSelected = useCallback((newTable: number) => {
     setTableNumber(newTable);
     toast.success(t('cart.tableChanged', { table: newTable }));
     setShowTableSelection(false);
-    // Masa seçildikten sonra garson çağır modalını aç
-    setShowCallWaiter(true);
-  }, [setTableNumber, t]);
+    // Çalışma saatleri açıksa masa seçildikten sonra garson çağır modalını aç
+    if (isCurrentlyOpen) {
+      setShowCallWaiter(true);
+    }
+  }, [setTableNumber, t, isCurrentlyOpen]);
 
   const handleShowSoundPermission = useCallback(() => {
     setShowSoundPermission(true);

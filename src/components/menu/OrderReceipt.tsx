@@ -58,25 +58,32 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
 
   // Calculate discount rate
   const getDiscountRate = () => {
-    if (order.orderType === "inPerson") return restaurant.tableOrderDiscountRate;
-    if (order.orderType === "online") return restaurant.onlineOrderDiscountRate;
+    if (order.orderType === "inPerson") return restaurant.tableOrderDiscountRate || 0;
+    if (order.orderType === "online") return restaurant.onlineOrderDiscountRate || 0;
     return 0;
   };
 
   const discountRate = getDiscountRate();
   
-  // For online orders, we need to subtract deliveryPrice first to get the items total
+  // Delivery fee for online orders
   const deliveryFee = order.orderType === "online" ? (restaurant.deliveryFee || 0) : 0;
   
   // order.totalAmount is the final amount after discount + delivery
+  // For online orders: totalAmount = (subtotal * (1 - discountRate/100)) + deliveryFee
+  // For inPerson: totalAmount = subtotal * (1 - discountRate/100)
   // We need to reverse-calculate the original subtotal (before discount)
-  // finalAmount = subtotal * (1 - discountRate/100) + deliveryFee
-  // So: subtotal = (finalAmount - deliveryFee) / (1 - discountRate/100)
-  const subtotal = discountRate > 0 
-    ? (order.totalAmount - deliveryFee) / (1 - discountRate / 100)
-    : order.totalAmount - deliveryFee;
+  const calculateSubtotal = () => {
+    const amountWithoutDelivery = order.totalAmount - deliveryFee;
+    if (discountRate > 0) {
+      // amountWithoutDelivery = subtotal * (1 - discountRate/100)
+      // subtotal = amountWithoutDelivery / (1 - discountRate/100)
+      return amountWithoutDelivery / (1 - discountRate / 100);
+    }
+    return amountWithoutDelivery;
+  };
   
-  const discountAmount = (subtotal * discountRate) / 100;
+  const subtotal = calculateSubtotal();
+  const discountAmount = subtotal * (discountRate / 100);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen bg-background">
