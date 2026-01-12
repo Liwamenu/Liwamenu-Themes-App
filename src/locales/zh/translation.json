@@ -116,6 +116,7 @@
     "tableDiscount": "堂食折扣",
     "onlineDiscount": "在线折扣",
     "deliveryFee": "配送费",
+    "coverCharge": "餐位费",
     "minOrderError": "外卖最低订单金额：{{min}}。",
     "cannotAddOutsideHours": "非营业时间不能添加商品。",
     "minOrderProgress": "您的购物车低于最低金额。请再添加{{remaining}}。",

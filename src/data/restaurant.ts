@@ -28,6 +28,7 @@ export const restaurantData: FullRestaurantInfo = {
     tableOrderDiscountRate: 5,
     onlineOrderDiscountRate: 10,
     deliveryFee: 15,
+    coverCharge: 10,
     minOrderAmount: 100,
     tenant: "popeyes",
     isSpecialPriceActive: true,

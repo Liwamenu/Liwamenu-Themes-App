@@ -116,6 +116,7 @@
     "tableDiscount": "Sconto tavolo",
     "onlineDiscount": "Sconto online",
     "deliveryFee": "Spese di consegna",
+    "coverCharge": "Coperto",
     "minOrderError": "Ordine minimo per consegna: {{min}}.",
     "cannotAddOutsideHours": "Non è possibile aggiungere articoli fuori orario.",
     "minOrderProgress": "Il tuo carrello è sotto il minimo. Aggiungi altri {{remaining}}.",

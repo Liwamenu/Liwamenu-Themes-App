@@ -117,6 +117,7 @@
     "tableDiscount": "Masa İndirimi",
     "onlineDiscount": "Paket Servis İndirimi",
     "deliveryFee": "Teslimat Ücreti",
+    "coverCharge": "Kuver",
     "minOrderError": "Paket Servisler için minimum sipariş tutarı {{min}}.",
     "cannotAddOutsideHours": "Çalışma saatleri dışında veya restoran aktif değilken ürün ekleyemezsiniz.",
     "minOrderProgress": "Paket Servis için sepet tutarı minimum tutarın altındadır. Lütfen {{remaining}} daha ürün ekleyin.",

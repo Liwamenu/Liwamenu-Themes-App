@@ -48,7 +48,7 @@ const statusSteps: Order["status"][] = ["pending", "confirmed", "preparing", "re
 
 export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
   const { t } = useTranslation();
-  const { restaurant, formatPrice } = useRestaurant();
+  const { restaurant, formatPrice, isCurrentlyOpen } = useRestaurant();
   const [showCallWaiterModal, setShowCallWaiterModal] = useState(false);
   const statusConfig = getStatusConfig(t);
   const status = statusConfig[order.status];
@@ -65,21 +65,19 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
 
   const discountRate = getDiscountRate();
   
-  // Delivery fee for online orders
+  // Service fees
   const deliveryFee = order.orderType === "online" ? (restaurant.deliveryFee || 0) : 0;
+  const coverCharge = order.orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
+  const serviceFee = deliveryFee + coverCharge;
   
-  // order.totalAmount is the final amount after discount + delivery
-  // For online orders: totalAmount = (subtotal * (1 - discountRate/100)) + deliveryFee
-  // For inPerson: totalAmount = subtotal * (1 - discountRate/100)
-  // We need to reverse-calculate the original subtotal (before discount)
+  // order.totalAmount is the final amount after discount + service fees
+  // We need to reverse-calculate the original subtotal (before discount and service fees)
   const calculateSubtotal = () => {
-    const amountWithoutDelivery = order.totalAmount - deliveryFee;
+    const amountWithoutServiceFee = order.totalAmount - serviceFee;
     if (discountRate > 0) {
-      // amountWithoutDelivery = subtotal * (1 - discountRate/100)
-      // subtotal = amountWithoutDelivery / (1 - discountRate/100)
-      return amountWithoutDelivery / (1 - discountRate / 100);
+      return amountWithoutServiceFee / (1 - discountRate / 100);
     }
-    return amountWithoutDelivery;
+    return amountWithoutServiceFee;
   };
   
   const subtotal = calculateSubtotal();
@@ -282,12 +280,24 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
             </div>
           )}
 
-          {/* Subtotal */}
-          {discountRate > 0 && (
+          {/* Service Fee - Delivery or Cover Charge */}
+          {serviceFee > 0 && (
+            <div className="px-6 py-2 text-base border-b border-dashed border-border">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  {order.orderType === "online" ? t("order.deliveryFee") : t("order.coverCharge")}
+                </span>
+                <span className="font-medium">{formatPrice(serviceFee)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Subtotal (with service fee included) */}
+          {(discountRate > 0 || serviceFee > 0) && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">{t("common.subtotal")}</span>
-                <span className="font-medium">{formatPrice(subtotal)}</span>
+                <span className="font-medium">{formatPrice(subtotal + serviceFee)}</span>
               </div>
             </div>
           )}
@@ -337,13 +347,17 @@ export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }:
           {order.orderType === "inPerson" && (
             <Button
               onClick={() => setShowCallWaiterModal(true)}
-              disabled={waiterCooldown > 0}
+              disabled={waiterCooldown > 0 || !isCurrentlyOpen}
               className={`w-full h-12 rounded-xl gap-2 ${
-                waiterCooldown > 0 ? "bg-muted text-muted-foreground" : ""
+                waiterCooldown > 0 || !isCurrentlyOpen ? "bg-muted text-muted-foreground" : ""
               }`}
             >
               <Bell className="w-5 h-5" />
-              {waiterCooldown > 0 ? `${t("common.callWaiter")} (${waiterCooldown}s)` : t("common.callWaiter")}
+              {!isCurrentlyOpen 
+                ? t("common.closedHours")
+                : waiterCooldown > 0 
+                  ? `${t("common.callWaiter")} (${waiterCooldown}s)` 
+                  : t("common.callWaiter")}
             </Button>
           )}
         </div>

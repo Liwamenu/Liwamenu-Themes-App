@@ -116,6 +116,7 @@
     "tableDiscount": "خصم الطاولة",
     "onlineDiscount": "خصم أونلاين",
     "deliveryFee": "رسوم التوصيل",
+    "coverCharge": "رسوم الخدمة",
     "minOrderError": "الحد الأدنى للطلب للتوصيل: {{min}}.",
     "cannotAddOutsideHours": "لا يمكن إضافة عناصر خارج ساعات العمل.",
     "minOrderProgress": "سلتك أقل من الحد الأدنى. أضف {{remaining}} أخرى.",

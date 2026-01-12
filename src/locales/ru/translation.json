@@ -116,6 +116,7 @@
     "tableDiscount": "Скидка за столом",
     "onlineDiscount": "Онлайн-скидка",
     "deliveryFee": "Стоимость доставки",
+    "coverCharge": "Сервисный сбор",
     "minOrderError": "Минимальная сумма заказа для доставки: {{min}}.",
     "cannotAddOutsideHours": "Нельзя добавлять товары вне рабочего времени.",
     "minOrderProgress": "Ваша корзина ниже минимума. Добавьте ещё {{remaining}}.",
