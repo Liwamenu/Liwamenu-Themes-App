@@ -116,6 +116,7 @@
     "tableDiscount": "Tischrabatt",
     "onlineDiscount": "Online-Rabatt",
     "deliveryFee": "Liefergebühr",
+    "coverCharge": "Kuvertgebühr",
     "minOrderError": "Mindestbestellwert für Lieferungen: {{min}}.",
     "cannotAddOutsideHours": "Außerhalb der Geschäftszeiten können keine Artikel hinzugefügt werden.",
     "minOrderProgress": "Ihr Warenkorb liegt unter dem Mindestbetrag. Bitte fügen Sie noch {{remaining}} hinzu.",

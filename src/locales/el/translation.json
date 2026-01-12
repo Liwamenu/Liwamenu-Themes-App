@@ -116,6 +116,7 @@
     "tableDiscount": "Έκπτωση τραπεζιού",
     "onlineDiscount": "Online έκπτωση",
     "deliveryFee": "Έξοδα αποστολής",
+    "coverCharge": "Κουβέρ",
     "minOrderError": "Ελάχιστη παραγγελία για παράδοση: {{min}}.",
     "cannotAddOutsideHours": "Δεν μπορείτε να προσθέσετε προϊόντα εκτός ωραρίου.",
     "minOrderProgress": "Το καλάθι σας είναι κάτω από το ελάχιστο. Προσθέστε ακόμα {{remaining}}.",

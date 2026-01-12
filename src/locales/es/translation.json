@@ -116,6 +116,7 @@
     "tableDiscount": "Descuento en mesa",
     "onlineDiscount": "Descuento online",
     "deliveryFee": "Gastos de envío",
+    "coverCharge": "Cubierto",
     "minOrderError": "Pedido mínimo para entrega: {{min}}.",
     "cannotAddOutsideHours": "No se pueden añadir artículos fuera del horario.",
     "minOrderProgress": "Tu carrito está por debajo del mínimo. Añade {{remaining}} más.",

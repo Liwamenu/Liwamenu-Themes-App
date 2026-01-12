@@ -111,6 +111,7 @@ export interface RestaurantData {
   tableOrderDiscountRate: number;
   onlineOrderDiscountRate: number;
   deliveryFee: number;
+  coverCharge?: number;
   minOrderAmount: number;
   tenant: string;
   isSpecialPriceActive: boolean;

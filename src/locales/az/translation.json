@@ -116,6 +116,7 @@
     "tableDiscount": "Masa endirimi",
     "onlineDiscount": "Onlayn endirim",
     "deliveryFee": "Çatdırılma haqqı",
+    "coverCharge": "Kuver",
     "minOrderError": "Çatdırılma üçün minimum sifariş məbləği {{min}}.",
     "cannotAddOutsideHours": "İş saatlarından kənar məhsul əlavə edə bilməzsiniz.",
     "minOrderProgress": "Səbət minimum məbləğin altındadır. {{remaining}} daha əlavə edin.",

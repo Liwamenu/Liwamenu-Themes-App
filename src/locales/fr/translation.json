@@ -116,6 +116,7 @@
     "tableDiscount": "Réduction table",
     "onlineDiscount": "Réduction en ligne",
     "deliveryFee": "Frais de livraison",
+    "coverCharge": "Couvert",
     "minOrderError": "Commande minimum pour livraison : {{min}}.",
     "cannotAddOutsideHours": "Impossible d'ajouter des articles en dehors des heures d'ouverture.",
     "minOrderProgress": "Votre panier est en dessous du minimum. Ajoutez encore {{remaining}}.",

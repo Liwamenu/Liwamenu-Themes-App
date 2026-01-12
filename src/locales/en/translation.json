@@ -117,6 +117,7 @@
     "tableDiscount": "Table Discount",
     "onlineDiscount": "Online Discount",
     "deliveryFee": "Delivery Fee",
+    "coverCharge": "Cover Charge",
     "minOrderError": "Minimum order amount is {{min}} for online orders.",
     "cannotAddOutsideHours": "Cannot add items outside working hours or when restaurant is not active.",
     "minOrderProgress": "Your cart is below the minimum for delivery. Please add {{remaining}} more.",
