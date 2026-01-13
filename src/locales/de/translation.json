@@ -109,7 +109,7 @@
     "fillAllFields": "Bitte füllen Sie alle Felder aus",
     "outOfRange": "Das Restaurant bedient in einem Radius von {{max}} km, Ihr aktueller Standort scheint {{distance}} km entfernt zu sein.",
     "locationError": "Sie müssen sich im Liefergebiet des Restaurants befinden.",
-    "tableOrderOutOfRangeDistance": "Das Restaurant akzeptiert Tischbestellungen innerhalb von {{max}} Metern, Ihr aktueller Standort scheint {{distance}} Meter entfernt zu sein.",
+    "tableOrderOutOfRangeDistance": "Das Restaurant akzeptiert Tischbestellungen innerhalb von {{max}}, Ihr aktueller Standort scheint {{distance}} entfernt zu sein.",
     "locationErrorTitle": "Standortfehler",
     "noOrdersAvailable": "Derzeit werden keine Bestellungen angenommen. Außerhalb der Geschäftszeiten.",
     "subtotal": "Zwischensumme",

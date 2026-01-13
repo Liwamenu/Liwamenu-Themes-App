@@ -110,7 +110,7 @@
     "fillAllFields": "Lütfen tüm bilgileri doldurun",
     "outOfRange": "Restoran {{max}} km çapında hizmet vermektedir, mevcut konumunuz {{distance}} km uzakta görünüyor.",
     "locationError": "Paket servis siparişi için restoranın hizmet verdiği alan içerisinde olmalısınız.",
-    "tableOrderOutOfRangeDistance": "Restoran {{max}} metre çapında masada sipariş kabul etmektedir, mevcut konumunuz {{distance}} metre uzakta görünüyor.",
+    "tableOrderOutOfRangeDistance": "Restoran {{max}} çapında masada sipariş kabul etmektedir, mevcut konumunuz {{distance}} uzakta görünüyor.",
     "locationErrorTitle": "Konum Hatası",
     "noOrdersAvailable": "Şu an sipariş alınmıyor. Mesai saatleri dışında. Lütfen daha sonra tekrar deneyin.",
     "subtotal": "Ara Toplam",
