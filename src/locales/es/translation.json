@@ -109,7 +109,7 @@
     "fillAllFields": "Por favor, completa todos los campos",
     "outOfRange": "El restaurante sirve en un radio de {{max}} km, tu ubicación actual parece estar a {{distance}} km.",
     "locationError": "Debes estar en el área de servicio del restaurante.",
-    "tableOrderOutOfRangeDistance": "El restaurante acepta pedidos en mesa dentro de {{max}} metros, tu ubicación actual parece estar a {{distance}} metros.",
+    "tableOrderOutOfRangeDistance": "El restaurante acepta pedidos en mesa dentro de {{max}}, tu ubicación actual parece estar a {{distance}}.",
     "locationErrorTitle": "Error de ubicación",
     "noOrdersAvailable": "No se aceptan pedidos actualmente. Fuera del horario de apertura.",
     "subtotal": "Subtotal",

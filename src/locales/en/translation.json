@@ -110,7 +110,7 @@
     "fillAllFields": "Please fill in all fields",
     "outOfRange": "The restaurant serves within a {{max}} km radius, your current location appears to be {{distance}} km away.",
     "locationError": "You must be within the restaurant's service area for delivery orders.",
-    "tableOrderOutOfRangeDistance": "The restaurant accepts table orders within {{max}} meters, your current location appears to be {{distance}} meters away.",
+    "tableOrderOutOfRangeDistance": "The restaurant accepts table orders within {{max}}, your current location appears to be {{distance}} away.",
     "locationErrorTitle": "Location Error",
     "noOrdersAvailable": "Orders are not being accepted at this time. Outside of business hours. Please try again later.",
     "subtotal": "Subtotal",

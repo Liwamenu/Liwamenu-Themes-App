@@ -145,14 +145,24 @@ export function CheckoutModal({
           const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
           const withinTableRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, maxDistanceKm);
           if (!withinTableRange) {
-            // Calculate distance in meters for display
+            // Calculate distance and format for display
             const distanceKm = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
-            const distanceMeters = Math.round(distanceKm * 1000);
+            const distanceMeters = distanceKm * 1000;
+            const maxMeters = restaurant.maxTableOrderDistanceMeter;
+            
+            // Format distance: show in km if >= 1000m, otherwise in meters
+            const formatDistance = (meters: number) => {
+              if (meters >= 1000) {
+                return `${(meters / 1000).toFixed(1)} km`;
+              }
+              return `${Math.round(meters)} ${t("common.meters", { defaultValue: "metre" })}`;
+            };
+            
             setLocationErrorModal({
               isOpen: true,
               message: t("order.tableOrderOutOfRangeDistance", {
-                distance: distanceMeters,
-                max: restaurant.maxTableOrderDistanceMeter
+                distance: formatDistance(distanceMeters),
+                max: formatDistance(maxMeters)
               }),
               errorType: "tableOutOfRange",
               orderTypeAttempted: "inPerson"

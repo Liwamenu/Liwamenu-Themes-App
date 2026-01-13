@@ -109,7 +109,7 @@
     "fillAllFields": "请填写所有字段",
     "outOfRange": "餐厅服务范围为{{max}}公里，您当前位置距离约{{distance}}公里。",
     "locationError": "您必须在餐厅的服务范围内。",
-    "tableOrderOutOfRangeDistance": "餐厅接受{{max}}米范围内的堂食点餐，您当前位置距离约{{distance}}米。",
+    "tableOrderOutOfRangeDistance": "餐厅接受{{max}}范围内的堂食点餐，您当前位置距离约{{distance}}。",
     "locationErrorTitle": "位置错误",
     "noOrdersAvailable": "目前不接受订单。营业时间外。",
     "subtotal": "小计",

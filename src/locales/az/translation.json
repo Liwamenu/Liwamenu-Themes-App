@@ -109,7 +109,7 @@
     "fillAllFields": "Zəhmət olmasa bütün sahələri doldurun",
     "outOfRange": "Restoran {{max}} km radiusda xidmət göstərir, cari yeriniz {{distance}} km uzaqda görünür.",
     "locationError": "Çatdırılma sifarişləri üçün restoranın xidmət zonasında olmalısınız.",
-    "tableOrderOutOfRangeDistance": "Restoran {{max}} metr ərazidə masa sifarişi qəbul edir, cari yeriniz {{distance}} metr uzaqda görünür.",
+    "tableOrderOutOfRangeDistance": "Restoran {{max}} ərazidə masa sifarişi qəbul edir, cari yeriniz {{distance}} uzaqda görünür.",
     "locationErrorTitle": "Məkan xətası",
     "noOrdersAvailable": "Hazırda sifariş qəbul edilmir. İş saatlarından kənar.",
     "subtotal": "Ara cəm",
