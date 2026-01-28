@@ -2,6 +2,7 @@ import { useState, useRef, useMemo } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck, X } from "lucide-react";
 import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
@@ -11,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useRestaurant } from "@/hooks/useRestaurant";
+import { useOrder } from "@/hooks/useOrder";
 import { API_URLS } from "@/lib/api";
 import { SurveyCategory } from "@/types/restaurant";
 
@@ -78,6 +80,7 @@ export function SurveyModal({
   const {
     restaurant
   } = useRestaurant();
+  const { orders } = useOrder();
   
   // Get survey settings from restaurant data
   const surveySettings = restaurant.surveySettings;
@@ -158,6 +161,12 @@ export function SurveyModal({
     spawnEmojis(rating, event);
   };
   const handleSubmit = async () => {
+    // Check if user has any completed orders
+    if (orders.length === 0) {
+      toast.error(t("survey.noOrderError"));
+      return;
+    }
+
     // Check if at least one rating is given
     const hasRating = Object.values(ratings).some(r => r > 0);
     if (!hasRating) return;
@@ -175,7 +184,7 @@ export function SurveyModal({
         customerEmail: formData.email.trim() || undefined,
         createdAt: new Date().toISOString()
       };
-      const response = await fetch(API_URLS.surveys, {
+      const response = await fetch(API_URLS.sendSurvey, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

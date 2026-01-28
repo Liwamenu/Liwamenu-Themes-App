@@ -283,6 +283,7 @@
     "submit": "提交",
     "successTitle": "谢谢！",
     "successMessage": "非常感谢您的反馈。您的意见对我们非常重要。",
-    "yourRatings": "您的评分"
+    "yourRatings": "您的评分",
+    "noOrderError": "您必须先下单才能提交评价。"
   }
 }

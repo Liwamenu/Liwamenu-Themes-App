@@ -283,6 +283,7 @@
     "submit": "Envoyer",
     "successTitle": "Merci !",
     "successMessage": "Merci beaucoup pour vos commentaires. Votre avis nous est très précieux.",
-    "yourRatings": "Vos évaluations"
+    "yourRatings": "Vos évaluations",
+    "noOrderError": "Vous devez passer une commande avant de soumettre un avis."
   }
 }

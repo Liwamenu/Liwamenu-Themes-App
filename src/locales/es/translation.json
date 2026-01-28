@@ -283,6 +283,7 @@
     "submit": "Enviar",
     "successTitle": "¡Gracias!",
     "successMessage": "Muchas gracias por tus comentarios. Tu opinión es muy valiosa para nosotros.",
-    "yourRatings": "Tus valoraciones"
+    "yourRatings": "Tus valoraciones",
+    "noOrderError": "Debes realizar un pedido antes de enviar una reseña."
   }
 }

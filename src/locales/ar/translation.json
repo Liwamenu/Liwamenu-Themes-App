@@ -283,6 +283,7 @@
     "submit": "إرسال",
     "successTitle": "شكراً لك!",
     "successMessage": "شكراً جزيلاً على ملاحظاتك. رأيك مهم جداً لنا.",
-    "yourRatings": "تقييماتك"
+    "yourRatings": "تقييماتك",
+    "noOrderError": "يجب عليك تقديم طلب قبل إرسال تقييم."
   }
 }

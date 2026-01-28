@@ -287,6 +287,7 @@
     "submit": "Submit",
     "successTitle": "Thank You!",
     "successMessage": "Thank you so much for your feedback. Your opinion is very valuable to us.",
-    "yourRatings": "Your Ratings"
+    "yourRatings": "Your Ratings",
+    "noOrderError": "You must place an order before submitting a review."
   }
 }

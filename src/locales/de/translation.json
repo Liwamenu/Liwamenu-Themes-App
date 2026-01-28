@@ -283,6 +283,7 @@
     "submit": "Absenden",
     "successTitle": "Vielen Dank!",
     "successMessage": "Vielen Dank für Ihr Feedback. Ihre Meinung ist uns sehr wichtig.",
-    "yourRatings": "Ihre Bewertungen"
+    "yourRatings": "Ihre Bewertungen",
+    "noOrderError": "Sie müssen eine Bestellung aufgeben, bevor Sie eine Bewertung abgeben können."
   }
 }

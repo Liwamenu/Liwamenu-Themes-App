@@ -283,6 +283,7 @@
     "submit": "Göndər",
     "successTitle": "Təşəkkür edirik!",
     "successMessage": "Qiymətləndirməniz üçün çox təşəkkür edirik. Rəyləriniz bizim üçün çox dəyərlidir.",
-    "yourRatings": "Verdiyiniz qiymətlər"
+    "yourRatings": "Verdiyiniz qiymətlər",
+    "noOrderError": "Rəy göndərmək üçün əvvəlcə sifariş verməlisiniz."
   }
 }
