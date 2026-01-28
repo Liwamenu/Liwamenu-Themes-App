@@ -30,7 +30,8 @@
     "okay": "Tamam",
     "phoneError": "Ülke kodundan sonra tam 10 rakam giriniz",
     "callWaiter": "Garson Çağır",
-    "closedHours": "Şu anda çalışma saatleri dışındayız."
+    "closedHours": "Şu anda çalışma saatleri dışındayız.",
+    "max": "maks"
   },
   "days": {
     "monday": "Pazartesi",

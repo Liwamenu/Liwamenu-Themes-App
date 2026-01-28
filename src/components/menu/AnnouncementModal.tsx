@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -79,45 +79,4 @@ export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: Announcement
       )}
     </AnimatePresence>
   );
-};
-
-// Demo content for New Year celebration
-export const getNewYearAnnouncementContent = (): string => {
-  return `
-    <div class="text-center space-y-4">
-      <div class="text-5xl mb-2">🎉✨🎊</div>
-      <h2 class="text-2xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-        Yeni Yılınız Kutlu Olsun!
-      </h2>
-      <p class="text-muted-foreground">
-        2026 yılının sağlık, mutluluk ve başarılarla dolu olmasını dileriz!
-      </p>
-      
-      <div class="my-6 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-amber-500/10 border border-primary/20">
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <span class="text-xl">🔥</span>
-          <span class="font-bold text-primary">Yeni Yıl Kampanyası</span>
-          <span class="text-xl">🔥</span>
-        </div>
-        <p class="text-sm text-muted-foreground mb-3">
-          Yeni yıla özel kampanyalı ürünlerimizi keşfedin! Seçili ürünlerde <strong class="text-primary">%20'ye varan indirimler</strong> sizi bekliyor.
-        </p>
-        <div class="flex flex-wrap justify-center gap-2 text-xs">
-          <span class="px-2 py-1 rounded-full bg-primary/20 text-primary">🍕 Lezzetli Pizzalar</span>
-          <span class="px-2 py-1 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">🍔 Gurme Burgerler</span>
-          <span class="px-2 py-1 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400">🥤 Özel İçecekler</span>
-        </div>
-      </div>
-      
-      <p class="text-xs text-muted-foreground italic">
-        Kampanya 31 Ocak 2026 tarihine kadar geçerlidir.
-      </p>
-      
-      <div class="mt-6 p-4 rounded-xl bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700">
-        <p class="text-sm text-green-800 dark:text-green-200">
-          💡 Müşterileriniz menüye eriştikten belli bir süre sonra otomatik olarak bu şekilde bir duyuru penceresi gösterebilir ve özel günlerde kutlama veya kampanya mesajları yayınlayabilirsiniz.
-        </p>
-      </div>
-    </div>
-  `;
 };

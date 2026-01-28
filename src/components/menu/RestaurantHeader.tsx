@@ -30,7 +30,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       <div
         className="absolute inset-0 opacity-20"
         style={{
-          backgroundImage: `url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop)`,
+          backgroundImage: `url(${restaurant.heroImageUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -53,7 +53,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           {/* Logo */}
           <div className="w-24 h-24 rounded-2xl bg-card shadow-card overflow-hidden mb-4 ring-4 ring-primary/20">
             <img
-              src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop"
+              src={restaurant.logoImageUrl}
               alt={restaurant.name}
               className="w-full h-full object-cover"
             />

@@ -34,23 +34,41 @@ interface ReservationFormData {
 
 type Step = "form" | "verify" | "code";
 
-// Generate time slots from 08:00 to 23:00
-const generateTimeSlots = () => {
+// Generate time slots based on settings
+const generateTimeSlots = (startTime: string, endTime: string, intervalMinutes: number) => {
   const slots: string[] = [];
-  for (let hour = 8; hour <= 23; hour++) {
-    slots.push(`${hour.toString().padStart(2, "0")}:00`);
-    if (hour < 23) {
-      slots.push(`${hour.toString().padStart(2, "0")}:30`);
-    }
+  const [startHour, startMin] = startTime.split(":").map(Number);
+  const [endHour, endMin] = endTime.split(":").map(Number);
+  
+  let currentMinutes = startHour * 60 + startMin;
+  const endMinutes = endHour * 60 + endMin;
+  
+  while (currentMinutes <= endMinutes) {
+    const hours = Math.floor(currentMinutes / 60);
+    const mins = currentMinutes % 60;
+    slots.push(`${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`);
+    currentMinutes += intervalMinutes;
   }
   return slots;
 };
 
-const TIME_SLOTS = generateTimeSlots();
-
 export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const { t, i18n } = useTranslation();
   const { restaurant } = useRestaurant();
+  
+  // Get reservation settings from restaurant data with fallbacks
+  const reservationSettings = restaurant.reservationSettings || {
+    startTime: "08:00",
+    endTime: "23:00",
+    intervalMinutes: 30,
+    maxGuests: 50,
+  };
+  
+  const TIME_SLOTS = generateTimeSlots(
+    reservationSettings.startTime,
+    reservationSettings.endTime,
+    reservationSettings.intervalMinutes
+  );
   const [step, setStep] = useState<Step>("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
@@ -405,7 +423,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Users className="w-4 h-4 text-muted-foreground" />
-                  {t("reservation.guests")}
+                  {t("reservation.guests")} ({t("common.max")} {reservationSettings.maxGuests})
                 </label>
                 <Input
                   type="text"
@@ -419,7 +437,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                       handleInputChange("guests", 0);
                     } else {
                       const num = parseInt(val);
-                      if (!isNaN(num) && num >= 0 && num <= 50) {
+                      if (!isNaN(num) && num >= 0 && num <= reservationSettings.maxGuests) {
                         handleInputChange("guests", num);
                       }
                     }

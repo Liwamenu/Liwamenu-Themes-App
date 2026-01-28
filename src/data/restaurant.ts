@@ -41,6 +41,65 @@ export const restaurantData: FullRestaurantInfo = {
     tableNumber: 5, // Test için geçici değer
     moneySign: "₺",
     isReservationActive: true,
+    heroImageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop",
+    logoImageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop",
+    announcementSettings: {
+      enabled: true,
+      delayMs: 30000,
+      htmlContent: `
+        <div class="text-center space-y-4">
+          <div class="text-5xl mb-2">🎉✨🎊</div>
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+            Yeni Yılınız Kutlu Olsun!
+          </h2>
+          <p class="text-muted-foreground">
+            2026 yılının sağlık, mutluluk ve başarılarla dolu olmasını dileriz!
+          </p>
+          
+          <div class="my-6 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-amber-500/10 border border-primary/20">
+            <div class="flex items-center justify-center gap-2 mb-3">
+              <span class="text-xl">🔥</span>
+              <span class="font-bold text-primary">Yeni Yıl Kampanyası</span>
+              <span class="text-xl">🔥</span>
+            </div>
+            <p class="text-sm text-muted-foreground mb-3">
+              Yeni yıla özel kampanyalı ürünlerimizi keşfedin! Seçili ürünlerde <strong class="text-primary">%20'ye varan indirimler</strong> sizi bekliyor.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 text-xs">
+              <span class="px-2 py-1 rounded-full bg-primary/20 text-primary">🍕 Lezzetli Pizzalar</span>
+              <span class="px-2 py-1 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">🍔 Gurme Burgerler</span>
+              <span class="px-2 py-1 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400">🥤 Özel İçecekler</span>
+            </div>
+          </div>
+          
+          <p class="text-xs text-muted-foreground italic">
+            Kampanya 31 Ocak 2026 tarihine kadar geçerlidir.
+          </p>
+          
+          <div class="mt-6 p-4 rounded-xl bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700">
+            <p class="text-sm text-green-800 dark:text-green-200">
+              💡 Müşterileriniz menüye eriştikten belli bir süre sonra otomatik olarak bu şekilde bir duyuru penceresi gösterebilir ve özel günlerde kutlama veya kampanya mesajları yayınlayabilirsiniz.
+            </p>
+          </div>
+        </div>
+      `,
+    },
+    reservationSettings: {
+      startTime: "08:00",
+      endTime: "23:00",
+      intervalMinutes: 30,
+      maxGuests: 50,
+    },
+    surveySettings: {
+      enabled: true,
+      categories: [
+        { key: "food", iconName: "UtensilsCrossed", labelKey: "survey.categories.food" },
+        { key: "service", iconName: "Users", labelKey: "survey.categories.service" },
+        { key: "ambiance", iconName: "Sparkles", labelKey: "survey.categories.ambiance" },
+        { key: "hygiene", iconName: "SprayCan", labelKey: "survey.categories.hygiene" },
+        { key: "staff", iconName: "UserCheck", labelKey: "survey.categories.staff" },
+      ],
+    },
     WorkingHours: [
       { Day: 1, IsClosed: false, Open: "00:00", Close: "23:59" },
       { Day: 2, IsClosed: false, Open: "00:00", Close: "23:59" },

@@ -29,7 +29,8 @@
     "okay": "Tamam",
     "phoneError": "Ölkə kodundan sonra tam 10 rəqəm daxil edin",
     "callWaiter": "Ofisiant çağır",
-    "closedHours": "Hazırda iş saatlarından kənardayıq."
+    "closedHours": "Hazırda iş saatlarından kənardayıq.",
+    "max": "maks"
   },
   "days": {
     "monday": "Bazar ertəsi",

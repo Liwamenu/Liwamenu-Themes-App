@@ -15,7 +15,7 @@ import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
-import { AnnouncementModal, getNewYearAnnouncementContent } from "@/components/menu/AnnouncementModal";
+import { AnnouncementModal } from "@/components/menu/AnnouncementModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -64,18 +64,21 @@ export function MenuPage() {
   });
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
-  // Auto-show announcement modal after 30 seconds
+  // Auto-show announcement modal based on settings
   useEffect(() => {
+    const announcementSettings = restaurant.announcementSettings;
+    if (!announcementSettings?.enabled) return;
+    
     const hasSeenAnnouncement = sessionStorage.getItem('hasSeenAnnouncement');
     if (hasSeenAnnouncement) return;
     
     const timer = setTimeout(() => {
       setShowAnnouncement(true);
       sessionStorage.setItem('hasSeenAnnouncement', 'true');
-    }, 30000);
+    }, announcementSettings.delayMs);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [restaurant.announcementSettings]);
 
   // Waiter cooldown timer with localStorage persistence
   useEffect(() => {
@@ -470,11 +473,13 @@ export function MenuPage() {
       />
 
       {/* Announcement Modal */}
-      <AnnouncementModal
-        isOpen={showAnnouncement}
-        onClose={() => setShowAnnouncement(false)}
-        htmlContent={getNewYearAnnouncementContent()}
-      />
+      {restaurant.announcementSettings?.enabled && (
+        <AnnouncementModal
+          isOpen={showAnnouncement}
+          onClose={() => setShowAnnouncement(false)}
+          htmlContent={restaurant.announcementSettings.htmlContent}
+        />
+      )}
 
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
       {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (

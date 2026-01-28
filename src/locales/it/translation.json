@@ -29,7 +29,8 @@
     "okay": "OK",
     "phoneError": "Inserisci esattamente 10 cifre dopo il prefisso del paese",
     "callWaiter": "Chiama cameriere",
-    "closedHours": "Attualmente siamo fuori dall'orario di lavoro."
+    "closedHours": "Attualmente siamo fuori dall'orario di lavoro.",
+    "max": "max"
   },
   "days": {
     "monday": "Lunedì",

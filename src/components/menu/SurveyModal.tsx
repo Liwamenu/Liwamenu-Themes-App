@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -12,42 +12,44 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { API_URLS } from "@/lib/api";
+import { SurveyCategory } from "@/types/restaurant";
+
 interface SurveyModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
 interface RatingCategory {
   key: string;
   icon: React.ReactNode;
   labelKey: string;
 }
+
 interface FlyingEmoji {
   id: number;
   emoji: string;
   x: number;
   y: number;
 }
-const ratingCategories: RatingCategory[] = [{
-  key: "food",
-  icon: <UtensilsCrossed className="w-5 h-5" />,
-  labelKey: "survey.categories.food"
-}, {
-  key: "service",
-  icon: <Users className="w-5 h-5" />,
-  labelKey: "survey.categories.service"
-}, {
-  key: "ambiance",
-  icon: <Sparkles className="w-5 h-5" />,
-  labelKey: "survey.categories.ambiance"
-}, {
-  key: "hygiene",
-  icon: <SprayCan className="w-5 h-5" />,
-  labelKey: "survey.categories.hygiene"
-}, {
-  key: "staff",
-  icon: <UserCheck className="w-5 h-5" />,
-  labelKey: "survey.categories.staff"
-}];
+
+// Icon mapping for dynamic icon rendering
+const iconMap: Record<string, React.ReactNode> = {
+  UtensilsCrossed: <UtensilsCrossed className="w-5 h-5" />,
+  Users: <Users className="w-5 h-5" />,
+  Sparkles: <Sparkles className="w-5 h-5" />,
+  SprayCan: <SprayCan className="w-5 h-5" />,
+  UserCheck: <UserCheck className="w-5 h-5" />,
+  MessageSquare: <MessageSquare className="w-5 h-5" />,
+};
+
+// Default categories fallback
+const defaultCategories: SurveyCategory[] = [
+  { key: "food", iconName: "UtensilsCrossed", labelKey: "survey.categories.food" },
+  { key: "service", iconName: "Users", labelKey: "survey.categories.service" },
+  { key: "ambiance", iconName: "Sparkles", labelKey: "survey.categories.ambiance" },
+  { key: "hygiene", iconName: "SprayCan", labelKey: "survey.categories.hygiene" },
+  { key: "staff", iconName: "UserCheck", labelKey: "survey.categories.staff" },
+];
 
 // Emoji based on rating
 const getRatingEmoji = (rating: number): string => {
@@ -76,19 +78,36 @@ export function SurveyModal({
   const {
     restaurant
   } = useRestaurant();
+  
+  // Get survey settings from restaurant data
+  const surveySettings = restaurant.surveySettings;
+  const categoriesFromSettings = surveySettings?.categories || defaultCategories;
+  
+  // Convert settings categories to RatingCategory format with icons
+  const ratingCategories: RatingCategory[] = useMemo(() => {
+    return categoriesFromSettings.map((cat) => ({
+      key: cat.key,
+      icon: iconMap[cat.iconName] || <Star className="w-5 h-5" />,
+      labelKey: cat.labelKey,
+    }));
+  }, [categoriesFromSettings]);
+  
+  // Build initial ratings state from categories
+  const initialRatings = useMemo(() => {
+    const ratings: Record<string, number> = {};
+    categoriesFromSettings.forEach((cat) => {
+      ratings[cat.key] = 0;
+    });
+    return ratings;
+  }, [categoriesFromSettings]);
+  
   const [step, setStep] = useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
   const [phoneSubscriber, setPhoneSubscriber] = useState("");
-  const [ratings, setRatings] = useState<Record<string, number>>({
-    food: 0,
-    service: 0,
-    ambiance: 0,
-    hygiene: 0,
-    staff: 0
-  });
+  const [ratings, setRatings] = useState<Record<string, number>>(initialRatings);
   const [hoveredRating, setHoveredRating] = useState<Record<string, number>>({});
   const [flyingEmojis, setFlyingEmojis] = useState<FlyingEmoji[]>([]);
   const emojiIdRef = useRef(0);
@@ -178,13 +197,7 @@ export function SurveyModal({
     // Reset after animation
     setTimeout(() => {
       setStep("form");
-      setRatings({
-        food: 0,
-        service: 0,
-        ambiance: 0,
-        hygiene: 0,
-        staff: 0
-      });
+      setRatings(initialRatings);
       setHoveredRating({});
       setFormData({
         name: "",

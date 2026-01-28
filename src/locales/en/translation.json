@@ -30,7 +30,8 @@
     "okay": "OK",
     "phoneError": "Please enter exactly 10 digits after the country code",
     "callWaiter": "Call Waiter",
-    "closedHours": "We are currently outside of working hours."
+    "closedHours": "We are currently outside of working hours.",
+    "max": "max"
   },
   "days": {
     "monday": "Monday",

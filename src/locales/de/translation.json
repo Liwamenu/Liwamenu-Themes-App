@@ -29,7 +29,8 @@
     "okay": "OK",
     "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein",
     "callWaiter": "Kellner rufen",
-    "closedHours": "Wir befinden uns derzeit außerhalb der Öffnungszeiten."
+    "closedHours": "Wir befinden uns derzeit außerhalb der Öffnungszeiten.",
+    "max": "max"
   },
   "days": {
     "monday": "Montag",

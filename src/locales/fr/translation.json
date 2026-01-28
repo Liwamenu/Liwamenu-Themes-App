@@ -29,7 +29,8 @@
     "okay": "OK",
     "phoneError": "Veuillez entrer exactement 10 chiffres après l'indicatif du pays",
     "callWaiter": "Appeler le serveur",
-    "closedHours": "Nous sommes actuellement en dehors des heures d'ouverture."
+    "closedHours": "Nous sommes actuellement en dehors des heures d'ouverture.",
+    "max": "max"
   },
   "days": {
     "monday": "Lundi",

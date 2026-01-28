@@ -29,7 +29,8 @@
     "okay": "OK",
     "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país",
     "callWaiter": "Llamar camarero",
-    "closedHours": "Actualmente estamos fuera del horario de trabajo."
+    "closedHours": "Actualmente estamos fuera del horario de trabajo.",
+    "max": "máx"
   },
   "days": {
     "monday": "Lunes",

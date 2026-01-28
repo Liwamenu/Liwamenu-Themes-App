@@ -85,6 +85,30 @@ export interface PaymentMethod {
   enabled: boolean;
 }
 
+export interface AnnouncementSettings {
+  enabled: boolean;
+  delayMs: number;
+  htmlContent: string;
+}
+
+export interface ReservationSettings {
+  startTime: string;
+  endTime: string;
+  intervalMinutes: number;
+  maxGuests: number;
+}
+
+export interface SurveyCategory {
+  key: string;
+  iconName: string;
+  labelKey: string;
+}
+
+export interface SurveySettings {
+  enabled: boolean;
+  categories: SurveyCategory[];
+}
+
 export interface RestaurantData {
   restaurantId: string;
   dealerId: string | null;
@@ -124,6 +148,11 @@ export interface RestaurantData {
   isReservationActive: boolean;
   tableNumber?: number;
   moneySign?: string | null;
+  heroImageUrl: string;
+  logoImageUrl: string;
+  announcementSettings?: AnnouncementSettings;
+  reservationSettings?: ReservationSettings;
+  surveySettings?: SurveySettings;
   WorkingHours: WorkingHour[];
   SocialLinks: SocialLinks;
   Products: Product[];
