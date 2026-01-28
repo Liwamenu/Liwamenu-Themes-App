@@ -162,7 +162,8 @@ export function SurveyModal({
   };
   const handleSubmit = async () => {
     // Check if user has any completed orders
-    if (orders.length === 0) {
+    const hasCompletedOrder = orders.some(order => order.status === 'delivered');
+    if (!hasCompletedOrder) {
       toast.error(t("survey.noOrderError"));
       return;
     }
