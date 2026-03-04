@@ -16,8 +16,13 @@ export const API_URLS = {
 export function getTenant(): string {
   const hostname = window.location.hostname;
 
-  // Local development → default tenant
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
+  // Local development or Lovable preview → default tenant
+  if (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".lovableproject.com") ||
+    hostname.endsWith(".lovable.app")
+  ) {
     return "addis";
   }
 
