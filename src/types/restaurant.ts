@@ -34,9 +34,11 @@ export interface Product {
   sortOrder: number;
   imageURL: string;
   name: string;
-  description: string;
+  description: string | null;
   recommendation: boolean;
   hide: boolean;
+  salesStatus?: boolean;
+  freeTagging?: boolean;
   categoryId: string;
   categoryName: string;
   categoryImage: string;
@@ -86,12 +88,14 @@ export interface PaymentMethod {
 }
 
 export interface AnnouncementSettings {
+  restaurantId?: string;
   enabled: boolean;
   delayMs: number;
   htmlContent: string;
 }
 
 export interface ReservationSettings {
+  restaurantId?: string;
   isActive: boolean;
   startTime: string;
   endTime: string;
