@@ -37,10 +37,8 @@ export const restaurantData: FullRestaurantInfo = {
     licenseIsActive: true,
     maxTableOrderDistanceMeter: 500, // 500 metre - test için geçici değer
     checkTableOrderDistance: true,
-    isReservationLicenseActive: true,
     tableNumber: 5, // Test için geçici değer
     moneySign: "₺",
-    isReservationActive: true,
     heroImageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop",
     logoImageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop",
     announcementSettings: {
@@ -85,6 +83,7 @@ export const restaurantData: FullRestaurantInfo = {
       `,
     },
     reservationSettings: {
+      isActive: true,
       startTime: "08:00",
       endTime: "23:00",
       intervalMinutes: 30,
