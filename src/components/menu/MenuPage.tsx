@@ -17,7 +17,7 @@ import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { AnnouncementModal } from "@/components/menu/AnnouncementModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
-import { useRestaurant } from "@/hooks/useRestaurant";
+import { useRestaurant, useInitializeRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
@@ -39,6 +39,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export function MenuPage() {
   const { t } = useTranslation();
+  const { isLoading, error } = useInitializeRestaurant();
   const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
@@ -261,6 +262,35 @@ export function MenuPage() {
   const handleCloseReservation = useCallback(() => {
     setShowReservation(false);
   }, []);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-muted-foreground text-sm">{t("common.loading", "Loading...")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="text-center space-y-4">
+          <p className="text-destructive font-medium">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
+          >
+            {t("common.retry", "Retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Show order receipt view
   if (currentView === "order" && viewingOrder) {
