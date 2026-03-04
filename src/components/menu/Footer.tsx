@@ -66,7 +66,7 @@ export function Footer() {
 
           {/* Reservation and Survey Buttons */}
           <div className="flex justify-center gap-3 mt-6 flex-wrap">
-            {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
+            {restaurant.reservationSettings?.isActive && (
               <Button
                 onClick={() => setIsReservationOpen(true)}
                 variant="outline"

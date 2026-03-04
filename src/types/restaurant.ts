@@ -92,6 +92,7 @@ export interface AnnouncementSettings {
 }
 
 export interface ReservationSettings {
+  isActive: boolean;
   startTime: string;
   endTime: string;
   intervalMinutes: number;
@@ -144,8 +145,6 @@ export interface RestaurantData {
   licenseIsActive: boolean;
   maxTableOrderDistanceMeter: number;
   checkTableOrderDistance: boolean;
-  isReservationLicenseActive: boolean;
-  isReservationActive: boolean;
   tableNumber?: number;
   moneySign?: string | null;
   heroImageUrl: string;

@@ -105,7 +105,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
 
           {/* Reservation, Survey and My Order Buttons */}
           <div className="flex gap-2 my-2 flex-wrap justify-center">
-            {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
+            {restaurant.reservationSettings?.isActive && (
               <Button
                 onClick={() => setIsReservationOpen(true)}
                 variant="outline"
