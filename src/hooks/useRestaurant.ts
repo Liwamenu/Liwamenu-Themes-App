@@ -42,7 +42,7 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
 
 // Call this once at app startup (in MenuPage)
 export function useInitializeRestaurant() {
-  const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error } =
+  const { isInitialized, setRestaurantData, setLoading, isLoading, error } =
     useRestaurantStore();
 
   useEffect(() => {
@@ -63,8 +63,8 @@ export function useInitializeRestaurant() {
         }
       } catch (err: any) {
         if (!cancelled) {
-          console.error('Failed to fetch restaurant data:', err);
-          setError(err.message || 'Failed to load restaurant data');
+          console.error('Failed to fetch restaurant data, falling back to dummy data:', err);
+          setRestaurantData(initialRestaurantData.restaurantData);
         }
       }
     }

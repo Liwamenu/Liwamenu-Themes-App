@@ -9,7 +9,7 @@ export const API_URLS = {
   orders: "https://liwamenu.pentegrasyon.net/api/Orders/SendOrders",
   callWaiter: "https://liwamenu.pentegrasyon.net/api/Orders/CallWaiter",
   sendSurvey: "https://liwamenu.pentegrasyon.net/api/Surveys/SendSurvey",
-  getRestaurantFull: "https://liwamenu.pentegrasyon.net/api/Restaurants/GetRestaurantFullByTenant",
+  getRestaurantFull: "https://api.liwamenu.com/api/Restaurants/GetRestaurantFullByTenant",
 } as const;
 
 // Resolve tenant from URL
