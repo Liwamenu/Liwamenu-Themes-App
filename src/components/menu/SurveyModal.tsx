@@ -90,8 +90,8 @@ export function SurveyModal({
   const ratingCategories: RatingCategory[] = useMemo(() => {
     return categoriesFromSettings.map((cat) => ({
       key: cat.key,
-      icon: iconMap[cat.iconName] || <Star className="w-5 h-5" />,
-      labelKey: cat.labelKey,
+      icon: cat.icon ? <span className="text-xl">{cat.icon}</span> : (iconMap[cat.iconName || ''] || <Star className="w-5 h-5" />),
+      labelKey: cat.labelKey || cat.key,
     }));
   }, [categoriesFromSettings]);
   

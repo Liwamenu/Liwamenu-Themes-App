@@ -50,10 +50,10 @@ export interface Product {
 }
 
 export interface WorkingHour {
-  Day: number;
-  IsClosed: boolean;
-  Open: string;
-  Close: string;
+  day: number;
+  isClosed: boolean;
+  open: string;
+  close: string;
 }
 
 export interface SocialLinks {
@@ -72,7 +72,7 @@ export interface MenuPlan {
 }
 
 export interface Menu {
-  id: number;
+  id: string | number;
   restaurantId: string;
   name: string;
   plans: MenuPlan[];
@@ -100,12 +100,17 @@ export interface ReservationSettings {
 }
 
 export interface SurveyCategory {
+  id?: string;
   key: string;
-  iconName: string;
-  labelKey: string;
+  icon?: string;
+  iconName?: string;
+  labelKey?: string;
+  averageRating?: number;
+  ratingCount?: number;
 }
 
 export interface SurveySettings {
+  restaurantId?: string;
   enabled: boolean;
   categories: SurveyCategory[];
 }
@@ -152,11 +157,11 @@ export interface RestaurantData {
   announcementSettings?: AnnouncementSettings;
   reservationSettings?: ReservationSettings;
   surveySettings?: SurveySettings;
-  WorkingHours: WorkingHour[];
-  SocialLinks: SocialLinks;
-  Products: Product[];
-  Menus: Menu[];
-  PaymentMethods: PaymentMethod[];
+  workingHours: WorkingHour[];
+  socialLinks: SocialLinks;
+  products: Product[];
+  menus: Menu[];
+  paymentMethods: PaymentMethod[];
 }
 
 export interface FullRestaurantInfo {

@@ -99,23 +99,23 @@ export const restaurantData: FullRestaurantInfo = {
         { key: "staff", iconName: "UserCheck", labelKey: "survey.categories.staff" },
       ],
     },
-    WorkingHours: [
-      { Day: 1, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 2, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 3, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 4, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 5, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 6, IsClosed: false, Open: "00:00", Close: "23:59" },
-      { Day: 7, IsClosed: false, Open: "00:00", Close: "22:59" },
+    workingHours: [
+      { day: 1, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 2, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 3, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 4, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 5, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 6, isClosed: false, open: "00:00", close: "23:59" },
+      { day: 7, isClosed: false, open: "00:00", close: "22:59" },
     ],
-    SocialLinks: {
+    socialLinks: {
       facebookUrl: "https://facebook.com/popeyes",
       instagramUrl: "https://instagram.com/popeyes",
       tiktokUrl: null,
       youtubeUrl: null,
       whatsappUrl: "https://wa.me/905058433855",
     },
-    Products: [
+    products: [
       {
         id: "prd-001-mercimek",
         sortOrder: 10,
@@ -1094,7 +1094,7 @@ export const restaurantData: FullRestaurantInfo = {
         ],
       },
     ],
-    Menus: [
+    menus: [
       {
         id: 1,
         restaurantId: "538ba1a1-bf0d-47eb-9b88-054856703452",
@@ -1141,7 +1141,7 @@ export const restaurantData: FullRestaurantInfo = {
         ],
       },
     ],
-    PaymentMethods: [
+    paymentMethods: [
       { id: "pm-001", name: "Banka Kartı", enabled: true },
       { id: "pm-002", name: "Kredi Kartı", enabled: true },
       { id: "pm-003", name: "Nakit", enabled: true },

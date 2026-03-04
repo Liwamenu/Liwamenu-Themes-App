@@ -86,17 +86,17 @@ export function useRestaurant() {
   const getCurrentWorkingHour = useMemo((): WorkingHour | null => {
     const now = new Date();
     const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
-    return data.WorkingHours.find(wh => wh.Day === dayOfWeek) || null;
+    return data.workingHours.find(wh => wh.day === dayOfWeek) || null;
   }, [data]);
 
   const isCurrentlyOpen = useMemo(() => {
     const workingHour = getCurrentWorkingHour;
-    if (!workingHour || workingHour.IsClosed) return false;
+    if (!workingHour || workingHour.isClosed) return false;
 
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     
-    return currentTime >= workingHour.Open && currentTime <= workingHour.Close;
+    return currentTime >= workingHour.open && currentTime <= workingHour.close;
   }, [getCurrentWorkingHour]);
 
   const activeMenu = useMemo(() => {
@@ -104,7 +104,7 @@ export function useRestaurant() {
     const dayOfWeek = now.getDay();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    for (const menu of data.Menus) {
+    for (const menu of data.menus) {
       for (const plan of menu.plans) {
         if (plan.days.includes(dayOfWeek)) {
           if (currentTime >= plan.startTime && currentTime <= plan.endTime) {
@@ -122,7 +122,7 @@ export function useRestaurant() {
   }, [activeMenu]);
 
   const categories = useMemo((): Category[] => {
-    let visibleProducts = data.Products.filter(p => !p.hide);
+    let visibleProducts = data.products.filter(p => !p.hide);
     
     if (allowedCategoryIds) {
       visibleProducts = visibleProducts.filter(p => allowedCategoryIds.has(p.categoryId));
@@ -159,7 +159,7 @@ export function useRestaurant() {
   };
 
   const recommendedProducts = useMemo(() => {
-    let products = data.Products.filter(p => p.recommendation && !p.hide);
+    let products = data.products.filter(p => p.recommendation && !p.hide);
     if (allowedCategoryIds) {
       products = products.filter(p => allowedCategoryIds.has(p.categoryId));
     }
@@ -167,7 +167,7 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const campaignProducts = useMemo(() => {
-    let products = data.Products.filter(p => !p.hide && p.portions.some(portion => portion.campaignPrice !== null));
+    let products = data.products.filter(p => !p.hide && p.portions.some(portion => portion.campaignPrice !== null));
     if (allowedCategoryIds) {
       products = products.filter(p => allowedCategoryIds.has(p.categoryId));
     }
@@ -175,7 +175,7 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const enabledPaymentMethods = useMemo(() => {
-    return data.PaymentMethods.filter(pm => pm.enabled);
+    return data.paymentMethods.filter(pm => pm.enabled);
   }, [data]);
 
   const canOrderOnline = data.onlineOrder && isRestaurantActive && isCurrentlyOpen;

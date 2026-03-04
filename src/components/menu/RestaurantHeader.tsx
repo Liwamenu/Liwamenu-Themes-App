@@ -79,8 +79,8 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
                 <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 <span>{t("header.open")}</span>
                 {workingHour && (
-                  <span className="text-muted-foreground">
-                    • {workingHour.Open} - {workingHour.Close}
+                <span className="text-muted-foreground">
+                    • {workingHour.open} - {workingHour.close}
                   </span>
                 )}
               </div>
@@ -94,9 +94,9 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
                   <Clock className="w-4 h-4" />
                   <span className="font-semibold">{t("header.currentlyClosed")}</span>
                 </div>
-                {workingHour && !workingHour.IsClosed && (
+                {workingHour && !workingHour.isClosed && (
                   <div className="text-muted-foreground text-xs">
-                    {t("header.workingHours")}: {workingHour.Open} - {workingHour.Close}
+                    {t("header.workingHours")}: {workingHour.open} - {workingHour.close}
                   </div>
                 )}
               </motion.div>

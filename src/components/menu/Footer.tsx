@@ -11,7 +11,7 @@ const dayKeys = ["", "monday", "tuesday", "wednesday", "thursday", "friday", "sa
 export function Footer() {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
-  const { SocialLinks, WorkingHours } = restaurant;
+  const { socialLinks: SocialLinks, workingHours: WorkingHours } = restaurant;
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
@@ -51,13 +51,13 @@ export function Footer() {
           <h3 className="font-semibold text-center mb-4">{t("footer.workingHours")}</h3>
           <div className="bg-secondary rounded-2xl p-4 space-y-2">
             {WorkingHours.map((wh) => (
-              <div key={wh.Day} className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t(`days.${dayKeys[wh.Day]}`)}</span>
-                {wh.IsClosed ? (
+              <div key={wh.day} className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{t(`days.${dayKeys[wh.day]}`)}</span>
+                {wh.isClosed ? (
                   <span className="text-destructive font-medium">{t("footer.closed")}</span>
                 ) : (
                   <span className="font-medium">
-                    {wh.Open} - {wh.Close}
+                    {wh.open} - {wh.close}
                   </span>
                 )}
               </div>
