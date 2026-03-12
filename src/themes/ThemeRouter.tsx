@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useInitializeRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
+import { initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 /**
  * Theme Registry
