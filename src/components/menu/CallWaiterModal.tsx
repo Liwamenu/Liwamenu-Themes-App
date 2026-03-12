@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useRestaurant, useRestaurantStore } from '@/hooks/useRestaurant';
+import { apiCallWaiter } from '@/lib/api';
 import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
 import { ChangeTableModal } from './ChangeTableModal';
 
@@ -94,10 +95,11 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
     };
 
     try {
-      console.log('Calling waiter at https://api.liwamnenu.com/CallWaiter:', JSON.stringify(payload, null, 2));
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await apiCallWaiter({
+        restaurantId: restaurant.restaurantId,
+        tableNumber: Number(restaurant.tableNumber),
+        note: reason.trim() || null,
+      });
 
       setReason('');
       setShowSuccessAnimation(true);

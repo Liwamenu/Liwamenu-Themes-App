@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
+import { createOnlineOrder, getResponseData } from "@/lib/api";
+import { useFirebaseMessagingStore } from "@/hooks/useFirebaseMessaging";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import confetti from "canvas-confetti";
 import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
@@ -256,16 +258,22 @@ export function CheckoutModal({
       })
     };
     try {
-      // Send order to API
-      console.log("Sending order to https://api.liwamnenu.com/orders:", JSON.stringify(orderPayload, null, 2));
+      // Include push token for realtime notifications
+      const pushToken = useFirebaseMessagingStore.getState().pushToken;
+      const payloadWithPush = {
+        ...orderPayload,
+        ...(pushToken ? { customerPushToken: pushToken, customerDeviceType: "web" } : {}),
+      };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Send order to API
+      const res = await createOnlineOrder(payloadWithPush);
+      const data = getResponseData(res);
+      const orderId = data?.id || data?.Id || `order-${Date.now()}`;
 
       // Create order with status
       const order: Order = {
         ...orderPayload,
-        id: `order-${Date.now()}`,
+        id: orderId,
         status: "pending"
       };
 

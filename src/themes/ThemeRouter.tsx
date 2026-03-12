@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useInitializeRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
+import { initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 /**
  * Theme Registry
@@ -50,6 +51,13 @@ function ErrorFallback({ error }: { error: string }) {
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
   const themeId = useRestaurantStore((s) => s.restaurantData.themeId);
+
+  // Initialize Firebase messaging once restaurant data is loaded
+  useEffect(() => {
+    if (!isLoading && !error) {
+      initializeFirebaseMessaging();
+    }
+  }, [isLoading, error]);
 
   if (isLoading) return <LoadingFallback />;
   if (error) return <ErrorFallback error={error} />;
