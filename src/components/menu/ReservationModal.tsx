@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { toast } from "sonner";
-import { API_URLS, isTurkishPhone } from "@/lib/api";
+import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservation as apiVerifyReservation, getResponseData } from "@/lib/api";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
