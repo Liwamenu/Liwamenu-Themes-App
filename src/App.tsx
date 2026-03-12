@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "next-themes";
 import i18n from "@/lib/i18n";
-import { MenuPage } from "@/components/menu/MenuPage";
+import { ThemeRouter } from "@/themes/ThemeRouter";
 import NotFound from "./pages/NotFound";
 import ReservationReceipt from "./pages/ReservationReceipt";
 
@@ -21,7 +21,7 @@ const App = () => (
           <Sonner position="top-right" />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<MenuPage />} />
+              <Route path="/" element={<ThemeRouter />} />
               <Route path="/reservation-receipt" element={<ReservationReceipt />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
