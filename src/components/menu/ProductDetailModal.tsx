@@ -75,7 +75,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       }
 
       // Add new selection
-      const startQty = item.minQuantity > 0 ? item.minQuantity : 1;
+      const startQty = 1;
       const newItem: SelectedTagItem = {
         tagId: tag.id,
         tagName: tag.name,
