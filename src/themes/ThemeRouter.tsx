@@ -52,6 +52,13 @@ export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
   const themeId = useRestaurantStore((s) => s.restaurantData.themeId);
 
+  // Initialize Firebase messaging once restaurant data is loaded
+  useEffect(() => {
+    if (!isLoading && !error) {
+      initializeFirebaseMessaging();
+    }
+  }, [isLoading, error]);
+
   if (isLoading) return <LoadingFallback />;
   if (error) return <ErrorFallback error={error} />;
 
