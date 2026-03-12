@@ -116,12 +116,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
       const newQty = current.quantity + delta;
 
-      // If decreasing below minQuantity (or below 1), remove the item
-      if (newQty < Math.max(1, minQty)) {
-        return {
-          ...prev,
-          [tagId]: currentTagItems.filter(t => t.itemId !== itemId),
-        };
+      // Don't go below 1
+      if (newQty < 1) {
+        return prev;
       }
 
       // Don't exceed maxQuantity
