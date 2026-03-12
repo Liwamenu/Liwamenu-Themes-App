@@ -123,7 +123,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
       // Don't exceed maxQuantity
       if (newQty > maxQty) {
-        toast.error(t('product.maxQuantityError', { max: maxQty }));
+        toast.error(t('product.maxQuantityError', { name: current.itemName, max: maxQty }));
         return prev;
       }
 
