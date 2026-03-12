@@ -305,41 +305,76 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   )}
                 </div>
                 <div className="space-y-2">
-                  {tag.orderTagItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleTagSelect(tag, item)}
-                      className={cn(
-                        'w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all',
-                        isTagItemSelected(tag.id, item.id)
-                          ? 'bg-primary/10 border-2 border-primary'
-                          : isShaking && isUnfulfilled
-                            ? 'bg-secondary border-2 border-destructive/50 animate-pulse'
-                            : 'bg-secondary border-2 border-transparent'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
-                          isTagItemSelected(tag.id, item.id)
-                            ? 'bg-primary border-primary'
+                {tag.orderTagItems.map((item) => {
+                    const selected = isTagItemSelected(tag.id, item.id);
+                    const qty = getTagItemQuantity(tag.id, item.id);
+                    const hasQuantityControl = item.maxQuantity > 1;
+                    
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          'w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all',
+                          selected
+                            ? 'bg-primary/10 border-2 border-primary'
                             : isShaking && isUnfulfilled
-                              ? 'border-destructive'
-                              : 'border-muted-foreground/30'
-                        )}>
-                          {isTagItemSelected(tag.id, item.id) && (
-                            <Check className="w-3 h-3 text-primary-foreground" />
+                              ? 'bg-secondary border-2 border-destructive/50 animate-pulse'
+                              : 'bg-secondary border-2 border-transparent'
+                        )}
+                      >
+                        <button
+                          onClick={() => handleTagSelect(tag, item)}
+                          className="flex items-center gap-3 flex-1 min-w-0"
+                        >
+                          <div className={cn(
+                            'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0',
+                            selected
+                              ? 'bg-primary border-primary'
+                              : isShaking && isUnfulfilled
+                                ? 'border-destructive'
+                                : 'border-muted-foreground/30'
+                          )}>
+                            {selected && (
+                              <Check className="w-3 h-3 text-primary-foreground" />
+                            )}
+                          </div>
+                          <span className="font-medium truncate">{item.name}</span>
+                        </button>
+                        
+                        <div className="flex items-center gap-2 shrink-0">
+                          {/* Quantity controls for selected items with maxQuantity > 1 */}
+                          {selected && hasQuantityControl && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleTagItemQuantity(tag.id, item.id, -1);
+                                }}
+                                className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center border border-border"
+                              >
+                                <Minus className="w-3.5 h-3.5 text-foreground" />
+                              </button>
+                              <span className="text-sm font-bold w-5 text-center">{qty}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleTagItemQuantity(tag.id, item.id, 1);
+                                }}
+                                className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                          {item.price > 0 && (
+                            <span className="text-sm text-muted-foreground">
+                              +{formatPrice(item.price * (qty || 1))}
+                            </span>
                           )}
                         </div>
-                        <span className="font-medium">{item.name}</span>
                       </div>
-                      {item.price > 0 && (
-                        <span className="text-sm text-muted-foreground">
-                          +{formatPrice(item.price)}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
