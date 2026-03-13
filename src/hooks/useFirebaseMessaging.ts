@@ -179,7 +179,7 @@ export async function initializeFirebaseMessaging() {
       // console.warn("[FCM] Not supported, skipping foreground subscription");
     }
   } catch (err) {
-    console.error("[FCM] Firebase messaging init failed:", err);
+    // console.error("[FCM] Firebase messaging init failed:", err);
     store.setInitialized(true);
   }
 }
