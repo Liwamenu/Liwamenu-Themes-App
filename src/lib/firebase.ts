@@ -39,10 +39,11 @@ export async function initFirebaseMessaging(): Promise<{
   if (!app) app = initializeApp(firebaseConfig);
   if (!messaging) messaging = getMessaging(app);
 
-  // Register the service worker for background messages
+  // Register the service worker for background messages (force update)
   try {
-    await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-    console.log("[FCM] Service worker registered");
+    const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js", { updateViaCache: "none" });
+    await reg.update();
+    console.log("[FCM] Service worker registered & updated");
   } catch (err) {
     console.error("[FCM] SW registration failed:", err);
   }
