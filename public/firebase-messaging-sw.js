@@ -13,13 +13,19 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+function relayToClients(data, notification) {
+  self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({ type: "FCM_BACKGROUND_MESSAGE", payload: { data, notification } });
+    });
+  });
+}
+
 messaging.onBackgroundMessage((payload) => {
   console.log("[FCM background] onBackgroundMessage:", payload);
-  const title = payload?.notification?.title || "QR Menu";
-  const body = payload?.notification?.body || "New update";
   const data = payload?.data || {};
-
-  self.registration.showNotification(title, { body, data });
+  const notification = payload?.notification || {};
+  relayToClients(data, notification);
 });
 
 self.addEventListener("push", (event) => {
@@ -35,6 +41,8 @@ self.addEventListener("push", (event) => {
   const title = payload?.notification?.title || "QR Menu";
   const body = payload?.notification?.body || "New update";
   const data = payload?.data || {};
+
+  relayToClients(data, payload?.notification);
 
   event.waitUntil(
     self.registration.showNotification(title, {

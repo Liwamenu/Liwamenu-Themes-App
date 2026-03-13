@@ -57,17 +57,18 @@ function parsePayload(payload: any): PushMessage {
 
 // Map FCM status strings to Order status type
 const STATUS_MAP: Record<string, Order["status"]> = {
+  // Backend enums
   Pending: "pending",
-  Confirmed: "confirmed",
+  Accepted: "confirmed",
   Preparing: "preparing",
-  Ready: "ready",
+  OnTheWay: "ready",
   Delivered: "delivered",
   Cancelled: "cancelled",
   // lowercase variants
   pending: "pending",
-  confirmed: "confirmed",
+  accepted: "confirmed",
   preparing: "preparing",
-  ready: "ready",
+  ontheway: "ready",
   delivered: "delivered",
   cancelled: "cancelled",
 };
