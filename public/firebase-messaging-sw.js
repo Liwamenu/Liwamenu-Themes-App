@@ -14,15 +14,37 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  console.log("[FCM SW] Background message received:", JSON.stringify(payload));
   const notification = payload.notification || {};
   const data = payload.data || {};
 
   const title = notification.title || data.title || "LiwaMenu";
   const body = notification.body || data.body || "";
 
+  // Relay data to all open clients so the app can update state
+  self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({ type: "FCM_BACKGROUND_MESSAGE", payload: { data, notification } });
+    });
+  });
+
   self.registration.showNotification(title, {
     body,
     icon: "/favicon.ico",
     data: data,
   });
+});
+
+// When user clicks the notification, focus/open the app
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      if (clients.length > 0) {
+        clients[0].focus();
+      } else {
+        self.clients.openWindow("/");
+      }
+    })
+  );
 });

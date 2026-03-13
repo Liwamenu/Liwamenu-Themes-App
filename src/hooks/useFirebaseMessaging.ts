@@ -95,6 +95,23 @@ function handleOrderStatusChange(msg: PushMessage) {
 }
 
 /**
+ * Handle any incoming push message (foreground or relayed from SW).
+ */
+function handlePushPayload(payload: any, source: string) {
+  console.log(`[FCM] 🔔 ${source} payload:`, JSON.stringify(payload, null, 2));
+  const msg = parsePayload(payload);
+  console.log(`[FCM] 🔔 Parsed message:`, JSON.stringify(msg, null, 2));
+  useFirebaseMessagingStore.getState().addMessage(msg);
+
+  if (msg.type === "order_status_changed" && msg.orderId && msg.orderId !== "-") {
+    console.log("[FCM] 🔄 Processing order status change:", msg.orderId, "→", msg.status);
+    handleOrderStatusChange(msg);
+  } else {
+    console.log("[FCM] ℹ️ Non-order message, type:", msg.type);
+  }
+}
+
+/**
  * Initialize Firebase messaging once. Safe to call multiple times.
  * Call this early in the app lifecycle (e.g. ThemeRouter after data loads).
  */
@@ -103,6 +120,17 @@ export async function initializeFirebaseMessaging() {
   if (store.isInitialized) {
     console.log("[FCM] Already initialized, skipping");
     return;
+  }
+
+  // Listen for messages relayed from the service worker (background pushes)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "FCM_BACKGROUND_MESSAGE") {
+        console.log("[FCM] 📬 Received SW relay message");
+        handlePushPayload(event.data.payload, "SW-relay");
+      }
+    });
+    console.log("[FCM] SW message listener registered");
   }
 
   try {
@@ -114,21 +142,10 @@ export async function initializeFirebaseMessaging() {
 
     if (supported) {
       console.log("[FCM] Subscribing to foreground messages...");
-      const unsub = subscribeForegroundMessages((payload: any) => {
-        console.log("[FCM] 🔔 RAW foreground payload:", JSON.stringify(payload, null, 2));
-        const msg = parsePayload(payload);
-        console.log("[FCM] 🔔 Parsed message:", JSON.stringify(msg, null, 2));
-        store.addMessage(msg);
-
-        // Handle order status changes
-        if (msg.type === "order_status_changed" && msg.orderId && msg.orderId !== "-") {
-          console.log("[FCM] 🔄 Processing order status change:", msg.orderId, "→", msg.status);
-          handleOrderStatusChange(msg);
-        } else {
-          console.log("[FCM] ℹ️ Message type not order_status_changed or missing orderId, type:", msg.type, "orderId:", msg.orderId);
-        }
+      subscribeForegroundMessages((payload: any) => {
+        handlePushPayload(payload, "foreground");
       });
-      console.log("[FCM] Foreground subscription active:", !!unsub);
+      console.log("[FCM] Foreground subscription active");
     } else {
       console.warn("[FCM] Not supported, skipping foreground subscription");
     }
