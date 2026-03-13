@@ -107,7 +107,7 @@ function handleOrderStatusChange(msg: PushMessage) {
 
   // Update order in Zustand store
   useOrder.getState().updateOrderStatus(msg.orderId, mappedStatus);
-  console.log(`[FCM] Order ${msg.orderId} status → ${mappedStatus}`);
+  // console.log(`[FCM] Order ${msg.orderId} status → ${mappedStatus}`);
 
   // Play notification sound
   playNotificationSound();
