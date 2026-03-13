@@ -296,7 +296,7 @@ export function MenuPage() {
   if (currentView === "order" && viewingOrder) {
     return (
       <OrderReceipt
-        order={viewingOrder}
+        orderId={viewingOrder.id}
         onBack={handleBackToMenu}
         waiterCooldown={waiterCooldown}
         onWaiterSuccess={handleWaiterSuccess}

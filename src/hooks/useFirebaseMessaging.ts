@@ -73,6 +73,31 @@ const STATUS_MAP: Record<string, Order["status"]> = {
   cancelled: "cancelled",
 };
 
+// Play a notification sound
+function playNotificationSound() {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    // Pleasant two-tone notification
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.15); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+    
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime + 0.4);
+  } catch (e) {
+    console.warn("[FCM] Could not play notification sound:", e);
+  }
+}
+
 function handleOrderStatusChange(msg: PushMessage) {
   const mappedStatus = STATUS_MAP[msg.status];
   if (!mappedStatus) {
@@ -83,6 +108,9 @@ function handleOrderStatusChange(msg: PushMessage) {
   // Update order in Zustand store
   useOrder.getState().updateOrderStatus(msg.orderId, mappedStatus);
   console.log(`[FCM] Order ${msg.orderId} status → ${mappedStatus}`);
+
+  // Play notification sound
+  playNotificationSound();
 
   // Show toast with notification body
   toast.info(msg.title, { description: msg.body });

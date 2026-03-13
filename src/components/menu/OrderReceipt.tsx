@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -19,6 +19,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Order } from "@/types/restaurant";
 import { useRestaurant } from "@/hooks/useRestaurant";
+import { useOrder } from "@/hooks/useOrder";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr, enUS } from "date-fns/locale";
@@ -27,30 +28,51 @@ import { Button } from "@/components/ui/button";
 import { CallWaiterModal } from "./CallWaiterModal";
 
 interface OrderReceiptProps {
-  order: Order;
+  orderId: string;
   onBack: () => void;
   waiterCooldown: number;
   onWaiterSuccess: () => void;
 }
 
+const STATUS_LABELS: Record<Order["status"], string> = {
+  pending: "Pending",
+  confirmed: "Accepted",
+  preparing: "Preparing",
+  ready: "On The Way",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
+
 const getStatusConfig = (
-  t: (key: string) => string,
 ): Record<Order["status"], { label: string; icon: React.ReactNode; color: string }> => ({
-  pending: { label: t("status.pending"), icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
-  confirmed: { label: t("status.confirmed"), icon: <CheckCircle2 className="w-5 h-5" />, color: "text-primary" },
-  preparing: { label: t("status.preparing"), icon: <ChefHat className="w-5 h-5" />, color: "text-blue-500" },
-  ready: { label: t("status.ready"), icon: <Package className="w-5 h-5" />, color: "text-green-500" },
-  delivered: { label: t("status.delivered"), icon: <Truck className="w-5 h-5" />, color: "text-green-600" },
-  cancelled: { label: t("status.cancelled"), icon: <XCircle className="w-5 h-5" />, color: "text-destructive" },
+  pending: { label: STATUS_LABELS.pending, icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
+  confirmed: { label: STATUS_LABELS.confirmed, icon: <CheckCircle2 className="w-5 h-5" />, color: "text-primary" },
+  preparing: { label: STATUS_LABELS.preparing, icon: <ChefHat className="w-5 h-5" />, color: "text-blue-500" },
+  ready: { label: STATUS_LABELS.ready, icon: <Package className="w-5 h-5" />, color: "text-green-500" },
+  delivered: { label: STATUS_LABELS.delivered, icon: <Truck className="w-5 h-5" />, color: "text-green-600" },
+  cancelled: { label: STATUS_LABELS.cancelled, icon: <XCircle className="w-5 h-5" />, color: "text-destructive" },
 });
 
 const statusSteps: Order["status"][] = ["pending", "confirmed", "preparing", "ready", "delivered"];
 
-export function OrderReceipt({ order, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
+export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
   const { t } = useTranslation();
   const { restaurant, formatPrice, isCurrentlyOpen } = useRestaurant();
   const [showCallWaiterModal, setShowCallWaiterModal] = useState(false);
-  const statusConfig = getStatusConfig(t);
+  
+  // Subscribe to live order from Zustand store
+  const order = useOrder((state) => state.orders.find((o) => o.id === orderId));
+  
+  const statusConfig = getStatusConfig();
+  
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Order not found</p>
+      </div>
+    );
+  }
+  
   const status = statusConfig[order.status];
   const currentStepIndex = statusSteps.indexOf(order.status);
   const isCancelled = order.status === "cancelled";
