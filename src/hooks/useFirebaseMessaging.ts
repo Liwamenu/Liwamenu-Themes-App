@@ -100,28 +100,40 @@ function handleOrderStatusChange(msg: PushMessage) {
  */
 export async function initializeFirebaseMessaging() {
   const store = useFirebaseMessagingStore.getState();
-  if (store.isInitialized) return;
+  if (store.isInitialized) {
+    console.log("[FCM] Already initialized, skipping");
+    return;
+  }
 
   try {
     const { supported, token } = await initFirebaseMessaging();
+    console.log("[FCM] Init result — supported:", supported, "token:", token ? token.substring(0, 20) + "..." : "null");
     store.setSupported(supported);
     store.setPushToken(token);
     store.setInitialized(true);
 
     if (supported) {
-      subscribeForegroundMessages((payload: any) => {
+      console.log("[FCM] Subscribing to foreground messages...");
+      const unsub = subscribeForegroundMessages((payload: any) => {
+        console.log("[FCM] 🔔 RAW foreground payload:", JSON.stringify(payload, null, 2));
         const msg = parsePayload(payload);
+        console.log("[FCM] 🔔 Parsed message:", JSON.stringify(msg, null, 2));
         store.addMessage(msg);
-        console.log("[FCM] Foreground message:", msg);
 
         // Handle order status changes
         if (msg.type === "order_status_changed" && msg.orderId && msg.orderId !== "-") {
+          console.log("[FCM] 🔄 Processing order status change:", msg.orderId, "→", msg.status);
           handleOrderStatusChange(msg);
+        } else {
+          console.log("[FCM] ℹ️ Message type not order_status_changed or missing orderId, type:", msg.type, "orderId:", msg.orderId);
         }
       });
+      console.log("[FCM] Foreground subscription active:", !!unsub);
+    } else {
+      console.warn("[FCM] Not supported, skipping foreground subscription");
     }
   } catch (err) {
-    console.warn("Firebase messaging init failed:", err);
+    console.error("[FCM] Firebase messaging init failed:", err);
     store.setInitialized(true);
   }
 }
