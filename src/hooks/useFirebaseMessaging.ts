@@ -127,16 +127,16 @@ function handleOrderStatusChange(msg: PushMessage) {
  * Handle any incoming push message (foreground or relayed from SW).
  */
 function handlePushPayload(payload: any, source: string) {
-  console.log(`[FCM] 🔔 ${source} payload:`, JSON.stringify(payload, null, 2));
+  // console.log(`[FCM] 🔔 ${source} payload:`, JSON.stringify(payload, null, 2));
   const msg = parsePayload(payload);
-  console.log(`[FCM] 🔔 Parsed message:`, JSON.stringify(msg, null, 2));
+  // console.log(`[FCM] 🔔 Parsed message:`, JSON.stringify(msg, null, 2));
   useFirebaseMessagingStore.getState().addMessage(msg);
 
   if (msg.type === "order_status_changed" && msg.orderId && msg.orderId !== "-") {
-    console.log("[FCM] 🔄 Processing order status change:", msg.orderId, "→", msg.status);
+    // console.log("[FCM] 🔄 Processing order status change:", msg.orderId, "→", msg.status);
     handleOrderStatusChange(msg);
   } else {
-    console.log("[FCM] ℹ️ Non-order message, type:", msg.type);
+    // console.log("[FCM] ℹ️ Non-order message, type:", msg.type);
   }
 }
 
