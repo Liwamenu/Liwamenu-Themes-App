@@ -147,7 +147,7 @@ function handlePushPayload(payload: any, source: string) {
 export async function initializeFirebaseMessaging() {
   const store = useFirebaseMessagingStore.getState();
   if (store.isInitialized) {
-    console.log("[FCM] Already initialized, skipping");
+    // console.log("[FCM] Already initialized, skipping");
     return;
   }
 
