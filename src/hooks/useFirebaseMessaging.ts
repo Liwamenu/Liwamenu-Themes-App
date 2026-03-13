@@ -94,7 +94,7 @@ function playNotificationSound() {
     oscillator.start(audioCtx.currentTime);
     oscillator.stop(audioCtx.currentTime + 0.4);
   } catch (e) {
-    console.warn("[FCM] Could not play notification sound:", e);
+    // console.warn("[FCM] Could not play notification sound:", e);
   }
 }
 
