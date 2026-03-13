@@ -164,7 +164,7 @@ export async function initializeFirebaseMessaging() {
 
   try {
     const { supported, token } = await initFirebaseMessaging();
-    console.log("[FCM] Init result — supported:", supported, "token:", token ? token.substring(0, 20) + "..." : "null");
+    // console.log("[FCM] Init result — supported:", supported, "token:", token ? token.substring(0, 20) + "..." : "null");
     store.setSupported(supported);
     store.setPushToken(token);
     store.setInitialized(true);
