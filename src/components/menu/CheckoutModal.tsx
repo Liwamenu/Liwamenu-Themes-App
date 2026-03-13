@@ -260,10 +260,30 @@ export function CheckoutModal({
     };
     try {
       // Include push token for realtime notifications
-      const pushToken = useFirebaseMessagingStore.getState().pushToken;
+      let pushToken = useFirebaseMessagingStore.getState().pushToken;
+
+      if (orderType === "online" && !pushToken && typeof window !== "undefined" && "Notification" in window && Notification.permission !== "denied") {
+        try {
+          const { token } = await initFirebaseMessaging();
+          pushToken = token;
+          useFirebaseMessagingStore.getState().setPushToken(token);
+        } catch (err) {
+          console.warn("[Order] Failed to refresh push token on checkout:", err);
+        }
+      }
+
       if (!pushToken) {
+        if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "denied") {
+          toast.warning(
+            t(
+              "order.notificationsBlocked",
+              "Notifications are blocked. Enable them in browser site settings (lock icon in address bar) to receive live order updates."
+            )
+          );
+        }
         console.warn("[Order] No push token available — customerPushToken will be null");
       }
+
       const payloadWithPush = {
         ...orderPayload,
         customerPushToken: pushToken,
