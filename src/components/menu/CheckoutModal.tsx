@@ -260,9 +260,13 @@ export function CheckoutModal({
     try {
       // Include push token for realtime notifications
       const pushToken = useFirebaseMessagingStore.getState().pushToken;
+      if (!pushToken) {
+        console.warn("[Order] No push token available — customerPushToken will be null");
+      }
       const payloadWithPush = {
         ...orderPayload,
-        ...(pushToken ? { customerPushToken: pushToken, customerDeviceType: "web" } : {}),
+        customerPushToken: pushToken,
+        customerDeviceType: "web",
       };
 
       // Send order to API
