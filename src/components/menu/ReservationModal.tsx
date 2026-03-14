@@ -210,22 +210,13 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
 
     setIsSubmitting(true);
     try {
-      const res = await createReservation({
-        restaurantId: restaurant.restaurantId,
-        fullName: formData.fullName,
-        phoneCountryCode: formData.phone.startsWith("+90") ? "+90" : "+1",
-        phoneNumber: formData.phone.replace(/^\+\d+/, ""),
-        email: formData.email,
-        reservationDate: formData.date ? format(formData.date, "yyyy-MM-dd") : "",
-        reservationTime: formData.time + ":00",
-        guestCount: formData.guests,
-        specialNotes: formData.notes,
+      const res = await apiVerifyReservation({
+        reservationId: reservationId,
         verificationCode: verificationCode,
-        language: i18n.language,
       });
       const data = getResponseData(res);
       const reservation = data?.reservation || data?.Reservation || data;
-      const code = reservation?.confirmationCode || reservation?.id || `#${Math.floor(1000 + Math.random() * 9000)}`;
+      const code = reservation?.confirmationCode || reservation?.id || reservationId || `#${Math.floor(1000 + Math.random() * 9000)}`;
 
       toast.success(t("reservation.success"));
       navigateToReceipt(code);
