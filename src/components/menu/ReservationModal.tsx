@@ -176,8 +176,12 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
 
       toast.success(t(isTurkish ? "reservation.codeSentSMS" : "reservation.codeSentEmail"));
       setStep("code");
-    } catch (error) {
-      toast.error(t("reservation.codeSendError"));
+    } catch (error: any) {
+      // Extract localized error message from backend response
+      const errorMessage = i18n.language === "tr" 
+        ? error?.message_TR || error?.message_EN || t("reservation.codeSendError")
+        : error?.message_EN || t("reservation.codeSendError");
+      toast.error(errorMessage);
     } finally {
       setIsSendingCode(false);
     }
