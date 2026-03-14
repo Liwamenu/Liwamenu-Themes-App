@@ -73,6 +73,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
+  const [reservationId, setReservationId] = useState<string>("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   // Phone is split into two parts: country + 10-digit subscriber number
