@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Country } from "react-phone-number-input";
+import { getCountryCallingCode } from "react-phone-number-input";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, Users, User, Phone, Mail, MessageSquare, AlertTriangle, Check, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -73,6 +74,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
+  const [reservationId, setReservationId] = useState<string>("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   // Phone is split into two parts: country + 10-digit subscriber number
@@ -155,17 +157,21 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const handleSendCode = async () => {
     setIsSendingCode(true);
     try {
-      const apiUrl = isTurkish ? API_URLS.sendReservationCodeSMS : API_URLS.sendReservationCodeEmail;
-      
-      await apiFetch(apiUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          restaurantId: restaurant.restaurantId,
-          phone: formData.phone,
-          email: formData.email,
-          language: i18n.language,
-        }),
+      const res = await createReservation({
+        restaurantId: restaurant.restaurantId,
+        fullName: formData.fullName,
+        phoneCountryCode: `+${getCountryCallingCode(phoneCountry)}`,
+        phoneNumber: phoneSubscriber,
+        email: formData.email,
+        reservationDate: formData.date ? format(formData.date, "yyyy-MM-dd") : "",
+        reservationTime: formData.time + ":00",
+        guestCount: formData.guests,
+        specialNotes: formData.notes,
+        language: i18n.language,
       });
+      const data = getResponseData(res);
+      const id = data?.reservationId || data?.ReservationId || data?.id || data?.Id;
+      if (id) setReservationId(id);
 
       toast.success(t(isTurkish ? "reservation.codeSentSMS" : "reservation.codeSentEmail"));
       setStep("code");
@@ -205,22 +211,13 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
 
     setIsSubmitting(true);
     try {
-      const res = await createReservation({
-        restaurantId: restaurant.restaurantId,
-        fullName: formData.fullName,
-        phoneCountryCode: formData.phone.startsWith("+90") ? "+90" : "+1",
-        phoneNumber: formData.phone.replace(/^\+\d+/, ""),
-        email: formData.email,
-        reservationDate: formData.date ? format(formData.date, "yyyy-MM-dd") : "",
-        reservationTime: formData.time + ":00",
-        guestCount: formData.guests,
-        specialNotes: formData.notes,
+      const res = await apiVerifyReservation({
+        reservationId: reservationId,
         verificationCode: verificationCode,
-        language: i18n.language,
       });
       const data = getResponseData(res);
       const reservation = data?.reservation || data?.Reservation || data;
-      const code = reservation?.confirmationCode || reservation?.id || `#${Math.floor(1000 + Math.random() * 9000)}`;
+      const code = reservation?.confirmationCode || reservation?.id || reservationId || `#${Math.floor(1000 + Math.random() * 9000)}`;
 
       toast.success(t("reservation.success"));
       navigateToReceipt(code);
@@ -238,6 +235,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const resetForm = () => {
     setStep("form");
     setVerificationCode("");
+    setReservationId("");
     setFormData({
       fullName: "",
       phone: "",
