@@ -234,6 +234,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const resetForm = () => {
     setStep("form");
     setVerificationCode("");
+    setReservationId("");
     setFormData({
       fullName: "",
       phone: "",
