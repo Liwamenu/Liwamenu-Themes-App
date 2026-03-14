@@ -170,7 +170,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
         language: i18n.language,
       });
       const data = getResponseData(res);
-      const id = data?.reservationId || data?.ReservationId || data?.id || data?.Id;
+      const reservation = data?.reservation || data?.Reservation;
+      const id = reservation?.id || reservation?.Id || data?.reservationId || data?.id;
       if (id) setReservationId(id);
 
       toast.success(t(isTurkish ? "reservation.codeSentSMS" : "reservation.codeSentEmail"));
