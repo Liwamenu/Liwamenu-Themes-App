@@ -59,6 +59,17 @@ export function useInitializeRestaurant() {
         const json = await res.json();
         if (!cancelled) {
           const restaurantData = json.data?.restaurantData ?? json.restaurantData ?? json;
+
+          // Extract tableNumber from URL query params on first load
+          const urlParams = new URLSearchParams(window.location.search);
+          const tableParam = urlParams.get('tableNumber');
+          if (tableParam) {
+            const tableNum = parseInt(tableParam, 10);
+            if (!isNaN(tableNum) && tableNum > 0) {
+              restaurantData.tableNumber = tableNum;
+            }
+          }
+
           setRestaurantData(restaurantData);
         }
       } catch (err: any) {
