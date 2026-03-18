@@ -11,7 +11,7 @@ const dayKeys = ["", "monday", "tuesday", "wednesday", "thursday", "friday", "sa
 export function Footer() {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
-  const { SocialLinks, WorkingHours } = restaurant;
+  const { socialLinks: SocialLinks, workingHours: WorkingHours } = restaurant;
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
@@ -44,19 +44,19 @@ export function Footer() {
           <h3 className="font-display font-semibold text-center mb-6 text-lg">{t("footer.workingHours")}</h3>
           <div className="bg-secondary/30 rounded-2xl p-5 space-y-3 border border-border/50">
             {WorkingHours.map((wh) => (
-              <div key={wh.Day} className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t(`days.${dayKeys[wh.Day]}`)}</span>
-                {wh.IsClosed ? (
+              <div key={wh.day} className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{t(`days.${dayKeys[wh.day]}`)}</span>
+                {wh.isClosed ? (
                   <span className="text-destructive font-medium px-2 py-0.5 bg-destructive/10 rounded-full text-xs">{t("footer.closed")}</span>
                 ) : (
-                  <span className="font-medium text-foreground">{wh.Open} - {wh.Close}</span>
+                  <span className="font-medium text-foreground">{wh.open} - {wh.close}</span>
                 )}
               </div>
             ))}
           </div>
 
           <div className="flex justify-center gap-3 mt-6 flex-wrap">
-            {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
+            {restaurant.reservationSettings?.isActive && (
               <Button onClick={() => setIsReservationOpen(true)} variant="outline" className="flex items-center gap-2 rounded-full border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all">
                 <CalendarDays className="w-4 h-4" />
                 <span>{t("reservation.button")}</span>

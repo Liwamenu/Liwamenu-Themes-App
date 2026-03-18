@@ -77,7 +77,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               <span>{t("header.open")}</span>
               {workingHour && (
                 <span className="opacity-80 text-xs">
-                  {workingHour.Open} - {workingHour.Close}
+                  {workingHour.open} - {workingHour.close}
                 </span>
               )}
             </div>
@@ -109,7 +109,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       <div className="bg-card border-b border-border">
         <div className="container px-4 py-3">
           <div className="flex gap-2 flex-wrap items-center">
-            {restaurant.isReservationLicenseActive && restaurant.isReservationActive && (
+            {restaurant.reservationSettings?.isActive && (
               <Button
                 onClick={() => setIsReservationOpen(true)}
                 variant="outline"
