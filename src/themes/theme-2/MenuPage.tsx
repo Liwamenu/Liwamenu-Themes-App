@@ -178,7 +178,7 @@ export function MenuPage() {
   if (currentView === "order" && viewingOrder) {
     return (
       <div className="theme-2">
-        <OrderReceipt order={viewingOrder} onBack={handleBackToMenu} waiterCooldown={waiterCooldown} onWaiterSuccess={handleWaiterSuccess} />
+        <OrderReceipt orderId={viewingOrder.id} onBack={handleBackToMenu} waiterCooldown={waiterCooldown} onWaiterSuccess={handleWaiterSuccess} />
       </div>
     );
   }

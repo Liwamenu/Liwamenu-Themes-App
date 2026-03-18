@@ -12,12 +12,12 @@ import { initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
  * 2. Add an entry here: N: lazy(() => import("./theme-N"))
  */
 const themeComponents: Record<number, React.LazyExoticComponent<React.ComponentType>> = {
-  1: lazy(() => import("./theme-1")),
-  // 2: lazy(() => import("./theme-2")),
-  // 3: lazy(() => import("./theme-3")),
+  0: lazy(() => import("./theme-1")),
+  1: lazy(() => import("./theme-2")),
+  // 2: lazy(() => import("./theme-3")),
 };
 
-const DEFAULT_THEME_ID = 1;
+const DEFAULT_THEME_ID = 0;
 
 function LoadingFallback() {
   const { t } = useTranslation();
