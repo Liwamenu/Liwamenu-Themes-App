@@ -14,7 +14,7 @@ import { initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 const themeComponents: Record<number, React.LazyExoticComponent<React.ComponentType>> = {
   0: lazy(() => import("./theme-1")),
   1: lazy(() => import("./theme-2")),
-  // 2: lazy(() => import("./theme-3")),
+  2: lazy(() => import("./theme-3")),
 };
 
 const DEFAULT_THEME_ID = 0;

@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+/* Theme 3: FazFood Cream/Green — scoped under .theme-3 */
+.theme-3 {
+  --background: 38 38% 93%;
+  --foreground: 20 15% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 20 15% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 15% 15%;
+
+  --primary: 142 58% 26%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 142 40% 85%;
+  --secondary-foreground: 142 58% 20%;
+
+  --muted: 38 25% 88%;
+  --muted-foreground: 20 10% 45%;
+
+  --accent: 38 30% 90%;
+  --accent-foreground: 142 58% 26%;
+
+  --destructive: 0 65% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 36%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 142 40% 85%;
+  --campaign-foreground: 142 58% 20%;
+
+  --special: 142 58% 32%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 142 58% 26%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 38 25% 85%;
+  --input: 142 30% 88%;
+  --ring: 142 58% 26%;
+
+  --shadow-sm: 0 1px 2px hsla(20, 15%, 15%, 0.04);
+  --shadow-md: 0 4px 12px hsla(20, 15%, 15%, 0.06);
+  --shadow-lg: 0 8px 24px hsla(20, 15%, 15%, 0.10);
+  --shadow-xl: 0 16px 48px hsla(20, 15%, 15%, 0.14);
+  --shadow-glow: 0 0 24px hsla(142, 58%, 26%, 0.25);
+}
+
+.dark .theme-3 {
+  --background: 20 15% 10%;
+  --foreground: 38 30% 95%;
+
+  --card: 20 15% 14%;
+  --card-foreground: 38 30% 95%;
+
+  --popover: 20 15% 14%;
+  --popover-foreground: 38 30% 95%;
+
+  --primary: 142 58% 36%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 142 40% 25%;
+  --secondary-foreground: 142 40% 85%;
+
+  --muted: 20 15% 20%;
+  --muted-foreground: 38 20% 60%;
+
+  --accent: 142 40% 20%;
+  --accent-foreground: 142 58% 70%;
+
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 40%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 142 40% 30%;
+  --campaign-foreground: 142 40% 85%;
+
+  --special: 142 58% 40%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 142 58% 36%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 20 15% 22%;
+  --input: 142 30% 25%;
+  --ring: 142 58% 36%;
+
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.2);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.3);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.4);
+  --shadow-xl: 0 16px 48px hsla(0, 0%, 0%, 0.5);
+  --shadow-glow: 0 0 24px hsla(142, 58%, 36%, 0.3);
+}
+
+/* Theme-3 font */
+.theme-3,
+.theme-3 * {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.theme-3 .font-display {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* Theme-3 glass effect */
+.theme-3 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(38, 38%, 93%, 0.9);
+}
+
+.dark .theme-3 .glass {
+  background: hsla(20, 15%, 14%, 0.9);
+}
+
+/* Theme-3 shadow utilities */
+.theme-3 .shadow-card {
+  box-shadow: var(--shadow-md);
+}
+
+.theme-3 .shadow-card-hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-3 .shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Theme-3 animations */
+@keyframes theme3-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes theme3-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes theme3-bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes theme3-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) rotate(-3deg); }
+  20%, 40%, 60%, 80% { transform: translateX(2px) rotate(3deg); }
+}
+
+.theme-3 .animate-fade-in {
+  animation: theme3-fadeIn 0.3s ease-out;
+}
+
+.theme-3 .animate-slide-up {
+  animation: theme3-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-3 .animate-bounce-in {
+  animation: theme3-bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-3 .animate-shake {
+  animation: theme3-shake 0.5s ease-in-out;
+}
