@@ -33,16 +33,53 @@ function LoadingFallback() {
 
 function ErrorFallback({ error }: { error: string }) {
   const { t } = useTranslation();
+  const isInvalidTenant = error === 'INVALID_TENANT';
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="text-center space-y-4">
-        <p className="text-destructive font-medium">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
-        >
-          {t("common.retry", "Retry")}
-        </button>
+      <div className="text-center space-y-6 max-w-md">
+        <div className="text-6xl">
+          {isInvalidTenant ? '🔍' : '⚠️'}
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold text-foreground">
+            {isInvalidTenant
+              ? t("errors.invalidTenant", "Restaurant Not Found")
+              : t("errors.loadFailed", "Something went wrong")}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {isInvalidTenant
+              ? t("errors.invalidTenantDesc", "The restaurant you're looking for doesn't exist or is no longer available.")
+              : error}
+          </p>
+        </div>
+        {!isInvalidTenant && (
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm"
+          >
+            {t("common.retry", "Retry")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyMenuFallback() {
+  const { t } = useTranslation();
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="text-center space-y-6 max-w-md">
+        <div className="text-6xl">🍽️</div>
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold text-foreground">
+            {t("errors.noProducts", "Menu Not Available")}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {t("errors.noProductsDesc", "This restaurant hasn't added any products to their menu yet. Please check back later.")}
+          </p>
+        </div>
       </div>
     </div>
   );

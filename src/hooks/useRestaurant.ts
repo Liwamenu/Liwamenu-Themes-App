@@ -60,6 +60,11 @@ export function useInitializeRestaurant() {
         if (!cancelled) {
           const restaurantData = json.data?.restaurantData ?? json.restaurantData ?? json;
 
+          // Validate that we got meaningful data back (invalid tenant returns empty/null)
+          if (!restaurantData || !restaurantData.restaurantId) {
+            throw new Error('INVALID_TENANT');
+          }
+
           // Extract tableNumber from URL query params on first load
           const urlParams = new URLSearchParams(window.location.search);
           const tableParam = urlParams.get('tableNumber');
