@@ -354,7 +354,7 @@ export function MenuPage() {
       {/* Menu Content */}
       <div className="pb-8">
         {/* Campaign Products Section */}
-        {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
+        {!searchQuery && campaignProducts.length > 0 && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)}>
             <div className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-primary/90 to-primary" />
