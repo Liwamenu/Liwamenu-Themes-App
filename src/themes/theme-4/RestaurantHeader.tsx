@@ -42,7 +42,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const logoUrl = restaurant.logoUrl || restaurant.heroImageUrl;
+  const logoUrl = (restaurant as any).logoUrl || restaurant.heroImageUrl;
 
   return (
     <header
