@@ -31,7 +31,15 @@
     "phoneError": "Please enter exactly 10 digits after the country code",
     "callWaiter": "Call Waiter",
     "closedHours": "We are currently outside of working hours.",
-    "max": "max"
+    "max": "max",
+    "retry": "Retry"
+  },
+  "errors": {
+    "invalidTenant": "Restaurant Not Found",
+    "invalidTenantDesc": "The restaurant you're looking for doesn't exist or is no longer available.",
+    "loadFailed": "Something went wrong",
+    "noProducts": "Menu Not Available",
+    "noProductsDesc": "This restaurant hasn't added any products to their menu yet. Please check back later."
   },
   "days": {
     "monday": "Monday",
