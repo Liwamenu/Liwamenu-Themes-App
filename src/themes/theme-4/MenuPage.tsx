@@ -263,7 +263,7 @@ export function MenuPage() {
       />
 
       {searchQuery !== null && (
-        <div className="sticky top-[88px] z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
           <div className="max-w-5xl mx-auto px-4 py-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
