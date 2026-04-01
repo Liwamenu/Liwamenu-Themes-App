@@ -30,7 +30,15 @@
     "phoneError": "请在国家代码后输入正好10位数字",
     "callWaiter": "呼叫服务员",
     "closedHours": "我们目前不在工作时间。",
-    "max": "最大"
+    "max": "最大",
+    "retry": "重试"
+  },
+  "errors": {
+    "invalidTenant": "未找到餐厅",
+    "invalidTenantDesc": "您查找的餐厅不存在或已不再可用。",
+    "loadFailed": "出了点问题",
+    "noProducts": "菜单不可用",
+    "noProductsDesc": "该餐厅尚未在菜单中添加任何产品。请稍后再查看。"
   },
   "days": {
     "monday": "星期一",

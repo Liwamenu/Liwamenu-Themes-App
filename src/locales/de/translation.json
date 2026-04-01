@@ -30,7 +30,15 @@
     "phoneError": "Bitte geben Sie genau 10 Ziffern nach der Landesvorwahl ein",
     "callWaiter": "Kellner rufen",
     "closedHours": "Wir befinden uns derzeit außerhalb der Öffnungszeiten.",
-    "max": "max"
+    "max": "max",
+    "retry": "Erneut versuchen"
+  },
+  "errors": {
+    "invalidTenant": "Restaurant nicht gefunden",
+    "invalidTenantDesc": "Das gesuchte Restaurant existiert nicht oder ist nicht mehr verfügbar.",
+    "loadFailed": "Etwas ist schiefgelaufen",
+    "noProducts": "Menü nicht verfügbar",
+    "noProductsDesc": "Dieses Restaurant hat noch keine Produkte zu seiner Speisekarte hinzugefügt. Bitte versuchen Sie es später erneut."
   },
   "days": {
     "monday": "Montag",

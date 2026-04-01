@@ -31,7 +31,15 @@
     "phoneError": "Ülke kodundan sonra tam 10 rakam giriniz",
     "callWaiter": "Garson Çağır",
     "closedHours": "Şu anda çalışma saatleri dışındayız.",
-    "max": "maks"
+    "max": "maks",
+    "retry": "Tekrar Dene"
+  },
+  "errors": {
+    "invalidTenant": "Restoran Bulunamadı",
+    "invalidTenantDesc": "Aradığınız restoran mevcut değil veya artık kullanılabilir değil.",
+    "loadFailed": "Bir hata oluştu",
+    "noProducts": "Menü Mevcut Değil",
+    "noProductsDesc": "Bu restoran henüz menüsüne ürün eklememiş. Lütfen daha sonra tekrar kontrol edin."
   },
   "days": {
     "monday": "Pazartesi",

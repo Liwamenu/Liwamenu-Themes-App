@@ -30,7 +30,15 @@
     "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país",
     "callWaiter": "Llamar camarero",
     "closedHours": "Actualmente estamos fuera del horario de trabajo.",
-    "max": "máx"
+    "max": "máx",
+    "retry": "Reintentar"
+  },
+  "errors": {
+    "invalidTenant": "Restaurante no encontrado",
+    "invalidTenantDesc": "El restaurante que buscas no existe o ya no está disponible.",
+    "loadFailed": "Algo salió mal",
+    "noProducts": "Menú no disponible",
+    "noProductsDesc": "Este restaurante aún no ha añadido productos a su menú. Por favor, inténtelo más tarde."
   },
   "days": {
     "monday": "Lunes",

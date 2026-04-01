@@ -30,7 +30,15 @@
     "phoneError": "Ölkə kodundan sonra tam 10 rəqəm daxil edin",
     "callWaiter": "Ofisiant çağır",
     "closedHours": "Hazırda iş saatlarından kənardayıq.",
-    "max": "maks"
+    "max": "maks",
+    "retry": "Yenidən cəhd et"
+  },
+  "errors": {
+    "invalidTenant": "Restoran tapılmadı",
+    "invalidTenantDesc": "Axtardığınız restoran mövcud deyil və ya artıq əlçatan deyil.",
+    "loadFailed": "Xəta baş verdi",
+    "noProducts": "Menyu mövcud deyil",
+    "noProductsDesc": "Bu restoran hələ menyusuna məhsul əlavə etməyib. Zəhmət olmasa daha sonra yenidən yoxlayın."
   },
   "days": {
     "monday": "Bazar ertəsi",
