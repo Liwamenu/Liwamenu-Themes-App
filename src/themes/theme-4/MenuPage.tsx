@@ -263,7 +263,7 @@ export function MenuPage() {
       />
 
       {searchQuery !== null && (
-        <div className="sticky top-[88px] z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
           <div className="max-w-5xl mx-auto px-4 py-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -284,18 +284,24 @@ export function MenuPage() {
         </div>
       )}
 
-      {!searchQuery && categories.length > 0 && (
+      {!searchQuery && (
         <div
           className="relative w-full h-[50vh] min-h-[300px] bg-fixed bg-cover bg-center"
           style={{
-            backgroundImage: `url(${categories[0]?.image || restaurant.heroImageUrl || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=600&fit=crop"})`,
+            backgroundImage: `url(${restaurant.heroImageUrl || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=600&fit=crop"})`,
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            {(restaurant as any).logoUrl && (
+              <img src={(restaurant as any).logoUrl} alt={restaurant.name} className="w-20 h-20 rounded-full object-cover border-2 border-white/30" />
+            )}
             <h2 className="text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase">
-              MENU
+              {restaurant.name}
             </h2>
+            {restaurant.slogan1 && (
+              <p className="text-white/70 text-lg">{restaurant.slogan1}</p>
+            )}
           </div>
         </div>
       )}
