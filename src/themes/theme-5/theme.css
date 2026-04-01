@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+/* Theme 5: Fresh Green — scoped under .theme-5 */
+.theme-5 {
+  --background: 0 0% 98%;
+  --foreground: 0 0% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 15%;
+
+  --primary: 83 55% 52%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 20%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 45%;
+
+  --accent: 83 55% 52%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 65% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 36%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 83 55% 46%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 0 72% 51%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 83 55% 52%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 0 0% 90%;
+  --input: 0 0% 94%;
+  --ring: 83 55% 52%;
+
+  --gradient-hero: linear-gradient(180deg, hsla(83, 55%, 52%, 0.85) 0%, hsla(83, 55%, 42%, 0.95) 100%);
+  --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 98%) 100%);
+  --gradient-overlay: linear-gradient(180deg, transparent 0%, hsla(0, 0%, 0%, 0.5) 100%);
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.06);
+  --shadow-md: 0 4px 16px hsla(0, 0%, 0%, 0.08);
+  --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.12);
+  --shadow-xl: 0 16px 48px hsla(0, 0%, 0%, 0.16);
+  --shadow-glow: 0 0 24px hsla(83, 55%, 52%, 0.3);
+}
+
+.dark .theme-5 {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 95%;
+
+  --card: 0 0% 11%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 0 0% 11%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 83 55% 62%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 85%;
+  --secondary-foreground: 0 0% 10%;
+
+  --muted: 0 0% 16%;
+  --muted-foreground: 0 0% 60%;
+
+  --accent: 83 55% 62%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 40%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 83 55% 56%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 0 72% 51%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 83 55% 62%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 0 0% 18%;
+  --input: 0 0% 18%;
+  --ring: 83 55% 62%;
+
+  --gradient-hero: linear-gradient(180deg, hsla(83, 55%, 40%, 0.9) 0%, hsla(83, 55%, 30%, 0.95) 100%);
+  --gradient-card: linear-gradient(180deg, hsl(0, 0%, 11%) 0%, hsl(0, 0%, 9%) 100%);
+  --gradient-overlay: linear-gradient(180deg, transparent 0%, hsla(0, 0%, 0%, 0.8) 100%);
+
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 48px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(83, 55%, 52%, 0.35);
+}
+
+/* Theme-5 fonts */
+.theme-5,
+.theme-5 * {
+  font-family: 'Barlow', 'Poppins', system-ui, sans-serif;
+}
+
+.theme-5 .font-display {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.theme-5 .font-barlow {
+  font-family: 'Barlow', system-ui, sans-serif;
+}
+
+/* Theme-5 glass effect */
+.theme-5 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 100%, 0.92);
+}
+
+.dark .theme-5 .glass {
+  background: hsla(0, 0%, 8%, 0.92);
+}
+
+/* Theme-5 text gradient */
+.theme-5 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--gradient-hero);
+}
+
+/* Theme-5 shadow utilities */
+.theme-5 .shadow-card {
+  box-shadow: var(--shadow-md);
+}
+
+.theme-5 .shadow-card-hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-5 .shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.theme-5 .shadow-elegant {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Theme-5 animations */
+@keyframes theme5-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes theme5-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes theme5-slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes theme5-bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes theme5-pulseSubtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes theme5-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) rotate(-3deg); }
+  20%, 40%, 60%, 80% { transform: translateX(2px) rotate(3deg); }
+}
+
+.theme-5 .animate-fade-in {
+  animation: theme5-fadeIn 0.3s ease-out;
+}
+
+.theme-5 .animate-slide-up {
+  animation: theme5-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-5 .animate-slide-in-right {
+  animation: theme5-slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-5 .animate-bounce-in {
+  animation: theme5-bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-5 .animate-pulse-subtle {
+  animation: theme5-pulseSubtle 2s ease-in-out infinite;
+}
+
+.theme-5 .animate-shake {
+  animation: theme5-shake 0.5s ease-in-out;
+}
+
+/* Theme-5 hide-scrollbar */
+.theme-5 .hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.theme-5 .hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
