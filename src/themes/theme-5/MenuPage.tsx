@@ -333,14 +333,12 @@ export function MenuPage() {
         <div className="relative w-full h-[250px] lg:h-[320px] overflow-hidden">
           {restaurantHeroImage && (
             <div
-              className="absolute inset-0 bg-no-repeat bg-center opacity-20"
-              style={{
-                backgroundImage: `url(${restaurantHeroImage})`,
-                backgroundSize: 'cover',
-              }}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${restaurantHeroImage})` }}
             />
           )}
-          <div className="flex z-10 justify-center bg-primary items-center h-full relative flex-col gap-2">
+          <div className="absolute inset-0 bg-primary/60" />
+          <div className="flex z-10 justify-center items-center h-full relative flex-col gap-2">
             <h1 className="font-bold text-[36px] lg:text-[52px] text-primary-foreground z-10 flex items-center justify-center font-display tracking-wider">
               {restaurant.name}
             </h1>
