@@ -11,7 +11,7 @@ const dayKeys = ["", "monday", "tuesday", "wednesday", "thursday", "friday", "sa
 export function Footer() {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
-  const { SocialLinks, WorkingHours } = restaurant;
+  const { socialLinks: SocialLinks, workingHours: WorkingHours } = restaurant;
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
