@@ -17,7 +17,6 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -39,7 +38,16 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export function MenuPage() {
   const { t } = useTranslation();
-  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
+  const {
+    categories,
+    recommendedProducts,
+    campaignProducts,
+    isRestaurantActive,
+    isCurrentlyOpen,
+    restaurant,
+    formatPrice,
+    setTableNumber,
+  } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
@@ -55,34 +63,30 @@ export function MenuPage() {
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
-    const savedEndTime = localStorage.getItem('waiterCooldownEnd');
+    const savedEndTime = localStorage.getItem("waiterCooldownEnd");
     if (savedEndTime) {
       const remaining = Math.ceil((parseInt(savedEndTime) - Date.now()) / 1000);
       return remaining > 0 ? remaining : 0;
     }
     return 0;
   });
-
-  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
-  useBodyScrollLock(isAnyOverlayOpen);
-
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     const announcementSettings = restaurant.announcementSettings;
     if (!announcementSettings?.enabled) return;
-    const hasSeenAnnouncement = sessionStorage.getItem('hasSeenAnnouncement');
+    const hasSeenAnnouncement = sessionStorage.getItem("hasSeenAnnouncement");
     if (hasSeenAnnouncement) return;
     const timer = setTimeout(() => {
       setShowAnnouncement(true);
-      sessionStorage.setItem('hasSeenAnnouncement', 'true');
+      sessionStorage.setItem("hasSeenAnnouncement", "true");
     }, announcementSettings.delayMs);
     return () => clearTimeout(timer);
   }, [restaurant.announcementSettings]);
 
   useEffect(() => {
     if (waiterCooldown <= 0) {
-      localStorage.removeItem('waiterCooldownEnd');
+      localStorage.removeItem("waiterCooldownEnd");
       return;
     }
     const timer = setInterval(() => {
@@ -93,7 +97,7 @@ export function MenuPage() {
 
   const handleWaiterSuccess = useCallback(() => {
     const endTime = Date.now() + 60 * 1000;
-    localStorage.setItem('waiterCooldownEnd', endTime.toString());
+    localStorage.setItem("waiterCooldownEnd", endTime.toString());
     setWaiterCooldown(60);
   }, []);
 
@@ -115,27 +119,30 @@ export function MenuPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [categories]);
 
-  const CAMPAIGN_CATEGORY_ID = '__campaign__';
+  const CAMPAIGN_CATEGORY_ID = "__campaign__";
 
-  const scrollToCategory = useCallback((categoryId: string) => {
-    if (categoryId === CAMPAIGN_CATEGORY_ID) {
-      const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+  const scrollToCategory = useCallback(
+    (categoryId: string) => {
+      if (categoryId === CAMPAIGN_CATEGORY_ID) {
+        const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+        if (element) {
+          const offset = 80;
+          const elementPosition = element.offsetTop - offset;
+          window.scrollTo({ top: elementPosition, behavior: "smooth" });
+        }
+        setActiveCategory(CAMPAIGN_CATEGORY_ID);
+        return;
+      }
+      const element = categoryRefs.current[categoryId];
       if (element) {
         const offset = 80;
         const elementPosition = element.offsetTop - offset;
         window.scrollTo({ top: elementPosition, behavior: "smooth" });
       }
-      setActiveCategory(CAMPAIGN_CATEGORY_ID);
-      return;
-    }
-    const element = categoryRefs.current[categoryId];
-    if (element) {
-      const offset = 80;
-      const elementPosition = element.offsetTop - offset;
-      window.scrollTo({ top: elementPosition, behavior: "smooth" });
-    }
-    setActiveCategory(categoryId);
-  }, [CAMPAIGN_CATEGORY_ID]);
+      setActiveCategory(categoryId);
+    },
+    [CAMPAIGN_CATEGORY_ID],
+  );
 
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return categories;
@@ -144,9 +151,7 @@ export function MenuPage() {
       .map((cat) => ({
         ...cat,
         products: cat.products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(lowerQuery) ||
-            p.description.toLowerCase().includes(lowerQuery),
+          (p) => p.name.toLowerCase().includes(lowerQuery) || p.description.toLowerCase().includes(lowerQuery),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
@@ -154,7 +159,7 @@ export function MenuPage() {
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
-  const handleOrderComplete = useCallback((order: Order, orderType: 'inPerson' | 'online') => {
+  const handleOrderComplete = useCallback((order: Order, orderType: "inPerson" | "online") => {
     setIsCheckoutOpen(false);
     setViewingOrder(order);
     setCurrentView("order");
@@ -197,7 +202,7 @@ export function MenuPage() {
 
   const handleOpenCallWaiter = useCallback(() => {
     if (!isCurrentlyOpen) {
-      toast.error(t('common.closedHours'));
+      toast.error(t("common.closedHours"));
       return;
     }
     setIsCartOpen(false);
@@ -210,7 +215,7 @@ export function MenuPage() {
 
   const handleOpenCallWaiterFloating = useCallback(() => {
     if (!isCurrentlyOpen) {
-      toast.error(t('common.closedHours'));
+      toast.error(t("common.closedHours"));
       return;
     }
     if (!restaurant.tableNumber) {
@@ -220,14 +225,17 @@ export function MenuPage() {
     setShowCallWaiter(true);
   }, [restaurant.tableNumber, isCurrentlyOpen, t]);
 
-  const handleTableSelected = useCallback((newTable: number) => {
-    setTableNumber(newTable);
-    toast.success(t('cart.tableChanged', { table: newTable }));
-    setShowTableSelection(false);
-    if (isCurrentlyOpen) {
-      setShowCallWaiter(true);
-    }
-  }, [setTableNumber, t, isCurrentlyOpen]);
+  const handleTableSelected = useCallback(
+    (newTable: number) => {
+      setTableNumber(newTable);
+      toast.success(t("cart.tableChanged", { table: newTable }));
+      setShowTableSelection(false);
+      if (isCurrentlyOpen) {
+        setShowCallWaiter(true);
+      }
+    },
+    [setTableNumber, t, isCurrentlyOpen],
+  );
 
   const handleShowSoundPermission = useCallback(() => {
     setShowSoundPermission(true);
@@ -261,11 +269,8 @@ export function MenuPage() {
   }
 
   return (
-    <div className="theme-4 min-h-screen bg-background">
-      <RestaurantHeader 
-        orders={orders}
-        onViewOrder={handleViewOrder}
-      />
+    <div className="theme-4 min-h-screen bg-background pb-20">
+      <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {searchQuery !== null && (
         <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -299,19 +304,21 @@ export function MenuPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             {(restaurant as any).logoUrl && (
-              <img src={(restaurant as any).logoUrl} alt={restaurant.name} className="w-20 h-20 rounded-full object-cover border-2 border-white/30" />
+              <img
+                src={(restaurant as any).logoUrl}
+                alt={restaurant.name}
+                className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
+              />
             )}
-            <h2 className="text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase">
+            <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase">
               {restaurant.name}
             </h2>
-            {restaurant.slogan1 && (
-              <p className="text-white/70 text-lg">{restaurant.slogan1}</p>
-            )}
+            {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
           </div>
         </div>
       )}
 
-      <div className="pb-24">
+      <div className="pb-8">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)}>
             <div
@@ -322,8 +329,8 @@ export function MenuPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase text-center px-4">
-                  🔥 {t('menu.campaignProducts')}
+                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+                  🔥 {t("menu.campaignProducts")}
                 </h2>
               </div>
             </div>
@@ -346,47 +353,48 @@ export function MenuPage() {
           </section>
         )}
 
-        {activeCategory !== CAMPAIGN_CATEGORY_ID && filteredCategories.map((category) => (
-          <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)}>
-            {!searchQuery && (
-              <div
-                className="relative w-full h-[40vh] min-h-[250px] bg-fixed bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${category.image || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop"})`,
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+        {activeCategory !== CAMPAIGN_CATEGORY_ID &&
+          filteredCategories.map((category) => (
+            <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)}>
+              {!searchQuery && (
+                <div
+                  className="relative w-full h-[40vh] min-h-[250px] bg-fixed bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${category.image || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop"})`,
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+                      {category.name}
+                    </h2>
+                  </div>
+                </div>
+              )}
+              <div className="max-w-5xl mx-auto px-4 pt-10 pb-8">
+                {searchQuery && (
+                  <h2 className="font-display text-xl font-bold mb-4 text-foreground">
                     {category.name}
+                    <span className="text-sm font-normal text-muted-foreground ml-2">({category.products.length})</span>
                   </h2>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
+                  <AnimatePresence mode="popLayout">
+                    {category.products.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    ))}
+                  </AnimatePresence>
                 </div>
               </div>
-            )}
-            <div className="max-w-5xl mx-auto px-4 pt-10 pb-8">
-              {searchQuery && (
-                <h2 className="font-display text-xl font-bold mb-4 text-foreground">
-                  {category.name}
-                  <span className="text-sm font-normal text-muted-foreground ml-2">({category.products.length})</span>
-                </h2>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
-                <AnimatePresence mode="popLayout">
-                  {category.products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onSelect={handleSelectProduct}
-                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                      specialPriceName={restaurant.specialPriceName}
-                      formatPrice={formatPrice}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
-            </div>
-          </section>
-        ))}
+            </section>
+          ))}
 
         {filteredCategories.length === 0 && searchQuery && (
           <div className="text-center py-12">
@@ -402,11 +410,15 @@ export function MenuPage() {
           categories={categories}
           activeCategory={activeCategory}
           onCategoryChange={scrollToCategory}
-          campaignTab={campaignProducts.length > 0 ? {
-            id: CAMPAIGN_CATEGORY_ID,
-            name: t('menu.campaignProducts'),
-            count: campaignProducts.length
-          } : null}
+          campaignTab={
+            campaignProducts.length > 0
+              ? {
+                  id: CAMPAIGN_CATEGORY_ID,
+                  name: t("menu.campaignProducts"),
+                  count: campaignProducts.length,
+                }
+              : null
+          }
         />
       )}
 
@@ -433,17 +445,9 @@ export function MenuPage() {
         )}
       </AnimatePresence>
 
-      <SoundPermissionModal
-        isOpen={showSoundPermission}
-        onAllow={handleAllowSound}
-        onDeny={handleDenySound}
-      />
+      <SoundPermissionModal isOpen={showSoundPermission} onAllow={handleAllowSound} onDeny={handleDenySound} />
 
-      <CallWaiterModal 
-        isOpen={showCallWaiter} 
-        onClose={handleCloseCallWaiter} 
-        onSuccess={handleWaiterSuccess}
-      />
+      <CallWaiterModal isOpen={showCallWaiter} onClose={handleCloseCallWaiter} onSuccess={handleWaiterSuccess} />
 
       <ReservationModal isOpen={showReservation} onClose={handleCloseReservation} />
 
@@ -454,11 +458,7 @@ export function MenuPage() {
         currentTable={undefined}
       />
 
-      <FlyingEmoji
-        isVisible={isFlyingEmojiVisible}
-        startPosition={flyingEmojiPosition}
-        onComplete={hideFlyingEmoji}
-      />
+      <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
 
       {restaurant.announcementSettings?.enabled && restaurant.announcementSettings?.htmlContent && (
         <AnnouncementModal
@@ -481,9 +481,7 @@ export function MenuPage() {
             aria-label={t("waiter.title")}
           >
             <Bell className="w-4 h-4" />
-            <span>
-              {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
-            </span>
+            <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
           </button>
         </div>
       )}
