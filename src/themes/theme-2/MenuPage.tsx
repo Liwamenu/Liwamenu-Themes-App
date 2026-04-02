@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { Search, X, Bell } from "lucide-react";
 import { RestaurantHeader } from "./RestaurantHeader";
 import { CategoryTabs } from "./CategoryTabs";
 import { ProductCard } from "./ProductCard";
