@@ -159,7 +159,6 @@ export function MenuPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [categories, campaignProducts.length, searchQuery, isHeaderVisible]);
 
-  
 
   const getStickyOffset = useCallback(() => {
     return isHeaderVisible ? 172 : 120;
