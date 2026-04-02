@@ -386,7 +386,7 @@ export function MenuPage() {
       )}
 
       {/* Menu Content */}
-      <div className="pb-8">
+      <div className="pb-24">
         {/* Campaign Products Section */}
         {!searchQuery && campaignProducts.length > 0 && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)}>
