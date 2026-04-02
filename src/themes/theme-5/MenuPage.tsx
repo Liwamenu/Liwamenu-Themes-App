@@ -161,7 +161,8 @@ export function MenuPage() {
 
 
   const getStickyOffset = useCallback(() => {
-    return isHeaderVisible ? 172 : 120;
+    // header(52) + category tabs(~58) + search bar(~46) + buffer
+    return isHeaderVisible ? 200 : 148;
   }, [isHeaderVisible]);
 
   const scrollToSection = useCallback(
