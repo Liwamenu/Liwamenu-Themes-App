@@ -65,13 +65,35 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     });
   };
 
+  const handleTagItemQuantity = (tagId: string, itemId: string, delta: number) => {
+    setSelectedTags(prev => {
+      const currentTagItems = prev[tagId] || [];
+      const itemIndex = currentTagItems.findIndex(t => t.itemId === itemId);
+      if (itemIndex < 0) return prev;
+      const current = currentTagItems[itemIndex];
+      const orderTag = selectedPortion.orderTags.find(t => t.id === tagId);
+      const orderTagItem = orderTag?.orderTagItems.find(i => i.id === itemId);
+      const maxQty = orderTagItem?.maxQuantity ?? 99;
+      const newQty = current.quantity + delta;
+      if (newQty < 1) return prev;
+      if (newQty > maxQty) {
+        toast.error(t('product.maxQuantityError', { name: current.itemName, max: maxQty }));
+        return prev;
+      }
+      return { ...prev, [tagId]: currentTagItems.map((t, i) => i === itemIndex ? { ...t, quantity: newQty } : t) };
+    });
+  };
+
   const isTagItemSelected = (tagId: string, itemId: string) => {
     return (selectedTags[tagId] || []).some(t => t.itemId === itemId);
   };
 
+  const getTagItemQuantity = (tagId: string, itemId: string) => (selectedTags[tagId] || []).find(t => t.itemId === itemId)?.quantity ?? 0;
+
   const validateTags = useCallback((): boolean => {
     for (const tag of selectedPortion.orderTags) {
-      const selectedCount = (selectedTags[tag.id] || []).length;
+      const currentTagItems = selectedTags[tag.id] || [];
+      const selectedCount = currentTagItems.length;
       if (tag.minSelected > 0 && selectedCount < tag.minSelected) {
         const tagElement = tagRefs.current[tag.id];
         if (tagElement) tagElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -79,6 +101,17 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         setTimeout(() => setShakingTagId(null), 1500);
         toast.error(t('product.minSelectionError', { name: tag.name, min: tag.minSelected }));
         return false;
+      }
+      for (const selectedItem of currentTagItems) {
+        const orderTagItem = tag.orderTagItems.find(i => i.id === selectedItem.itemId);
+        if (orderTagItem && orderTagItem.minQuantity > 0 && selectedItem.quantity < orderTagItem.minQuantity) {
+          const tagElement = tagRefs.current[tag.id];
+          if (tagElement) tagElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setShakingTagId(tag.id);
+          setTimeout(() => setShakingTagId(null), 1500);
+          toast.error(t('product.minQuantityError', { name: selectedItem.itemName, min: orderTagItem.minQuantity }));
+          return false;
+        }
       }
     }
     return true;
@@ -162,24 +195,32 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   {tag.maxSelected > 1 && <span className="text-xs text-muted-foreground">({t('product.maxSelection', { max: tag.maxSelected })})</span>}
                 </div>
                 <div className="space-y-2">
-                  {tag.orderTagItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleTagSelect(tag, item)}
-                      className={cn(
-                        'w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all',
-                        isTagItemSelected(tag.id, item.id) ? 'bg-primary/10 border-2 border-primary' : isShaking && isRequired && selectedCount < tag.minSelected ? 'bg-card border-2 border-secondary/50 animate-pulse' : 'bg-card border-2 border-transparent'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn('w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all', isTagItemSelected(tag.id, item.id) ? 'bg-primary border-primary' : isShaking && isRequired && selectedCount < tag.minSelected ? 'border-secondary' : 'border-muted-foreground/30')}>
-                          {isTagItemSelected(tag.id, item.id) && <Check className="w-3 h-3 text-primary-foreground" />}
+                  {tag.orderTagItems.map((item) => {
+                    const selected = isTagItemSelected(tag.id, item.id);
+                    const qty = getTagItemQuantity(tag.id, item.id);
+                    const showQtyControls = selected && item.maxQuantity > 1;
+                    return (
+                      <div key={item.id} className={cn('w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all',
+                        selected ? 'bg-primary/10 border-2 border-primary' : isShaking && isRequired && selectedCount < tag.minSelected ? 'bg-card border-2 border-secondary/50 animate-pulse' : 'bg-card border-2 border-transparent')}>
+                        <button onClick={() => handleTagSelect(tag, item)} className="flex items-center gap-3 flex-1">
+                          <div className={cn('w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all', selected ? 'bg-primary border-primary' : isShaking && isRequired && selectedCount < tag.minSelected ? 'border-secondary' : 'border-muted-foreground/30')}>
+                            {selected && <Check className="w-3 h-3 text-primary-foreground" />}
+                          </div>
+                          <span className="font-medium">{item.name}</span>
+                        </button>
+                        <div className="flex items-center gap-2">
+                          {showQtyControls && (
+                            <div className="flex items-center gap-1">
+                              <button onClick={() => handleTagItemQuantity(tag.id, item.id, -1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center"><Minus className="w-3 h-3" /></button>
+                              <span className="w-6 text-center text-sm font-bold">{qty}</span>
+                              <button onClick={() => handleTagItemQuantity(tag.id, item.id, 1)} className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Plus className="w-3 h-3" /></button>
+                            </div>
+                          )}
+                          {item.price > 0 && <span className="text-sm text-muted-foreground">+{formatPrice(item.price * (qty || 1))}</span>}
                         </div>
-                        <span className="font-medium">{item.name}</span>
                       </div>
-                      {item.price > 0 && <span className="text-sm text-muted-foreground">+{formatPrice(item.price)}</span>}
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
