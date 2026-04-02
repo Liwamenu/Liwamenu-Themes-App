@@ -17,6 +17,7 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -63,6 +64,10 @@ export function MenuPage() {
     }
     return 0;
   });
+
+  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  useBodyScrollLock(isAnyOverlayOpen);
+
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
   const isAutoScrollingRef = useRef(false);
   const autoScrollTimeoutRef = useRef<number | null>(null);

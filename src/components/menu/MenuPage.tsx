@@ -17,6 +17,7 @@ import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { AnnouncementModal } from "@/components/menu/AnnouncementModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant, useInitializeRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -63,6 +64,11 @@ export function MenuPage() {
     }
     return 0;
   });
+
+  // Lock body scroll when any overlay is open
+  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  useBodyScrollLock(isAnyOverlayOpen);
+
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
   // Auto-show announcement modal based on settings

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { Search, X, Bell } from "lucide-react";
 import { RestaurantHeader } from "./RestaurantHeader";
 import { CategoryTabs } from "./CategoryTabs";
 import { ProductCard } from "./ProductCard";
@@ -17,6 +17,7 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -58,6 +59,10 @@ export function MenuPage() {
     }
     return 0;
   });
+
+  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  useBodyScrollLock(isAnyOverlayOpen);
+
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
@@ -155,6 +160,12 @@ export function MenuPage() {
   const handleAllowSound = useCallback(() => { localStorage.setItem("soundPermission", "allowed"); setShowSoundPermission(false); }, []);
   const handleDenySound = useCallback(() => { localStorage.setItem("soundPermission", "denied"); setShowSoundPermission(false); }, []);
   const handleCloseReservation = useCallback(() => setShowReservation(false), []);
+
+  const handleOpenCallWaiterFloating = useCallback(() => {
+    if (!isCurrentlyOpen) { toast.error(t('common.closedHours')); return; }
+    if (!restaurant.tableNumber) { setShowTableSelection(true); return; }
+    setShowCallWaiter(true);
+  }, [restaurant.tableNumber, isCurrentlyOpen, t]);
 
   if (currentView === "order" && viewingOrder) {
     return (
@@ -281,6 +292,27 @@ export function MenuPage() {
       <ChangeTableModal isOpen={showTableSelection} onClose={() => setShowTableSelection(false)} onTableChange={handleTableSelected} currentTable={undefined} />
       <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
       <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings?.htmlContent || ""} />
+
+      {/* Floating Call Waiter Button */}
+      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
+        <div className="fixed top-[100px] right-4 z-50">
+          <button
+            onClick={handleOpenCallWaiterFloating}
+            disabled={waiterCooldown > 0}
+            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+              waiterCooldown > 0
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-primary text-primary-foreground hover:opacity-90"
+            }`}
+            aria-label={t("waiter.title")}
+          >
+            <Bell className="w-4 h-4" />
+            <span>
+              {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
