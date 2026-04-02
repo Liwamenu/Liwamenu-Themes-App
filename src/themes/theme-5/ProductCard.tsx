@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -99,13 +99,13 @@ export const ProductCard = memo(function ProductCard({
       {/* Price & Add Button Column */}
       <div className="flex flex-col h-[100px] flex-shrink-0 justify-between items-end mr-3">
         <button
-          className="text-foreground px-3 border border-border rounded-xl h-[32px] text-[16px] cursor-pointer flex items-center justify-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+          className="text-primary px-3 border border-primary/30 rounded-xl h-[32px] text-[16px] cursor-pointer flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleClick();
           }}
         >
-          <Plus className="w-4 h-4" />
+          <ShoppingCart className="w-4 h-4" />
         </button>
         <div className="text-right pb-1">
           <span className="text-lg font-bold text-foreground">{formatPrice(displayPrice)}</span>
