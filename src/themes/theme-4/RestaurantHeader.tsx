@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Receipt } from "lucide-react";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
