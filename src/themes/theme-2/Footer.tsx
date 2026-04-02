@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Facebook, Instagram, Youtube, MessageCircle, CalendarDays, Star, Heart } from "lucide-react";
+import { Facebook, Instagram, Youtube, MessageCircle, CalendarDays, Star } from "lucide-react";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
