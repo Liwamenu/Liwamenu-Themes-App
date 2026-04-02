@@ -36,6 +36,8 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
   }) as T;
 }
 
+const CAMPAIGN_CATEGORY_ID = "__campaign__";
+
 export function MenuPage() {
   const { t } = useTranslation();
   const {
