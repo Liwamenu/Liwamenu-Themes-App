@@ -311,7 +311,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       {/* Restaurant Header */}
       <RestaurantHeader 
         orders={orders}
