@@ -176,7 +176,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="theme-3 min-h-screen bg-background pb-24">
+    <div className="theme-3 min-h-screen bg-background">
       <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {/* Search Bar */}
@@ -234,7 +234,7 @@ export function MenuPage() {
       )}
 
       {/* Menu Categories - Grid Layout */}
-      <div className="container px-4 pb-8">
+      <div className="container px-4 pb-24">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)} className="mb-8">
             <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">

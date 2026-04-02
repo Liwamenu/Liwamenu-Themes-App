@@ -311,7 +311,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       {/* Restaurant Header */}
       <RestaurantHeader 
         orders={orders}
@@ -386,7 +386,7 @@ export function MenuPage() {
       )}
 
       {/* Menu Categories */}
-      <div className="container px-4 pb-8">
+      <div className="container px-4 pb-24">
         {/* Campaign Products Section - Only show when campaign tab is active */}
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section 

@@ -261,7 +261,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="theme-4 min-h-screen bg-background pb-20">
+    <div className="theme-4 min-h-screen bg-background">
       <RestaurantHeader 
         orders={orders}
         onViewOrder={handleViewOrder}
@@ -311,7 +311,7 @@ export function MenuPage() {
         </div>
       )}
 
-      <div className="pb-8">
+      <div className="pb-24">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)}>
             <div
