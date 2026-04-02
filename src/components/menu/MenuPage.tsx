@@ -518,7 +518,7 @@ export function MenuPage() {
       )}
 
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
+      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
         <div className="fixed top-[138px] right-4 z-50">
           <button
             onClick={handleOpenCallWaiterFloating}

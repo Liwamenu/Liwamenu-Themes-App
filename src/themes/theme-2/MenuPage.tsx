@@ -313,7 +313,7 @@ export function MenuPage() {
       <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings?.htmlContent || ""} />
 
       {/* Floating Call Waiter Button */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
+      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
         <div className="fixed top-[100px] right-4 z-50">
           <button
             onClick={handleOpenCallWaiterFloating}
