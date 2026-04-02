@@ -68,6 +68,18 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
         </div>
 
         <div className="flex items-center gap-1">
+          {orders.length > 0 && onViewOrder && (
+            <button
+              onClick={() => onViewOrder(orders[0])}
+              className="relative p-2 rounded-full hover:bg-muted transition-colors"
+              aria-label={t("order.viewOrder")}
+            >
+              <Receipt className="w-5 h-5 text-foreground" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-accent text-accent-foreground text-[8px] font-bold flex items-center justify-center">
+                {orders.length}
+              </span>
+            </button>
+          )}
           <ThemeSwitcher />
           <LanguageSwitcher />
           <div className="relative ml-2">
