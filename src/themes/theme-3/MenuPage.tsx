@@ -292,6 +292,27 @@ export function MenuPage() {
       <ChangeTableModal isOpen={showTableSelection} onClose={() => setShowTableSelection(false)} onTableChange={handleTableSelected} currentTable={undefined} />
       <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
       <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings?.htmlContent || ""} />
+
+      {/* Floating Call Waiter Button */}
+      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
+        <div className="fixed top-[100px] right-4 z-50">
+          <button
+            onClick={handleOpenCallWaiterFloating}
+            disabled={waiterCooldown > 0}
+            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+              waiterCooldown > 0
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-primary text-primary-foreground hover:opacity-90"
+            }`}
+            aria-label={t("waiter.title")}
+          >
+            <Bell className="w-4 h-4" />
+            <span>
+              {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
