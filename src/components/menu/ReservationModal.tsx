@@ -58,11 +58,12 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const { restaurant } = useRestaurant();
   
   // Get reservation settings from restaurant data with fallbacks
-  const reservationSettings = restaurant.reservationSettings || {
-    startTime: "08:00",
-    endTime: "23:00",
-    intervalMinutes: 30,
-    maxGuests: 50,
+  const reservationSettings = {
+    startTime: restaurant.reservationSettings?.startTime || "08:00",
+    endTime: restaurant.reservationSettings?.endTime || "23:00",
+    intervalMinutes: restaurant.reservationSettings?.intervalMinutes || 30,
+    maxGuests: restaurant.reservationSettings?.maxGuests || 50,
+    isActive: restaurant.reservationSettings?.isActive ?? false,
   };
   
   const TIME_SLOTS = generateTimeSlots(
