@@ -184,7 +184,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="theme-2 min-h-screen bg-background pb-24">
+    <div className="theme-2 min-h-screen bg-background">
       <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {/* Search Bar */}
