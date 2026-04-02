@@ -85,7 +85,7 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
               onClick={() => handleClick(category.id)}
               whileTap={{ scale: 0.9 }}
               className={cn(
-                'flex-1 min-w-[80px] flex flex-col items-center gap-1 py-3 px-2 transition-all duration-200 border-b-2',
+                'flex-shrink-0 min-w-[80px] flex flex-col items-center gap-1 py-3 px-4 transition-all duration-200 border-b-2',
                 activeCategory === category.id
                   ? 'text-primary border-primary font-bold'
                   : 'text-muted-foreground hover:text-foreground border-transparent'
