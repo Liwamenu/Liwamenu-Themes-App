@@ -64,6 +64,11 @@ export function MenuPage() {
     }
     return 0;
   });
+
+  // Lock body scroll when any overlay is open
+  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  useBodyScrollLock(isAnyOverlayOpen);
+
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
   // Auto-show announcement modal based on settings

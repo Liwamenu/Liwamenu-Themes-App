@@ -59,6 +59,10 @@ export function MenuPage() {
     }
     return 0;
   });
+
+  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  useBodyScrollLock(isAnyOverlayOpen);
+
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
