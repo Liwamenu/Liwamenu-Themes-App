@@ -1,35 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Locks body scroll when any overlay/modal is open.
- * Pass `true` to lock, `false` to unlock.
+ * Uses overflow:hidden + scrollbar compensation to avoid layout shift.
+ * Does NOT reposition the page — scroll position is preserved naturally.
  */
 export function useBodyScrollLock(isLocked: boolean) {
+  const scrollBarWidth = useRef(0);
+
   useEffect(() => {
     if (isLocked) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
+      scrollBarWidth.current = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollBarWidth.current}px`;
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
       document.body.style.overflow = "";
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || "0") * -1);
-      }
+      document.body.style.paddingRight = "";
     }
     return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
       document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [isLocked]);
 }
