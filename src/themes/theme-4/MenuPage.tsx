@@ -322,7 +322,7 @@ export function MenuPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase text-center px-4">
                   🔥 {t('menu.campaignProducts')}
                 </h2>
               </div>

@@ -100,9 +100,8 @@ export const ProductCard = memo(function ProductCard({
             )}
           </div>
 
-          <button className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded transition-all hover:opacity-90">
-            <ShoppingCart className="w-3.5 h-3.5" />
-            <span>{t("productCard.addToCart", "Add To Cart")}</span>
+          <button className="flex items-center justify-center w-9 h-9 bg-primary text-primary-foreground rounded-full transition-all hover:opacity-90" aria-label="Add to cart">
+            <ShoppingCart className="w-4 h-4" />
           </button>
         </div>
       </div>
