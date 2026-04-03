@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
-import { useCart } from '@/hooks/useCart';
+import { useCart, getPortionDisplayPrice } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
