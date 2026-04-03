@@ -226,13 +226,7 @@ export function CheckoutModal({
       restaurantId: restaurant.restaurantId,
       orderType: orderType!,
       items: items.map(item => {
-        const portion = item.portion;
-        let unitPrice = portion.price;
-        if (portion.specialPrice !== null) {
-          unitPrice = portion.specialPrice;
-        } else if (portion.campaignPrice !== null) {
-          unitPrice = portion.campaignPrice;
-        }
+        const unitPrice = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive);
         const tagTotal = item.selectedTags.reduce((sum, tag) => sum + tag.price * tag.quantity, 0);
         const itemTotal = (unitPrice + tagTotal) * item.quantity;
         return {
