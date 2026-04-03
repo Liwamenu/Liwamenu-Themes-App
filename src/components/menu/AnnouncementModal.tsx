@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import DOMPurify from "dompurify";
 
 interface AnnouncementModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface AnnouncementModalProps {
 
 export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: AnnouncementModalProps) => {
   const { t } = useTranslation();
+  const sanitizedHtml = useMemo(() => DOMPurify.sanitize(htmlContent), [htmlContent]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -60,7 +62,7 @@ export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: Announcement
             <div className="relative max-h-[calc(85vh-80px)] overflow-y-auto p-6 pt-8">
               <div
                 className="announcement-content prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
+                dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
               />
             </div>
 
