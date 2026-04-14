@@ -1,57 +1,37 @@
 
 
 ## Problem
-After placing an order, the Order Receipt page is unscrollable because `overflow: hidden` remains on the `<body>` element. The style is applied by multiple sources (the `useBodyScrollLock` hook in themes 2/3, and individual modals like CartDrawer, ProductDetailModal, CallWaiterModal, etc.). When the view switches to "order", these modals either unmount or stop rendering (via the early return), but their cleanup may not run correctly due to React batching, AnimatePresence delays, or the `showSoundPermission` state being set via a `setTimeout` that fires after the view has already switched.
+Several hardcoded (untranslated) strings exist across the app, causing language inconsistency when the user switches languages.
 
-## Root Cause
-Multiple competing `document.body.style.overflow = 'hidden'` setters across the app. When transitioning to the order receipt view, the cleanup of these styles is unreliable because:
-1. State updates are batched, and the early return for the "order" view prevents some modal components from rendering (and thus cleaning up)
-2. In themes 2/3, `showSoundPermission` can be set to `true` via a 1-second delay after order placement, keeping `isAnyOverlayOpen` true even though the SoundPermissionModal isn't rendered in the "order" view
+## Found Issues
+
+1. **Order status labels in `OrderReceipt.tsx` (lines 37-44)** -- "Pending", "Accepted", "Preparing", "On The Way", "Delivered", "Cancelled" are hardcoded in English. Translation keys (`status.pending`, `status.confirmed`, etc.) already exist in all locale files but are not being used.
+
+2. **"Order not found" in `OrderReceipt.tsx` (line 71)** -- Hardcoded English fallback text.
+
+3. **"Kapat" in `SurveyModal.tsx` (line 251)** -- Hardcoded Turkish word for "Close" in the screen-reader label instead of using `t("common.close")`.
+
+4. **"metre" fallback in `CheckoutModal.tsx` (line 161)** -- Uses `defaultValue: "metre"` but the `common.meters` key is missing from all locale files.
 
 ## Fix
 
-**Explicit cleanup in `handleOrderComplete` across all MenuPage files** -- force-clear body styles when transitioning to the order receipt view, regardless of what set them:
+### 1. `src/components/menu/OrderReceipt.tsx`
+- Remove the static `STATUS_LABELS` object
+- Make `getStatusConfig` accept a `t` function and use `t("status.pending")`, `t("status.confirmed")`, `t("status.preparing")`, `t("status.ready")`, `t("status.delivered")`, `t("status.cancelled")` for labels
+- Replace `"Order not found"` with `t("errors.loadFailed")` or a new key
 
-```tsx
-const handleOrderComplete = useCallback((order: Order, orderType: "inPerson" | "online") => {
-  setIsCheckoutOpen(false);
-  setViewingOrder(order);
-  setCurrentView("order");
-  // Force-clear any stuck body scroll locks
-  document.body.style.overflow = "";
-  document.body.style.paddingRight = "";
-  window.scrollTo(0, 0);
-}, []);
-```
+### 2. `src/components/menu/SurveyModal.tsx`
+- Line 251: Replace `"Kapat"` with `{t("common.close")}`
 
-Same cleanup in `handleBackToMenu`:
-```tsx
-const handleBackToMenu = useCallback(() => {
-  setCurrentView("menu");
-  setViewingOrder(null);
-  document.body.style.overflow = "";
-  document.body.style.paddingRight = "";
-  window.scrollTo(0, 0);
-}, []);
-```
+### 3. `src/components/menu/CheckoutModal.tsx`
+- Line 161: Remove the `defaultValue` and add the `common.meters` key to all 11 locale files
 
-And in `handleViewOrder`:
-```tsx
-const handleViewOrder = useCallback((order: Order) => {
-  setViewingOrder(order);
-  setCurrentView("order");
-  document.body.style.overflow = "";
-  document.body.style.paddingRight = "";
-  window.scrollTo(0, 0);
-}, []);
-```
+### 4. Add missing translation keys to all 11 locale files
+- Add `"meters"` key under `common` section in all locale files (tr, en, de, fr, it, es, ar, az, ru, el, zh)
 
 ### Files to modify
-1. `src/components/menu/MenuPage.tsx` -- base theme
-2. `src/themes/theme-2/MenuPage.tsx`
-3. `src/themes/theme-3/MenuPage.tsx`
-4. `src/themes/theme-4/MenuPage.tsx`
-5. `src/themes/theme-5/MenuPage.tsx`
-
-All five files get the same three-line addition (`document.body.style.overflow = ""`, `document.body.style.paddingRight = ""`, `window.scrollTo(0, 0)`) in `handleOrderComplete`, `handleBackToMenu`, and `handleViewOrder`.
+- `src/components/menu/OrderReceipt.tsx`
+- `src/components/menu/SurveyModal.tsx`
+- `src/components/menu/CheckoutModal.tsx`
+- All 11 `src/locales/*/translation.json` files (add `common.meters`)
 
