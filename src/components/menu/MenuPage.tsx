@@ -175,17 +175,20 @@ export function MenuPage() {
     setIsCheckoutOpen(false);
     setViewingOrder(order);
     setCurrentView("order");
+    window.scrollTo(0, 0);
   }, []);
 
   const handleBackToMenu = useCallback(() => {
     setCurrentView("menu");
     setViewingOrder(null);
+    window.scrollTo(0, 0);
   }, []);
 
   // Memoized callbacks for child components
   const handleViewOrder = useCallback((order: Order) => {
     setViewingOrder(order);
     setCurrentView("order");
+    window.scrollTo(0, 0);
   }, []);
 
   const handleSelectProduct = useCallback((product: Product) => {
