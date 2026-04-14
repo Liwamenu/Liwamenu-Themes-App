@@ -170,17 +170,18 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                   <span className="font-medium text-destructive">{t("orderReceipt.orderCancelled")}</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-between">
-                  {statusSteps.map((step, index) => {
+                <div className="grid grid-cols-3 gap-y-4">
+                  {/* Row 1 (bottom row visually): Pending, Preparing, Delivered */}
+                  {[statusSteps[0], statusSteps[2], statusSteps[4]].map((step) => {
+                    const index = statusSteps.indexOf(step);
                     const isActive = index <= currentStepIndex;
                     const isCurrent = index === currentStepIndex;
                     const stepConfig = statusConfig[step];
-
                     return (
-                      <div key={step} className="flex flex-col items-center flex-1">
+                      <div key={step} className="flex flex-col items-center">
                         <div
                           className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center transition-all",
+                            "w-12 h-12 rounded-full flex items-center justify-center transition-all",
                             isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
                             isCurrent && "ring-4 ring-primary/20",
                           )}
@@ -189,24 +190,45 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                         </div>
                         <span
                           className={cn(
-                            "text-xs mt-2 text-center",
+                            "text-xs mt-2 text-center leading-tight",
                             isActive ? "text-foreground font-medium" : "text-muted-foreground",
                           )}
                         >
                           {stepConfig.label}
                         </span>
-                        {index < statusSteps.length - 1 && (
-                          <div
-                            className={cn(
-                              "absolute h-0.5 w-full top-5 left-1/2",
-                              isActive ? "bg-primary" : "bg-secondary",
-                            )}
-                            style={{ display: "none" }}
-                          />
-                        )}
                       </div>
                     );
                   })}
+                  {/* Row 2 (top row visually): Confirmed, Ready - offset to create zigzag */}
+                  <div className="col-span-3 grid grid-cols-2 gap-y-4 px-[16.67%]">
+                    {[statusSteps[1], statusSteps[3]].map((step) => {
+                      const index = statusSteps.indexOf(step);
+                      const isActive = index <= currentStepIndex;
+                      const isCurrent = index === currentStepIndex;
+                      const stepConfig = statusConfig[step];
+                      return (
+                        <div key={step} className="flex flex-col items-center">
+                          <div
+                            className={cn(
+                              "w-12 h-12 rounded-full flex items-center justify-center transition-all",
+                              isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
+                              isCurrent && "ring-4 ring-primary/20",
+                            )}
+                          >
+                            {stepConfig.icon}
+                          </div>
+                          <span
+                            className={cn(
+                              "text-xs mt-2 text-center leading-tight",
+                              isActive ? "text-foreground font-medium" : "text-muted-foreground",
+                            )}
+                          >
+                            {stepConfig.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
