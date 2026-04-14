@@ -50,7 +50,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       style={{ opacity: scrollOpacity, pointerEvents: scrollOpacity < 0.1 ? "none" : "auto" }}
     >
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 overflow-hidden">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -62,7 +62,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               <span className="text-sm font-bold text-foreground">{restaurant.name?.charAt(0)}</span>
             )}
           </motion.div>
-          <h1 className="font-display text-lg font-bold tracking-widest text-foreground uppercase">
+          <h1 className="font-display text-lg font-bold tracking-widest text-foreground uppercase truncate">
             {restaurant.name}
           </h1>
         </div>
