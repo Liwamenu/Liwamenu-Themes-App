@@ -189,7 +189,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   };
 
   const navigateToReceipt = (code: string) => {
-    const params = new URLSearchParams({
+    const receiptData = {
       restaurantName: restaurant.name,
       restaurantAddress: restaurant.address,
       restaurantPhone: restaurant.phoneNumber,
@@ -202,11 +202,13 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       confirmationCode: code,
       createdAt: new Date().toLocaleString(i18n.language === "en" ? "en-US" : "tr-TR"),
       lang: i18n.language,
-    });
+    };
+
+    sessionStorage.setItem("reservationReceipt", JSON.stringify(receiptData));
 
     resetForm();
     onClose();
-    window.open(`/reservation-receipt?${params.toString()}`, "_blank");
+    window.open(`/reservation-receipt`, "_blank");
   };
 
   const handleSubmit = async () => {
@@ -223,7 +225,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       });
       const data = getResponseData(res);
       const reservation = data?.reservation || data?.Reservation || data;
-      const code = reservation?.confirmationCode || reservation?.id || reservationId || `#${Math.floor(1000 + Math.random() * 9000)}`;
+      const fallbackCode = `#${Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(36)).join('').slice(0, 8).toUpperCase()}`;
+      const code = reservation?.confirmationCode || reservation?.id || reservationId || fallbackCode;
 
       toast.success(t("reservation.success"));
       navigateToReceipt(code);
