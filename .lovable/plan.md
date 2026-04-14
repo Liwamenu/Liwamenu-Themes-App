@@ -1,46 +1,18 @@
 
 
-## Plan: Fetch Restaurant Data from API with Dummy Data Fallback
+## Problem
+In Theme 4, the restaurant name (`h1`) has no width constraint or text wrapping, causing horizontal overflow when the name is long (e.g., "KAHRAMANMARAS").
 
-### Overview
-Add a `GetRestaurantFullByTenant` API call to load restaurant data dynamically. A single toggle variable controls whether to use the API or the existing dummy data. The tenant is determined automatically: `"addis"` in local development, extracted from the URL in production.
+## Fix
+Two changes to `src/themes/theme-4/RestaurantHeader.tsx`:
 
-### Changes
+1. **Line 65**: Add `truncate` or `min-w-0` + `break-words` to the `h1` to prevent overflow. Since `tracking-widest` + `uppercase` makes long names very wide, `truncate` is cleanest — it will ellipsis the name if too long.
 
-**1. `src/lib/api.ts`** -- Add the new endpoint and tenant resolver
-- Add `getRestaurantFull` endpoint: `https://api.liwamenu.com/api/Restaurants/GetRestaurantFullByTenant`
-- Add `USE_DUMMY_DATA` boolean constant (set to `true` by default for dev)
-- Add `getTenant()` helper: returns `"addis"` if `localhost`, otherwise extracts tenant from the URL subdomain or path
+2. **Line 55** (the parent flex container with `gap-3`): Add `min-w-0` and `overflow-hidden` so the flex child can shrink.
 
-**2. `src/hooks/useRestaurant.ts`** -- Add API fetching with loading/error states
-- Expand the Zustand store with: `setRestaurantData`, `isLoading`, `error`, `isInitialized`
-- Add a `useInitializeRestaurant()` hook that:
-  - If `USE_DUMMY_DATA` is `true`: loads from `src/data/restaurant.ts` (current behavior)
-  - If `false`: calls `GET /api/Restaurants/GetRestaurantFullByTenant?tenant={tenant}` on mount
-  - Sets loading/error states accordingly
-- Keep all existing `useRestaurant()` logic unchanged -- it continues reading from the Zustand store
+Specifically:
+- Line 55: `<div className="flex items-center gap-3">` → `<div className="flex items-center gap-3 min-w-0 overflow-hidden">`
+- Line 65: Add `truncate` class to the `h1` → `<h1 className="font-display text-lg font-bold tracking-widest text-foreground uppercase truncate">`
 
-**3. `src/components/menu/MenuPage.tsx`** -- Call the initializer and show loading state
-- Call `useInitializeRestaurant()` at the top of `MenuPage`
-- Show a loading spinner while `isLoading` is true
-- Show an error state if the fetch fails
-
-**4. `src/data/restaurant.ts`** -- No changes, kept as dummy/fallback data
-
-### Tenant Resolution Logic
-```text
-localhost / 127.0.0.1  →  "addis"
-liwamenu.com/addis     →  "addis"  (path-based)
-addis.liwamenu.com     →  "addis"  (subdomain-based)
-```
-
-The `getTenant()` function will check the hostname first. If local, return `"addis"`. Otherwise, extract from the first path segment (e.g., `window.location.pathname.split('/')[1]`). This can be adjusted once you finalize your production URL structure.
-
-### Summary of Files
-| File | Action |
-|------|--------|
-| `src/lib/api.ts` | Add endpoint, `USE_DUMMY_DATA` flag, `getTenant()` |
-| `src/hooks/useRestaurant.ts` | Add `setRestaurantData`, `useInitializeRestaurant()` |
-| `src/components/menu/MenuPage.tsx` | Call initializer, loading/error UI |
-| `src/data/restaurant.ts` | No changes |
+This ensures the name truncates with ellipsis rather than pushing the layout wider.
 
