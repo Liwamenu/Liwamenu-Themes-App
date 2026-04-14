@@ -146,12 +146,12 @@ export function MenuPage() {
 
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return categories;
-    const lowerQuery = searchQuery.toLowerCase();
+    const lowerQuery = String(searchQuery ?? "").toLowerCase();
     return categories
       .map((cat) => ({
         ...cat,
         products: cat.products.filter(
-          (p) => p.name.toLowerCase().includes(lowerQuery) || p.description.toLowerCase().includes(lowerQuery),
+          (p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
