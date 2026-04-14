@@ -170,37 +170,52 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                   <span className="font-medium text-destructive">{t("orderReceipt.orderCancelled")}</span>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-y-4">
-                  {/* Row 1 (bottom row visually): Pending, Preparing, Delivered */}
-                  {[statusSteps[0], statusSteps[2], statusSteps[4]].map((step) => {
-                    const index = statusSteps.indexOf(step);
-                    const isActive = index <= currentStepIndex;
-                    const isCurrent = index === currentStepIndex;
-                    const stepConfig = statusConfig[step];
-                    return (
-                      <div key={step} className="flex flex-col items-center">
-                        <div
-                          className={cn(
-                            "w-12 h-12 rounded-full flex items-center justify-center transition-all",
-                            isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
-                            isCurrent && "ring-4 ring-primary/20",
-                          )}
-                        >
-                          {stepConfig.icon}
+                <div className="relative">
+                  {/* SVG connecting lines */}
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+                    {/* Line: Pending (row1 col1) -> Confirmed (row2 col1) */}
+                    <line x1="16.67%" y1="24" x2="25%" y2="104" className={cn(currentStepIndex >= 1 ? "stroke-primary" : "stroke-secondary")} strokeWidth="3" />
+                    {/* Line: Confirmed (row2 col1) -> Preparing (row1 col2) */}
+                    <line x1="25%" y1="104" x2="50%" y2="24" className={cn(currentStepIndex >= 2 ? "stroke-primary" : "stroke-secondary")} strokeWidth="3" />
+                    {/* Line: Preparing (row1 col2) -> Ready (row2 col2) */}
+                    <line x1="50%" y1="24" x2="75%" y2="104" className={cn(currentStepIndex >= 3 ? "stroke-primary" : "stroke-secondary")} strokeWidth="3" />
+                    {/* Line: Ready (row2 col2) -> Delivered (row1 col3) */}
+                    <line x1="75%" y1="104" x2="83.33%" y2="24" className={cn(currentStepIndex >= 4 ? "stroke-primary" : "stroke-secondary")} strokeWidth="3" />
+                  </svg>
+
+                  {/* Row 1: Pending, Preparing, Delivered */}
+                  <div className="relative grid grid-cols-3 z-10">
+                    {[statusSteps[0], statusSteps[2], statusSteps[4]].map((step) => {
+                      const index = statusSteps.indexOf(step);
+                      const isActive = index <= currentStepIndex;
+                      const isCurrent = index === currentStepIndex;
+                      const stepConfig = statusConfig[step];
+                      return (
+                        <div key={step} className="flex flex-col items-center">
+                          <div
+                            className={cn(
+                              "w-12 h-12 rounded-full flex items-center justify-center transition-all bg-background",
+                              isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
+                              isCurrent && "ring-4 ring-primary/20",
+                            )}
+                          >
+                            {stepConfig.icon}
+                          </div>
+                          <span
+                            className={cn(
+                              "text-xs mt-2 text-center leading-tight",
+                              isActive ? "text-foreground font-medium" : "text-muted-foreground",
+                            )}
+                          >
+                            {stepConfig.label}
+                          </span>
                         </div>
-                        <span
-                          className={cn(
-                            "text-xs mt-2 text-center leading-tight",
-                            isActive ? "text-foreground font-medium" : "text-muted-foreground",
-                          )}
-                        >
-                          {stepConfig.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                  {/* Row 2 (top row visually): Confirmed, Ready - offset to create zigzag */}
-                  <div className="col-span-3 grid grid-cols-2 gap-y-4 px-[16.67%]">
+                      );
+                    })}
+                  </div>
+
+                  {/* Row 2: Confirmed, Ready */}
+                  <div className="relative grid grid-cols-2 z-10 mt-4 px-[16.67%]">
                     {[statusSteps[1], statusSteps[3]].map((step) => {
                       const index = statusSteps.indexOf(step);
                       const isActive = index <= currentStepIndex;
@@ -210,7 +225,7 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                         <div key={step} className="flex flex-col items-center">
                           <div
                             className={cn(
-                              "w-12 h-12 rounded-full flex items-center justify-center transition-all",
+                              "w-12 h-12 rounded-full flex items-center justify-center transition-all bg-background",
                               isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground",
                               isCurrent && "ring-4 ring-primary/20",
                             )}
