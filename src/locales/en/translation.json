@@ -32,7 +32,8 @@
     "callWaiter": "Call Waiter",
     "closedHours": "We are currently outside of working hours.",
     "max": "max",
-    "retry": "Retry"
+    "retry": "Retry",
+    "meters": "meters"
   },
   "errors": {
     "invalidTenant": "Restaurant Not Found",

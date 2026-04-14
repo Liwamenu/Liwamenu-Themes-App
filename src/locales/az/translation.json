@@ -31,7 +31,8 @@
     "callWaiter": "Ofisiant çağır",
     "closedHours": "Hazırda iş saatlarından kənardayıq.",
     "max": "maks",
-    "retry": "Yenidən cəhd et"
+    "retry": "Yenidən cəhd et",
+    "meters": "metr"
   },
   "errors": {
     "invalidTenant": "Restoran tapılmadı",

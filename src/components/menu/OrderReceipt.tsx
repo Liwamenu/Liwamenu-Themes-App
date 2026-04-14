@@ -34,23 +34,15 @@ interface OrderReceiptProps {
   onWaiterSuccess: () => void;
 }
 
-const STATUS_LABELS: Record<Order["status"], string> = {
-  pending: "Pending",
-  confirmed: "Accepted",
-  preparing: "Preparing",
-  ready: "On The Way",
-  delivered: "Delivered",
-  cancelled: "Cancelled",
-};
-
 const getStatusConfig = (
+  t: (key: string) => string
 ): Record<Order["status"], { label: string; icon: React.ReactNode; color: string }> => ({
-  pending: { label: STATUS_LABELS.pending, icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
-  confirmed: { label: STATUS_LABELS.confirmed, icon: <CheckCircle2 className="w-5 h-5" />, color: "text-primary" },
-  preparing: { label: STATUS_LABELS.preparing, icon: <ChefHat className="w-5 h-5" />, color: "text-blue-500" },
-  ready: { label: STATUS_LABELS.ready, icon: <Package className="w-5 h-5" />, color: "text-green-500" },
-  delivered: { label: STATUS_LABELS.delivered, icon: <Truck className="w-5 h-5" />, color: "text-green-600" },
-  cancelled: { label: STATUS_LABELS.cancelled, icon: <XCircle className="w-5 h-5" />, color: "text-destructive" },
+  pending: { label: t("status.pending"), icon: <Clock className="w-5 h-5" />, color: "text-amber-500" },
+  confirmed: { label: t("status.confirmed"), icon: <CheckCircle2 className="w-5 h-5" />, color: "text-primary" },
+  preparing: { label: t("status.preparing"), icon: <ChefHat className="w-5 h-5" />, color: "text-blue-500" },
+  ready: { label: t("status.ready"), icon: <Package className="w-5 h-5" />, color: "text-green-500" },
+  delivered: { label: t("status.delivered"), icon: <Truck className="w-5 h-5" />, color: "text-green-600" },
+  cancelled: { label: t("status.cancelled"), icon: <XCircle className="w-5 h-5" />, color: "text-destructive" },
 });
 
 const statusSteps: Order["status"][] = ["pending", "confirmed", "preparing", "ready", "delivered"];
@@ -63,12 +55,12 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
   // Subscribe to live order from Zustand store
   const order = useOrder((state) => state.orders.find((o) => o.id === orderId));
   
-  const statusConfig = getStatusConfig();
+  const statusConfig = getStatusConfig(t);
   
   if (!order) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Order not found</p>
+        <p className="text-muted-foreground">{t("errors.loadFailed")}</p>
       </div>
     );
   }

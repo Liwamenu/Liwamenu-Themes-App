@@ -31,7 +31,8 @@
     "callWaiter": "Chiama cameriere",
     "closedHours": "Attualmente siamo fuori dall'orario di lavoro.",
     "max": "max",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "meters": "metri"
   },
   "errors": {
     "invalidTenant": "Ristorante non trovato",

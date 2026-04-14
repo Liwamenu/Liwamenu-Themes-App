@@ -31,7 +31,8 @@
     "callWaiter": "呼叫服务员",
     "closedHours": "我们目前不在工作时间。",
     "max": "最大",
-    "retry": "重试"
+    "retry": "重试",
+    "meters": "米"
   },
   "errors": {
     "invalidTenant": "未找到餐厅",

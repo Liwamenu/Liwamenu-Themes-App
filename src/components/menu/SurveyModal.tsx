@@ -248,7 +248,7 @@ export function SurveyModal({
         {/* Custom Close Button */}
         <DialogClose className="absolute right-4 top-8 z-50 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-100 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
           <X className="h-4 w-4 text-red-600 dark:text-red-400" />
-          <span className="sr-only">Kapat</span>
+          <span className="sr-only">{t("common.close")}</span>
         </DialogClose>
         {/* Flying Emojis */}
         <AnimatePresence>

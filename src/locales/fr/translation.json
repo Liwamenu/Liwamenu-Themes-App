@@ -31,7 +31,8 @@
     "callWaiter": "Appeler le serveur",
     "closedHours": "Nous sommes actuellement en dehors des heures d'ouverture.",
     "max": "max",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "meters": "mètres"
   },
   "errors": {
     "invalidTenant": "Restaurant introuvable",

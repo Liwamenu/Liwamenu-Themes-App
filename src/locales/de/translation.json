@@ -31,7 +31,8 @@
     "callWaiter": "Kellner rufen",
     "closedHours": "Wir befinden uns derzeit außerhalb der Öffnungszeiten.",
     "max": "max",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "meters": "Meter"
   },
   "errors": {
     "invalidTenant": "Restaurant nicht gefunden",

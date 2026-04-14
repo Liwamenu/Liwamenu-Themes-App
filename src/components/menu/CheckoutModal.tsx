@@ -158,7 +158,7 @@ export function CheckoutModal({
               if (meters >= 1000) {
                 return `${(meters / 1000).toFixed(1)} km`;
               }
-              return `${Math.round(meters)} ${t("common.meters", { defaultValue: "metre" })}`;
+              return `${Math.round(meters)} ${t("common.meters")}`;
             };
             
             setLocationErrorModal({

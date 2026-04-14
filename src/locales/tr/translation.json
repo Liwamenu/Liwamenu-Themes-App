@@ -32,7 +32,8 @@
     "callWaiter": "Garson Çağır",
     "closedHours": "Şu anda çalışma saatleri dışındayız.",
     "max": "maks",
-    "retry": "Tekrar Dene"
+    "retry": "Tekrar Dene",
+    "meters": "metre"
   },
   "errors": {
     "invalidTenant": "Restoran Bulunamadı",

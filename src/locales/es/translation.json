@@ -31,7 +31,8 @@
     "callWaiter": "Llamar camarero",
     "closedHours": "Actualmente estamos fuera del horario de trabajo.",
     "max": "máx",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "meters": "metros"
   },
   "errors": {
     "invalidTenant": "Restaurante no encontrado",
