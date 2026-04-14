@@ -144,7 +144,7 @@ function StatusZigzag({
   );
 }
 
-
+export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
   const { t } = useTranslation();
   const { restaurant, formatPrice, isCurrentlyOpen } = useRestaurant();
   const [showCallWaiterModal, setShowCallWaiterModal] = useState(false);
