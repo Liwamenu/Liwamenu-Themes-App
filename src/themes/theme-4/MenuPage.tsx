@@ -269,7 +269,7 @@ export function MenuPage() {
   }
 
   return (
-    <div className="theme-4 min-h-screen bg-background pb-20">
+    <div className="theme-4 min-h-screen bg-background pb-20 overflow-x-hidden">
       <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {searchQuery !== null && (
@@ -310,7 +310,7 @@ export function MenuPage() {
                 className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
               />
             )}
-            <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase">
+            <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
               {restaurant.name}
             </h2>
             {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
@@ -329,7 +329,7 @@ export function MenuPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+                <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
                   🔥 {t("menu.campaignProducts")}
                 </h2>
               </div>
@@ -365,7 +365,7 @@ export function MenuPage() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase">
+                    <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
                       {category.name}
                     </h2>
                   </div>
