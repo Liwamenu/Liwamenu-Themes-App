@@ -175,12 +175,16 @@ export function MenuPage() {
     setIsCheckoutOpen(false);
     setViewingOrder(order);
     setCurrentView("order");
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
     window.scrollTo(0, 0);
   }, []);
 
   const handleBackToMenu = useCallback(() => {
     setCurrentView("menu");
     setViewingOrder(null);
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
     window.scrollTo(0, 0);
   }, []);
 
@@ -188,6 +192,8 @@ export function MenuPage() {
   const handleViewOrder = useCallback((order: Order) => {
     setViewingOrder(order);
     setCurrentView("order");
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
     window.scrollTo(0, 0);
   }, []);
 

@@ -131,9 +131,9 @@ export function MenuPage() {
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
-  const handleOrderComplete = useCallback((order: Order) => { setIsCheckoutOpen(false); setViewingOrder(order); setCurrentView("order"); window.scrollTo(0, 0); }, []);
-  const handleBackToMenu = useCallback(() => { setCurrentView("menu"); setViewingOrder(null); window.scrollTo(0, 0); }, []);
-  const handleViewOrder = useCallback((order: Order) => { setViewingOrder(order); setCurrentView("order"); window.scrollTo(0, 0); }, []);
+  const handleOrderComplete = useCallback((order: Order) => { setIsCheckoutOpen(false); setViewingOrder(order); setCurrentView("order"); document.body.style.overflow = ""; document.body.style.paddingRight = ""; window.scrollTo(0, 0); }, []);
+  const handleBackToMenu = useCallback(() => { setCurrentView("menu"); setViewingOrder(null); document.body.style.overflow = ""; document.body.style.paddingRight = ""; window.scrollTo(0, 0); }, []);
+  const handleViewOrder = useCallback((order: Order) => { setViewingOrder(order); setCurrentView("order"); document.body.style.overflow = ""; document.body.style.paddingRight = ""; window.scrollTo(0, 0); }, []);
   const handleSelectProduct = useCallback((product: Product) => setSelectedProduct(product), []);
   const handleCloseProduct = useCallback(() => setSelectedProduct(null), []);
   const handleOpenCart = useCallback(() => setIsCartOpen(true), []);
