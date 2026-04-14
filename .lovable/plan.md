@@ -1,23 +1,56 @@
 
 
 ## Problem
-Theme 4 still has horizontal scrolling despite the header fix. The overflow comes from:
-1. The root page container (`div.theme-4`) has no overflow constraint
-2. The hero section restaurant name (`text-5xl uppercase tracking-wider`) can exceed viewport width on mobile
-3. Category banner titles similarly overflow
+After placing an order, switching to the Order Receipt view does not scroll the page to the top. The user sees the bottom of the receipt (or a non-scrollable state) because:
+1. The scroll position remains wherever it was during checkout
+2. The `overflow: hidden` from the body scroll lock (used during checkout modal) may not be fully cleared before the receipt renders
 
 ## Fix
 
-**File: `src/themes/theme-4/MenuPage.tsx`**
+**All theme MenuPage files** (theme-2, theme-3, theme-4, theme-5, and base `src/components/menu/MenuPage.tsx`):
 
-1. **Line 272** - Add `overflow-x-hidden` to the root container:
-   - `<div className="theme-4 min-h-screen bg-background pb-20">` → `<div className="theme-4 min-h-screen bg-background pb-20 overflow-x-hidden">`
+Add `window.scrollTo(0, 0)` in the `handleOrderComplete` and `handleViewOrder` callbacks so the page scrolls to the top when transitioning to the receipt view.
 
-2. **Line 313** - Make the hero restaurant name responsive and prevent overflow:
-   - Add `break-words px-4 max-w-full` to the `h2` so the long name wraps instead of overflowing
+For example in Theme 3 (`src/themes/theme-3/MenuPage.tsx` line 134):
+```tsx
+// Before
+const handleOrderComplete = useCallback((order: Order) => { 
+  setIsCheckoutOpen(false); setViewingOrder(order); setCurrentView("order"); 
+}, []);
 
-3. **Line 332** - Same treatment for category banner titles:
-   - Add `break-words px-4 max-w-full` to prevent overflow
+// After
+const handleOrderComplete = useCallback((order: Order) => { 
+  setIsCheckoutOpen(false); setViewingOrder(order); setCurrentView("order"); 
+  window.scrollTo(0, 0); 
+}, []);
+```
 
-These three changes will eliminate horizontal scrolling across the entire Theme 4 page.
+Same for `handleViewOrder`:
+```tsx
+// Before
+const handleViewOrder = useCallback((order: Order) => { 
+  setViewingOrder(order); setCurrentView("order"); 
+}, []);
+
+// After  
+const handleViewOrder = useCallback((order: Order) => { 
+  setViewingOrder(order); setCurrentView("order"); 
+  window.scrollTo(0, 0); 
+}, []);
+```
+
+Also add `window.scrollTo(0, 0)` to `handleBackToMenu` so returning to the menu starts from the top:
+```tsx
+const handleBackToMenu = useCallback(() => { 
+  setCurrentView("menu"); setViewingOrder(null); 
+  window.scrollTo(0, 0); 
+}, []);
+```
+
+Apply these three changes to all 5 MenuPage files:
+- `src/components/menu/MenuPage.tsx`
+- `src/themes/theme-2/MenuPage.tsx`
+- `src/themes/theme-3/MenuPage.tsx`
+- `src/themes/theme-4/MenuPage.tsx`
+- `src/themes/theme-5/MenuPage.tsx`
 
