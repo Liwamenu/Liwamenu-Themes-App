@@ -1,18 +1,23 @@
 
 
 ## Problem
-In Theme 4, the restaurant name (`h1`) has no width constraint or text wrapping, causing horizontal overflow when the name is long (e.g., "KAHRAMANMARAS").
+Theme 4 still has horizontal scrolling despite the header fix. The overflow comes from:
+1. The root page container (`div.theme-4`) has no overflow constraint
+2. The hero section restaurant name (`text-5xl uppercase tracking-wider`) can exceed viewport width on mobile
+3. Category banner titles similarly overflow
 
 ## Fix
-Two changes to `src/themes/theme-4/RestaurantHeader.tsx`:
 
-1. **Line 65**: Add `truncate` or `min-w-0` + `break-words` to the `h1` to prevent overflow. Since `tracking-widest` + `uppercase` makes long names very wide, `truncate` is cleanest — it will ellipsis the name if too long.
+**File: `src/themes/theme-4/MenuPage.tsx`**
 
-2. **Line 55** (the parent flex container with `gap-3`): Add `min-w-0` and `overflow-hidden` so the flex child can shrink.
+1. **Line 272** - Add `overflow-x-hidden` to the root container:
+   - `<div className="theme-4 min-h-screen bg-background pb-20">` → `<div className="theme-4 min-h-screen bg-background pb-20 overflow-x-hidden">`
 
-Specifically:
-- Line 55: `<div className="flex items-center gap-3">` → `<div className="flex items-center gap-3 min-w-0 overflow-hidden">`
-- Line 65: Add `truncate` class to the `h1` → `<h1 className="font-display text-lg font-bold tracking-widest text-foreground uppercase truncate">`
+2. **Line 313** - Make the hero restaurant name responsive and prevent overflow:
+   - Add `break-words px-4 max-w-full` to the `h2` so the long name wraps instead of overflowing
 
-This ensures the name truncates with ellipsis rather than pushing the layout wider.
+3. **Line 332** - Same treatment for category banner titles:
+   - Add `break-words px-4 max-w-full` to prevent overflow
+
+These three changes will eliminate horizontal scrolling across the entire Theme 4 page.
 
