@@ -149,7 +149,7 @@ export function MenuPage() {
 
   const handleCloseCallWaiter = useCallback(() => setShowCallWaiter(false), []);
 
-  const handleTableSelected = useCallback((newTable: number) => {
+  const handleTableSelected = useCallback((newTable: string) => {
     setTableNumber(newTable);
     toast.success(t('cart.tableChanged', { table: newTable }));
     setShowTableSelection(false);

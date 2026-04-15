@@ -97,7 +97,7 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
     try {
       await apiCallWaiter({
         restaurantId: restaurant.restaurantId,
-        tableNumber: Number(restaurant.tableNumber),
+        tableNumber: restaurant.tableNumber || '',
         note: reason.trim() || null,
       });
 

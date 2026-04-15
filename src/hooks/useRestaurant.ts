@@ -35,7 +35,7 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error, isLoading: false }),
   setInitialized: (initialized: boolean) => set({ isInitialized: initialized }),
-  setTableNumber: (tableNumber: number) =>
+  setTableNumber: (tableNumber: string) =>
     set((state) => ({
       restaurantData: { ...state.restaurantData, tableNumber },
     })),
