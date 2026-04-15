@@ -289,7 +289,7 @@ export function MenuPage() {
   }, [restaurant.tableNumber, isCurrentlyOpen, t]);
 
   const handleTableSelected = useCallback(
-    (newTable: number) => {
+    (newTable: string) => {
       setTableNumber(newTable);
       toast.success(t("cart.tableChanged", { table: newTable }));
       setShowTableSelection(false);

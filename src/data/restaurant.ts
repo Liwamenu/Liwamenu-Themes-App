@@ -37,7 +37,7 @@ export const restaurantData: FullRestaurantInfo = {
     licenseIsActive: true,
     maxTableOrderDistanceMeter: 500, // 500 metre - test için geçici değer
     checkTableOrderDistance: true,
-    tableNumber: 5, // Test için geçici değer
+    tableNumber: "5", // Test için geçici değer
     moneySign: "₺",
     heroImageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop",
     logoImageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop",
