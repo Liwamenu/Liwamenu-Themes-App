@@ -323,7 +323,7 @@ export function CheckoutModal({
       setIsSubmitting(false);
     }
   };
-  const handleTableChange = (newTableNumber: number) => {
+  const handleTableChange = (newTableNumber: string) => {
     setTableNumber(newTableNumber);
   };
   const showBackButton = step !== "type";

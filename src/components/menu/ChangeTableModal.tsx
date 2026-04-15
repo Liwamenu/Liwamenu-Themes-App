@@ -9,14 +9,14 @@ import { Html5Qrcode } from "html5-qrcode";
 interface ChangeTableModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTableChange: (tableNumber: number) => void;
-  currentTable?: number;
+  onTableChange: (tableNumber: string) => void;
+  currentTable?: string;
 }
 
 export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable }: ChangeTableModalProps) {
   const { t } = useTranslation();
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedTable, setScannedTable] = useState<number | null>(null);
+  const [scannedTable, setScannedTable] = useState<string | null>(null);
   const [scannerError, setScannerError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = "qr-reader";
@@ -52,25 +52,17 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
     }
   };
 
-  const extractTableNumber = (url: string): number | null => {
+  const extractTableNumber = (url: string): string | null => {
     try {
-      // Try to parse as URL first
       const urlObj = new URL(url);
       const tableParam = urlObj.searchParams.get("tableNumber");
-      if (tableParam) {
-        const tableNum = parseInt(tableParam, 10);
-        if (!isNaN(tableNum) && tableNum > 0) {
-          return tableNum;
-        }
+      if (tableParam && tableParam.trim()) {
+        return tableParam.trim();
       }
     } catch {
-      // If not a valid URL, try to find tableNumber pattern directly
-      const match = url.match(/tableNumber=(\d+)/);
-      if (match) {
-        const tableNum = parseInt(match[1], 10);
-        if (!isNaN(tableNum) && tableNum > 0) {
-          return tableNum;
-        }
+      const match = url.match(/tableNumber=([^&]+)/);
+      if (match && match[1].trim()) {
+        return decodeURIComponent(match[1].trim());
       }
     }
     return null;

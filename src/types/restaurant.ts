@@ -154,7 +154,7 @@ export interface RestaurantData {
   licenseIsActive: boolean;
   maxTableOrderDistanceMeter: number;
   checkTableOrderDistance: boolean;
-  tableNumber?: number;
+  tableNumber?: string;
   moneySign?: string | null;
   heroImageUrl: string;
   logoImageUrl: string;
@@ -212,7 +212,7 @@ export interface OrderPayload {
   };
   paymentMethodId?: string;
   paymentMethodName?: string;
-  tableNumber?: number;
+  tableNumber?: string;
   totalAmount: number;
   orderNote?: string;
   createdAt: string;

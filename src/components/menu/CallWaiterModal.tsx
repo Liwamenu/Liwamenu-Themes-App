@@ -26,7 +26,7 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showChangeTableModal, setShowChangeTableModal] = useState(false);
 
-  const handleTableChange = (newTable: number) => {
+  const handleTableChange = (newTable: string) => {
     setTableNumber(newTable);
     toast.success(t('cart.tableChanged', { table: newTable }));
   };

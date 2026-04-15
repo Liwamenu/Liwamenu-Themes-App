@@ -69,7 +69,7 @@ export async function createOnlineOrder(payload: any) {
   });
 }
 
-export async function apiCallWaiter(payload: { restaurantId: string; tableNumber: number; note?: string | null }) {
+export async function apiCallWaiter(payload: { restaurantId: string; tableNumber: string; note?: string | null }) {
   return apiFetch(API_URLS.callWaiter, {
     method: "POST",
     body: JSON.stringify(payload),
