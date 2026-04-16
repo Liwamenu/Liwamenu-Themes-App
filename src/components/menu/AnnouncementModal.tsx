@@ -13,7 +13,17 @@ interface AnnouncementModalProps {
 
 export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: AnnouncementModalProps) => {
   const { t } = useTranslation();
-  const sanitizedHtml = useMemo(() => DOMPurify.sanitize(htmlContent), [htmlContent]);
+
+  // Sanitize and wrap. We render inside a sandboxed iframe so any inline
+  // <script>, external CDN <script>, or window.onload inside the payload
+  // CANNOT touch the parent page (prevents iOS renderer crashes / hangs).
+  const srcDoc = useMemo(() => {
+    const sanitized = DOMPurify.sanitize(htmlContent, { WHOLE_DOCUMENT: true });
+    // If payload is already a full document, use it as-is; otherwise wrap.
+    const isFullDoc = /<html[\s>]/i.test(sanitized) || /<!doctype/i.test(sanitized);
+    if (isFullDoc) return sanitized;
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>html,body{margin:0;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#111;background:transparent;}img{max-width:100%;height:auto;}</style></head><body>${sanitized}</body></html>`;
+  }, [htmlContent]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -47,8 +57,8 @@ export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: Announcement
           >
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-amber-500 to-primary" />
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Close button */}
             <button
@@ -58,11 +68,15 @@ export const AnnouncementModal = ({ isOpen, onClose, htmlContent }: Announcement
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
 
-            {/* Scrollable content */}
-            <div className="relative max-h-[calc(85vh-80px)] overflow-y-auto p-6 pt-8">
-              <div
-                className="announcement-content prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+            {/* Sandboxed iframe — isolates inline scripts and CDN loads */}
+            <div className="relative pt-8">
+              <iframe
+                title="announcement"
+                srcDoc={srcDoc}
+                sandbox="allow-scripts"
+                referrerPolicy="no-referrer"
+                loading="lazy"
+                className="w-full h-[60vh] max-h-[calc(85vh-140px)] border-0 bg-transparent"
               />
             </div>
 

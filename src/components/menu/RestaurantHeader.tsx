@@ -56,6 +56,11 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               src={restaurant.logoImageUrl}
               alt={restaurant.name}
               className="w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              width={96}
+              height={96}
             />
           </div>
 

@@ -57,7 +57,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
             className="w-10 h-10 rounded-full border-2 border-border/30 overflow-hidden flex items-center justify-center bg-muted"
           >
             {logoUrl ? (
-              <img src={logoUrl} alt={restaurant.name} className="w-full h-full object-cover" />
+              <img src={logoUrl} alt={restaurant.name} className="w-full h-full object-cover" loading="eager" decoding="async" fetchPriority="high" width={40} height={40} />
             ) : (
               <span className="text-sm font-bold text-foreground">{restaurant.name?.charAt(0)}</span>
             )}

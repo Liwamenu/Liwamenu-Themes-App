@@ -81,6 +81,9 @@ export const ProductCard = memo(function ProductCard({
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
+          decoding="async"
+          width={100}
+          height={100}
         />
       </div>
 

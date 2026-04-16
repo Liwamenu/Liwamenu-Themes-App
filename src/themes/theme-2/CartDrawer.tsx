@@ -109,7 +109,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
 
                       return (
                         <motion.div key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex gap-4 bg-secondary/30 rounded-2xl p-3 border border-border/50">
-                          <img src={item.product.imageURL} alt={item.product.name} className="w-20 h-20 rounded-xl object-cover" />
+                          <img src={item.product.imageURL} alt={item.product.name} className="w-20 h-20 rounded-xl object-cover" loading="lazy" decoding="async" width={80} height={80} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div>

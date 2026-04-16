@@ -240,7 +240,7 @@ export function MenuPage() {
             {recommendedProducts.slice(0, 5).map((product) => (
               <motion.div key={product.id} whileTap={{ scale: 0.98 }} whileHover={{ y: -4 }} onClick={() => handleSelectProduct(product)} className="flex-shrink-0 w-36 cursor-pointer group">
                 <div className="relative aspect-square rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-                  <img src={product.imageURL} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={product.imageURL} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
                   <div className="absolute bottom-2 left-2 right-2">
                     <p className="text-white text-sm font-medium line-clamp-2 drop-shadow-md">{product.name}</p>
