@@ -7,7 +7,19 @@ interface LocationState {
   loading: boolean;
 }
 
+function normalizeCoord(n: number): number {
+  if (!Number.isFinite(n) || n === 0) return n;
+  const abs = Math.abs(n);
+  if (abs <= 180) return n;
+  const intDigits = Math.floor(Math.log10(abs)) + 1;
+  return n / Math.pow(10, intDigits - 2);
+}
+
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  lat1 = normalizeCoord(lat1);
+  lon1 = normalizeCoord(lon1);
+  lat2 = normalizeCoord(lat2);
+  lon2 = normalizeCoord(lon2);
   const R = 6371; // Radius of the earth in km
   const dLat = deg2rad(lat2 - lat1);
   const dLon = deg2rad(lon2 - lon1);
