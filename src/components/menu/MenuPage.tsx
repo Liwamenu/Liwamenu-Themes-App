@@ -407,18 +407,16 @@ export function MenuPage() {
               <span className="text-sm font-normal text-muted-foreground">({campaignProducts.length})</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <AnimatePresence mode="popLayout">
-                {campaignProducts.map((product) => (
-                  <ProductCard
-                    key={`campaign-${product.id}`}
-                    product={product}
-                    onSelect={handleSelectProduct}
-                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                    specialPriceName={restaurant.specialPriceName}
-                    formatPrice={formatPrice}
-                  />
-                ))}
-              </AnimatePresence>
+              {campaignProducts.map((product) => (
+                <ProductCard
+                  key={`campaign-${product.id}`}
+                  product={product}
+                  onSelect={handleSelectProduct}
+                  isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                  specialPriceName={restaurant.specialPriceName}
+                  formatPrice={formatPrice}
+                />
+              ))}
             </div>
           </section>
         )}
@@ -431,18 +429,16 @@ export function MenuPage() {
               <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <AnimatePresence mode="popLayout">
-                {category.products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onSelect={handleSelectProduct}
-                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                    specialPriceName={restaurant.specialPriceName}
-                    formatPrice={formatPrice}
-                  />
-                ))}
-              </AnimatePresence>
+              {category.products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onSelect={handleSelectProduct}
+                  isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                  specialPriceName={restaurant.specialPriceName}
+                  formatPrice={formatPrice}
+                />
+              ))}
             </div>
           </section>
         ))}
