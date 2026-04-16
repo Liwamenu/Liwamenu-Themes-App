@@ -52,13 +52,9 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "320px" } as React.CSSProperties}
       className="group relative bg-card rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden cursor-pointer"
     >
       {/* Recommendation Badge */}
@@ -86,8 +82,11 @@ export const ProductCard = memo(function ProductCard({
         <img
           src={product.imageURL}
           alt={product.name}
+          width={400}
+          height={300}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
