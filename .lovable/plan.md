@@ -1,66 +1,27 @@
-## Issues
 
-### 1. HTML styles stripped in announcement modal
+## Change
 
-In `src/components/menu/AnnouncementModal.tsx`:
+Remove the `sessionStorage` "hasSeenAnnouncement" gate so the announcement modal shows on every page load/refresh.
 
-```ts
-DOMPurify.sanitize(htmlContent, { WHOLE_DOCUMENT: true })
-```
+## Files to modify
 
-`WHOLE_DOCUMENT: true` expects the input to actually be a complete `<html>` document. When the backend sends a fragment with `<style>` blocks and styled `<div>`s (like the Lezzet Kampanyası HTML in the screenshot), DOMPurify either drops the `<style>` tags or wraps things in a way that breaks the cascade. Result: raw text with browser defaults — exactly what the screenshot shows.
+All 5 theme `MenuPage.tsx` files use the same pattern:
+1. `src/themes/theme-2/MenuPage.tsx`
+2. `src/themes/theme-3/MenuPage.tsx`
+3. `src/themes/theme-4/MenuPage.tsx`
+4. `src/themes/theme-5/MenuPage.tsx`
+5. `src/components/menu/MenuPage.tsx` (theme-1)
 
-Also: the iframe is forced to `h-[60vh]` which clips content and doesn't reflect the announcement's intended sizing.
+## What to change
 
-### 2. Announcement only shows once per session across all themes
+In each file, locate the announcement effect that reads/writes `sessionStorage.getItem("hasSeenAnnouncement")` and:
+- Remove the `sessionStorage.getItem(...)` guard
+- Remove the `sessionStorage.setItem("hasSeenAnnouncement", "true")` call
+- Keep the rest of the trigger logic (delay, `announcementSettings.isActive`, htmlContent presence)
 
-All 5 themes use the same `sessionStorage` key `hasSeenAnnouncement`. That part is correct (one-time per session is the intended UX). The user's perception that it "isn't showing in all themes" is most likely because:
-
-- They saw it once in one theme → sessionStorage flag set → switching themes/refreshing within the session never re-triggers it.
-
-This is actually intentional behavior, but worth confirming.
-
-## Fix
-
-### File: `src/components/menu/AnnouncementModal.tsx`
-
-**A. Stop forcing `WHOLE_DOCUMENT`.** Sanitize as a fragment, then always wrap in our own document shell that preserves `<style>` tags and inline styles:
-
-```ts
-const srcDoc = useMemo(() => {
-  const sanitized = DOMPurify.sanitize(htmlContent, {
-    ADD_TAGS: ["style"],
-    ADD_ATTR: ["style", "target"],
-    FORBID_TAGS: ["script"],
-  });
-  const isFullDoc = /<html[\s>]/i.test(sanitized) || /<!doctype/i.test(sanitized);
-  if (isFullDoc) return sanitized;
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <style>
-      html,body{margin:0;padding:0;background:transparent;
-        font-family:system-ui,-apple-system,'Kumbh Sans',sans-serif;color:#111;
-        word-wrap:break-word;overflow-x:hidden;}
-      *{box-sizing:border-box;}
-      img,video{max-width:100%;height:auto;display:block;}
-      a{color:inherit;}
-    </style></head><body>${sanitized}</body></html>`;
-}, [htmlContent]);
-```
-
-**B. Auto-resize the iframe** to its content height (capped) instead of fixed `60vh`, so the styled banner shows naturally:
-
-- Add `ref` to iframe + `onLoad` handler that measures `iframe.contentDocument.documentElement.scrollHeight` and applies it as inline height (clamped between e.g. `200px` and `calc(85vh - 140px)`).
-- Listen for resize via a `ResizeObserver` on the iframe document body to handle late image loads.
-
-**C. Optional**: confirm sessionStorage semantics. Plan keeps current "once per session" logic — no change unless the user wants per-theme reset.
+Result: every refresh re-triggers the modal as long as the backend has it active.
 
 ## Out of scope
-
-- No theme-level changes (all 5 themes already correctly mount `AnnouncementModal`).
-- No backend change.
-- No new dependency.
-
-## Files modified
-
-1. `src/components/menu/AnnouncementModal.tsx` — sanitization config + iframe auto-height.
+- No changes to `AnnouncementModal.tsx` itself
+- No backend changes
+- Memory `mem://features/announcement-system` will be updated to reflect "per refresh" instead of "once per session"
