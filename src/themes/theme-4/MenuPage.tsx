@@ -303,31 +303,30 @@ export function MenuPage() {
         </div>
       )}
 
-      {!searchQuery && (
-        <div
-          className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
-          style={
-            restaurant.heroImageUrl
-              ? { backgroundImage: `url(${restaurant.heroImageUrl})`, backgroundAttachment: "fixed" }
-              : undefined
-          }
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            {(restaurant as any).logoUrl && (
-              <img
-                src={(restaurant as any).logoUrl}
-                alt={restaurant.name}
-                className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
-              />
-            )}
-            <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
-              {restaurant.name}
-            </h2>
-            {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
+      {!searchQuery && (() => {
+        const heroBg = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
+        return (
+          <div
+            className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
+            style={heroBg ? { backgroundImage: `url(${heroBg})`, backgroundAttachment: "fixed" } : undefined}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              {(restaurant as any).logoUrl && (
+                <img
+                  src={(restaurant as any).logoUrl}
+                  alt={restaurant.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
+                />
+              )}
+              <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
+                {restaurant.name}
+              </h2>
+              {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <div className="pb-8">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (

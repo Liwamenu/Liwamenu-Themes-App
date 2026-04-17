@@ -332,7 +332,7 @@ export function MenuPage() {
     );
   }
 
-  const restaurantHeroImage = restaurant.heroImageUrl || restaurant.imageAbsoluteUrl;
+  const restaurantHeroImage = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
 
   return (
     <div className="theme-5 min-h-screen bg-background">
