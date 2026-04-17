@@ -257,20 +257,18 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
           </div>
 
           {/* Order Status */}
-          {order.orderType === "online" && (
-            <div className="p-6 border-b border-dashed border-border">
-              <h3 className="font-semibold mb-4">{t("orderReceipt.orderStatus")}</h3>
+          <div className="p-6 border-b border-dashed border-border">
+            <h3 className="font-semibold mb-4">{t("orderReceipt.orderStatus")}</h3>
 
-              {isCancelled ? (
-                <div className="flex items-center gap-3 p-4 bg-destructive/10 rounded-xl">
-                  <XCircle className="w-6 h-6 text-destructive" />
-                  <span className="font-medium text-destructive">{t("orderReceipt.orderCancelled")}</span>
-                </div>
-              ) : (
-                <StatusZigzag statusSteps={statusSteps} statusConfig={statusConfig} currentStepIndex={currentStepIndex} />
-              )}
-            </div>
-          )}
+            {isCancelled ? (
+              <div className="flex items-center gap-3 p-4 bg-destructive/10 rounded-xl">
+                <XCircle className="w-6 h-6 text-destructive" />
+                <span className="font-medium text-destructive">{t("orderReceipt.orderCancelled")}</span>
+              </div>
+            ) : (
+              <StatusZigzag statusSteps={statusSteps} statusConfig={statusConfig} currentStepIndex={currentStepIndex} />
+            )}
+          </div>
 
           {/* Customer Info (for online orders) */}
           {order.orderType === "online" && order.customerInfo && (
