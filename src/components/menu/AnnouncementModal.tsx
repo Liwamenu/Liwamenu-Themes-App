@@ -150,8 +150,8 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 sandbox="allow-same-origin allow-scripts allow-popups"
                 referrerPolicy="no-referrer"
                 onLoad={handleIframeLoad}
-                style={{ height: 200 }}
-                className="w-full flex-1 min-h-0 border-0 bg-transparent block"
+                style={{ height: 400 }}
+                className="w-full border-0 bg-transparent block"
               />
 
               <div className="shrink-0 p-3 bg-background/95 backdrop-blur border-t border-border">
