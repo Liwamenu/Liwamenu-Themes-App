@@ -305,10 +305,12 @@ export function MenuPage() {
 
       {!searchQuery && (
         <div
-          className="relative w-full h-[50vh] min-h-[300px] bg-fixed bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${restaurant.heroImageUrl || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=600&fit=crop"})`,
-          }}
+          className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
+          style={
+            restaurant.heroImageUrl
+              ? { backgroundImage: `url(${restaurant.heroImageUrl})`, backgroundAttachment: "fixed" }
+              : undefined
+          }
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -330,12 +332,7 @@ export function MenuPage() {
       <div className="pb-8">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)}>
-            <div
-              className="relative w-full h-[40vh] min-h-[250px] bg-fixed bg-cover bg-center"
-              style={{
-                backgroundImage: `url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop)`,
-              }}
-            >
+            <div className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-campaign/60 to-primary/40">
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
@@ -367,10 +364,12 @@ export function MenuPage() {
             <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)}>
               {!searchQuery && (
                 <div
-                  className="relative w-full h-[40vh] min-h-[250px] bg-fixed bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${category.image || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop"})`,
-                  }}
+                  className="relative w-full h-[40vh] min-h-[250px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
+                  style={
+                    category.image
+                      ? { backgroundImage: `url(${category.image})`, backgroundAttachment: "fixed" }
+                      : undefined
+                  }
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                   <div className="absolute inset-0 flex items-center justify-center">
