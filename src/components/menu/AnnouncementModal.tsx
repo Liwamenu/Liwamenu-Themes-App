@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,64 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
   ({ isOpen, onClose, htmlContent }, ref) => {
     const { t } = useTranslation();
 
+    const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
     const srcDoc = useMemo(() => {
-      const sanitized = DOMPurify.sanitize(htmlContent, { WHOLE_DOCUMENT: true });
+      const sanitized = DOMPurify.sanitize(htmlContent, {
+        ADD_TAGS: ["style"],
+        ADD_ATTR: ["style", "target"],
+        FORBID_TAGS: ["script"],
+      });
       const isFullDoc = /<html[\s>]/i.test(sanitized) || /<!doctype/i.test(sanitized);
       if (isFullDoc) return sanitized;
-      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>html,body{margin:0;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#111;background:transparent;}img{max-width:100%;height:auto;}</style></head><body>${sanitized}</body></html>`;
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>
+        html,body{margin:0;padding:0;background:transparent;font-family:system-ui,-apple-system,'Kumbh Sans',sans-serif;color:#111;word-wrap:break-word;overflow-x:hidden;}
+        *{box-sizing:border-box;}
+        img,video{max-width:100%;height:auto;display:block;}
+        a{color:inherit;}
+      </style></head><body>${sanitized}</body></html>`;
     }, [htmlContent]);
+
+    const resizeIframe = useCallback(() => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+      try {
+        const doc = iframe.contentDocument;
+        if (!doc) return;
+        const height = Math.max(
+          doc.documentElement.scrollHeight,
+          doc.body?.scrollHeight ?? 0
+        );
+        const maxPx = Math.floor(window.innerHeight * 0.85) - 140;
+        const clamped = Math.min(Math.max(height, 200), Math.max(maxPx, 200));
+        iframe.style.height = `${clamped}px`;
+      } catch {
+        // cross-origin or sandbox restriction — keep default
+      }
+    }, []);
+
+    const handleIframeLoad = useCallback(() => {
+      resizeIframe();
+      const iframe = iframeRef.current;
+      const doc = iframe?.contentDocument;
+      if (!doc) return;
+      // Re-measure after late images load
+      const imgs = Array.from(doc.images || []);
+      imgs.forEach((img) => {
+        if (!img.complete) {
+          img.addEventListener("load", resizeIframe, { once: true });
+          img.addEventListener("error", resizeIframe, { once: true });
+        }
+      });
+      try {
+        const ro = new ResizeObserver(() => resizeIframe());
+        if (doc.body) ro.observe(doc.body);
+        (iframe as any)._ro?.disconnect?.();
+        (iframe as any)._ro = ro;
+      } catch {
+        /* noop */
+      }
+    }, [resizeIframe]);
 
     useEffect(() => {
       if (isOpen) {
@@ -66,12 +118,15 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
 
               <div className="relative pt-8">
                 <iframe
+                  ref={iframeRef}
                   title="announcement"
                   srcDoc={srcDoc}
-                  sandbox="allow-scripts"
+                  sandbox="allow-same-origin"
                   referrerPolicy="no-referrer"
                   loading="lazy"
-                  className="w-full h-[60vh] max-h-[calc(85vh-140px)] border-0 bg-transparent"
+                  onLoad={handleIframeLoad}
+                  style={{ height: 200 }}
+                  className="w-full max-h-[calc(85vh-140px)] border-0 bg-transparent overflow-auto"
                 />
               </div>
 
