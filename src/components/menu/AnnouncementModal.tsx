@@ -28,12 +28,23 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
         ALLOW_UNKNOWN_PROTOCOLS: false,
       });
 
-      if (isFullDoc) return sanitized;
-      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>
-        html,body{margin:0;padding:0;background:transparent;word-wrap:break-word;overflow-x:hidden;}
+      // Neutralize min-h-screen / h-screen which would otherwise make the
+      // content always report the iframe viewport height (causing tiny clamps).
+      const heightOverride = `<style>
+        html,body{margin:0!important;padding:0;background:transparent;min-height:0!important;height:auto!important;word-wrap:break-word;overflow-x:hidden;}
+        .min-h-screen,.h-screen{min-height:0!important;height:auto!important;}
         *{box-sizing:border-box;}
         img,video{max-width:100%;height:auto;}
-      </style></head><body>${sanitized}</body></html>`;
+      </style>`;
+
+      if (isFullDoc) {
+        // Inject override into <head> (or before </html> as fallback)
+        if (/<\/head>/i.test(sanitized)) {
+          return sanitized.replace(/<\/head>/i, `${heightOverride}</head>`);
+        }
+        return sanitized.replace(/<html[^>]*>/i, (m) => `${m}<head>${heightOverride}</head>`);
+      }
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${sanitized}</body></html>`;
     }, [htmlContent]);
 
     const resizeIframe = useCallback(() => {
@@ -42,12 +53,17 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       try {
         const doc = iframe.contentDocument;
         if (!doc) return;
+        const body = doc.body;
+        const html = doc.documentElement;
         const height = Math.max(
-          doc.documentElement.scrollHeight,
-          doc.body?.scrollHeight ?? 0
+          body?.scrollHeight ?? 0,
+          body?.offsetHeight ?? 0,
+          html?.scrollHeight ?? 0,
+          html?.offsetHeight ?? 0
         );
-        const maxPx = Math.floor(window.innerHeight * 0.9);
-        const clamped = Math.min(Math.max(height, 200), maxPx);
+        const footerPx = 64;
+        const maxPx = Math.floor(window.innerHeight * 0.9) - footerPx;
+        const clamped = Math.min(Math.max(height, 400), maxPx);
         iframe.style.height = `${clamped}px`;
       } catch {
         // cross-origin or sandbox restriction — keep default
@@ -75,7 +91,11 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       });
 
       try {
-        const ro = new ResizeObserver(() => resizeIframe());
+        let raf = 0;
+        const ro = new ResizeObserver(() => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => resizeIframe());
+        });
         if (doc.body) ro.observe(doc.body);
         (iframe as any)._ro?.disconnect?.();
         (iframe as any)._ro = ro;
@@ -130,8 +150,8 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 sandbox="allow-same-origin allow-scripts allow-popups"
                 referrerPolicy="no-referrer"
                 onLoad={handleIframeLoad}
-                style={{ height: 200 }}
-                className="w-full flex-1 min-h-0 border-0 bg-transparent block"
+                style={{ height: 400 }}
+                className="w-full border-0 bg-transparent block"
               />
 
               <div className="shrink-0 p-3 bg-background/95 backdrop-blur border-t border-border">
