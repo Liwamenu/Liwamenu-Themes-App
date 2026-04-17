@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import DOMPurify from "dompurify";
+import { useTranslation } from "react-i18next";
 
 interface AnnouncementModalProps {
   isOpen: boolean;
