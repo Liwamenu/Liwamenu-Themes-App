@@ -28,12 +28,23 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
         ALLOW_UNKNOWN_PROTOCOLS: false,
       });
 
-      if (isFullDoc) return sanitized;
-      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>
-        html,body{margin:0;padding:0;background:transparent;word-wrap:break-word;overflow-x:hidden;}
+      // Neutralize min-h-screen / h-screen which would otherwise make the
+      // content always report the iframe viewport height (causing tiny clamps).
+      const heightOverride = `<style>
+        html,body{margin:0!important;padding:0;background:transparent;min-height:0!important;height:auto!important;word-wrap:break-word;overflow-x:hidden;}
+        .min-h-screen,.h-screen{min-height:0!important;height:auto!important;}
         *{box-sizing:border-box;}
         img,video{max-width:100%;height:auto;}
-      </style></head><body>${sanitized}</body></html>`;
+      </style>`;
+
+      if (isFullDoc) {
+        // Inject override into <head> (or before </html> as fallback)
+        if (/<\/head>/i.test(sanitized)) {
+          return sanitized.replace(/<\/head>/i, `${heightOverride}</head>`);
+        }
+        return sanitized.replace(/<html[^>]*>/i, (m) => `${m}<head>${heightOverride}</head>`);
+      }
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${sanitized}</body></html>`;
     }, [htmlContent]);
 
     const resizeIframe = useCallback(() => {
