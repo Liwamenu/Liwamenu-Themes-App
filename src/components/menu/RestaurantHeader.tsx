@@ -30,7 +30,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       <div
         className="absolute inset-0 opacity-20"
         style={{
-          backgroundImage: `url(${restaurant.heroImageUrl})`,
+          backgroundImage: `url(${restaurant.imageAbsoluteUrl || restaurant.heroImageUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
