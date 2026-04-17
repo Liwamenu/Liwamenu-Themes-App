@@ -111,7 +111,7 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-md max-h-[90vh] rounded-2xl overflow-hidden bg-transparent shadow-2xl"
+              className="relative w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl overflow-hidden bg-transparent shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -131,8 +131,18 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 referrerPolicy="no-referrer"
                 onLoad={handleIframeLoad}
                 style={{ height: 200 }}
-                className="w-full max-h-[90vh] border-0 bg-transparent block"
+                className="w-full flex-1 min-h-0 border-0 bg-transparent block"
               />
+
+              <div className="shrink-0 p-3 bg-background/95 backdrop-blur border-t border-border">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-full py-2.5 px-4 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 active:scale-[0.98] transition-all"
+                >
+                  {t("common.okay")}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
