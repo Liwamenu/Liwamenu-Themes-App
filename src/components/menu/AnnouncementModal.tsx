@@ -91,7 +91,11 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       });
 
       try {
-        const ro = new ResizeObserver(() => resizeIframe());
+        let raf = 0;
+        const ro = new ResizeObserver(() => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => resizeIframe());
+        });
         if (doc.body) ro.observe(doc.body);
         (iframe as any)._ro?.disconnect?.();
         (iframe as any)._ro = ro;
