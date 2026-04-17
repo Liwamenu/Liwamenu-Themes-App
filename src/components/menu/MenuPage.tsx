@@ -76,12 +76,8 @@ export function MenuPage() {
     const announcementSettings = restaurant.announcementSettings;
     if (!announcementSettings?.enabled) return;
     
-    const hasSeenAnnouncement = sessionStorage.getItem('hasSeenAnnouncement');
-    if (hasSeenAnnouncement) return;
-    
     const timer = setTimeout(() => {
       setShowAnnouncement(true);
-      sessionStorage.setItem('hasSeenAnnouncement', 'true');
     }, announcementSettings.delayMs * 1000);
     
     return () => clearTimeout(timer);
