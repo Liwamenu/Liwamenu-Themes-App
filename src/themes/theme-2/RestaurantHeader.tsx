@@ -28,7 +28,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       {/* Hero Banner */}
       <div className="relative h-64 sm:h-80 overflow-hidden">
         <img
-          src={restaurant.heroImageUrl || restaurant.imageAbsoluteUrl}
+          src={restaurant.imageAbsoluteUrl || restaurant.heroImageUrl}
           alt={restaurant.name}
           className="absolute inset-0 w-full h-full object-cover"
         />
