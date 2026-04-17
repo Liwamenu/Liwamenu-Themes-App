@@ -12,6 +12,7 @@ interface AnnouncementModalProps {
 
 export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalProps>(
   ({ isOpen, onClose, htmlContent }, ref) => {
+    const { t } = useTranslation();
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
     const srcDoc = useMemo(() => {
