@@ -312,9 +312,9 @@ export function MenuPage() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              {(restaurant as any).logoUrl && (
+              {(restaurant.logoImageUrl || (restaurant as any).logoUrl) && (
                 <img
-                  src={(restaurant as any).logoUrl}
+                  src={restaurant.logoImageUrl || (restaurant as any).logoUrl}
                   alt={restaurant.name}
                   className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
                 />
