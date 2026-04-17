@@ -1,28 +1,45 @@
-## Change
 
-Re-add a localized close button ("Tamam" / "Okay") at the bottom of the announcement modal, in addition to the existing top-right X.
+## Issue
 
-## Implementation
+The iframe is rendering but its height is being clamped too small (≈200px), cutting off most of the announcement content. Two root causes:
+
+1. **`flex-1 min-h-0` on the iframe overrides the inline `style.height`** set by `resizeIframe()`. Flexbox `flex-1` forces the iframe to fill available space inside a parent that has no explicit height, so the measured height never sticks.
+2. **Initial height fallback is 200px** and the parent uses `max-h-[90vh]` without a min, so when measurement fails (cross-origin script timing) it stays tiny.
+
+Also, when the inner HTML uses `min-h-screen` / `h-screen` (very common in Tailwind announcement templates), `documentElement.scrollHeight` reports the iframe's own viewport height rather than the content's natural height — so we measure the wrong thing.
+
+## Fix
 
 ### File: `src/components/menu/AnnouncementModal.tsx`
 
-- Below the iframe, add a footer bar inside the modal container with a single button that calls `onClose`.
-- Button label uses i18n: `t("common.okay")` (already exists in `tr/translation.json` as "Tamam" and presumably across other locales — will fallback to "Okay").
-- Style: full-width-ish, centered, rounded, white/translucent background so it sits on top of the transparent shell without fighting backend HTML colors. Use a subtle backdrop (`bg-white/95 backdrop-blur`) so it's readable regardless of the iframe content beneath.  
-Color: Make the button background color same as the theme's primary color(dark/light theme should be considerd)
-- Container layout: switch the modal inner wrapper to `flex flex-col` so iframe takes available space and footer pins below. Cap iframe `max-h` to leave room for the footer (e.g. `calc(90vh - 64px)`).
-- Keep the top-right X button as a secondary dismissal.
+**A. Stop fighting flexbox**
+- Remove `flex-1 min-h-0` from the iframe; let its inline `height` (set by `resizeIframe`) be the source of truth.
+- Remove `flex flex-col` + `max-h-[90vh]` from the outer modal container; instead let the container size to its children. Keep `max-w-md w-full`.
 
-### i18n
+**B. Better measurement**
+- In the injected fragment shell, neutralize `min-h-screen` / `h-screen` by adding CSS:
+  ```css
+  html, body { min-height: 0 !important; height: auto !important; }
+  ```
+- For full-doc HTML, inject the same override via a `<style>` tag appended to `<head>` after sanitization (or via `srcDoc` post-processing).
+- Measure using `Math.max(body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight)`.
+- Raise initial height fallback from 200 → 400.
+- Cap at `window.innerHeight * 0.9` minus footer height (~64px) so the OK button stays visible.
 
-- Verify `common.okay` exists in all 11 locale files; if any are missing, add "Okay"/local equivalent. (TR already has "Tamam".)
+**C. Footer pinning**
+- Keep footer outside the iframe but inside the modal container. Use a wrapper that's `flex flex-col`, iframe gets natural height (not flex-1), footer is `shrink-0`.
+- Add `overflow-y: auto` to the modal container so if content is taller than 90vh the whole modal (iframe + footer) scrolls together — but iframe height is already clamped, so this is a safety net.
+
+**D. ResizeObserver loop fix**
+- Wrap the `ResizeObserver` callback in `requestAnimationFrame` to silence the "ResizeObserver loop completed" runtime error.
+
+### Files to fix forwardRef warnings (quietly, mentioned per instructions only if related)
+- Console shows `AnnouncementModal` and `FlyingEmoji` ref warnings. `AnnouncementModal` already uses `forwardRef` — warning is from theme-2/3/4 wrappers re-exporting via `export { AnnouncementModal } from ...` which is fine; warning likely stale from HMR. Will not touch unless it persists.
 
 ## Out of scope
-
-- No changes to themes, sanitizer, sandbox, or auto-resize logic.
-- No backend/data changes.
+- No theme-level changes
+- No backend or sanitizer changes
+- No new dependencies
 
 ## Files modified
-
-1. `src/components/menu/AnnouncementModal.tsx` — add footer button + flex layout.
-2. Any of the 11 `src/locales/*/translation.json` missing `common.okay` — add the key.
+1. `src/components/menu/AnnouncementModal.tsx` — iframe height strategy + shell CSS overrides + RO rAF wrap.
