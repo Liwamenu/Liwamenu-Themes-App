@@ -53,12 +53,17 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       try {
         const doc = iframe.contentDocument;
         if (!doc) return;
+        const body = doc.body;
+        const html = doc.documentElement;
         const height = Math.max(
-          doc.documentElement.scrollHeight,
-          doc.body?.scrollHeight ?? 0
+          body?.scrollHeight ?? 0,
+          body?.offsetHeight ?? 0,
+          html?.scrollHeight ?? 0,
+          html?.offsetHeight ?? 0
         );
-        const maxPx = Math.floor(window.innerHeight * 0.9);
-        const clamped = Math.min(Math.max(height, 200), maxPx);
+        const footerPx = 64;
+        const maxPx = Math.floor(window.innerHeight * 0.9) - footerPx;
+        const clamped = Math.min(Math.max(height, 400), maxPx);
         iframe.style.height = `${clamped}px`;
       } catch {
         // cross-origin or sandbox restriction — keep default
