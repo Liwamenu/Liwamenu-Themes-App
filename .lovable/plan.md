@@ -1,37 +1,49 @@
 
-## Issue
+## Plan
 
-The Order Status progress block in `src/components/menu/OrderReceipt.tsx` (line 260) is gated by `order.orderType === "online"`. Your test order is `inPerson` (per the network log), so the entire status section + zigzag tracker is skipped.
+### Part A — Add distance check to Call Waiter (parity with in-person ordering)
 
-## Fix
+**File:** `src/components/menu/CallWaiterModal.tsx`
 
-**File:** `src/components/menu/OrderReceipt.tsx` (line 260)
+- Import `useLocation` and `useRestaurant` (already imported).
+- In `handleCallWaiter`, before `apiCallWaiter()`:
+  - If `restaurant.checkTableOrderDistance` is true:
+    - Call `getLocation()`.
+    - Compute distance vs `restaurant.latitude/longitude` with max = `restaurant.maxTableOrderDistanceMeter / 1000`.
+    - If out of range → show toast with formatted distance (reuse the `t("order.tableOrderOutOfRangeDistance", ...)` key already used in CheckoutModal) and abort.
+    - On location permission errors, mirror CheckoutModal's behavior (toast with `order.locationError`).
+- Re-export wrappers in `theme-2/3/4/5/CallWaiterModal.tsx` already pass through, no changes needed.
 
-Remove the `order.orderType === "online"` condition wrapping the Order Status block so the status tracker renders for both in-person and online orders.
+### Part B — Auto-expire stored data after 2 hours
 
-Before:
-```tsx
-{order.orderType === "online" && (
-  <div className="p-6 border-b border-dashed border-border">
-    <h3>{t("orderReceipt.orderStatus")}</h3>
-    {isCancelled ? (...) : <StatusZigzag ... />}
-  </div>
-)}
-```
+**Files:** `src/hooks/useOrder.ts` and `src/hooks/useCart.ts`
 
-After:
-```tsx
-<div className="p-6 border-b border-dashed border-border">
-  <h3>{t("orderReceipt.orderStatus")}</h3>
-  {isCancelled ? (...) : <StatusZigzag ... />}
-</div>
-```
+**Approach:** Add a TTL wrapper around Zustand `persist`, write a `savedAt` timestamp on every state change, and on hydration drop the data if older than 2 hours.
 
-The "Customer Info (delivery details)" block on line 276 stays gated to online — that one is correct, since in-person orders don't have customer info.
+1. **`useOrder.ts`** (already persisted)
+   - Extend state with `savedAt: number`.
+   - In `addOrder` / `updateOrderStatus`, set `savedAt = Date.now()`.
+   - Add `onRehydrateStorage` callback in `persist` config: if `Date.now() - savedAt > 2 * 60 * 60 * 1000`, reset to `{ orders: [], currentOrder: null }`.
+   - Also start a single `setInterval` (e.g. every 60s) inside the module to re-check and clear if expired while the tab stays open.
 
-## Out of scope
-- No changes to status enum, FCM mapping, or theme files (they all import this same `OrderReceipt`).
-- The `forwardRef` console warning is unrelated and pre-existing; not touching unless it reappears.
+2. **`useCart.ts`** (currently in-memory only)
+   - Decide: also persist with same 2h TTL? (recommended — matches user expectation of "session" being 2h).
+   - Wrap with `persist` middleware (`name: 'restaurant-cart'`), store `savedAt`, same TTL eviction logic.
 
-## Files modified
-1. `src/components/menu/OrderReceipt.tsx` — unwrap status block.
+3. **Shared TTL helper** (optional cleanup): create `src/lib/persistTTL.ts` exporting `createTTLStorage(ttlMs)` returning a custom `StateStorage` that wraps `localStorage` and auto-clears expired entries on read. Both hooks then just pass `storage: createTTLStorage(2 * 60 * 60 * 1000)`.
+
+### Open question
+
+For Part A, when the user is out of waiter-call range, should we:
+- (a) Block the call entirely with an error toast (matches in-person order behavior), or
+- (b) Allow the call but show a warning?
+
+Default: (a) — strict block, same as in-person ordering.
+
+### Files modified
+1. `src/components/menu/CallWaiterModal.tsx` — distance gate.
+2. `src/hooks/useOrder.ts` — TTL eviction.
+3. `src/hooks/useCart.ts` — persist + TTL eviction.
+4. `src/lib/persistTTL.ts` (new) — shared TTL storage helper.
+5. `.lovable/memory/features/waiter-call-system-constraints.md` — note the new distance gate.
+6. `.lovable/memory/features/cart/item-merging-logic.md` + `mem://index.md` — note 2h persistence TTL.
