@@ -189,10 +189,10 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   };
 
   const navigateToReceipt = (code: string) => {
-    const receiptData = {
-      restaurantName: restaurant.name,
-      restaurantAddress: restaurant.address,
-      restaurantPhone: restaurant.phoneNumber,
+    const params = new URLSearchParams({
+      restaurantName: restaurant.name ?? "",
+      restaurantAddress: restaurant.address ?? "",
+      restaurantPhone: restaurant.phoneNumber ?? "",
       fullName: formData.fullName,
       phone: formData.phone,
       date: formData.date ? format(formData.date, "yyyy-MM-dd") : "",
@@ -202,13 +202,11 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       confirmationCode: code,
       createdAt: new Date().toLocaleString(i18n.language === "en" ? "en-US" : "tr-TR"),
       lang: i18n.language,
-    };
-
-    sessionStorage.setItem("reservationReceipt", JSON.stringify(receiptData));
+    });
 
     resetForm();
     onClose();
-    window.open(`/reservation-receipt`, "_blank");
+    window.open(`/reservation-receipt?${params.toString()}`, "_blank");
   };
 
   const handleSubmit = async () => {

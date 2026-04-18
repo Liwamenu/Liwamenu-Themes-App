@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { changeLanguage } from "@/lib/i18n";
 
 export default function ReservationReceipt() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const restaurantName = searchParams.get("restaurantName") || "";
   const restaurantAddress = searchParams.get("restaurantAddress") || "";
@@ -123,12 +122,8 @@ export default function ReservationReceipt() {
         <div className="text-center text-xs mt-5">*** {t("reservation.receiptFooter")} ***</div>
       </div>
 
-      <div className="flex gap-3 mt-6 w-full max-w-sm print:hidden">
-        <Button variant="outline" onClick={() => navigate(-1)} className="flex-1 h-12 gap-2">
-          <ArrowLeft className="w-4 h-4" />
-          {t("reservation.goBack")}
-        </Button>
-        <Button onClick={handlePrint} className="flex-1 h-12 gap-2">
+      <div className="mt-6 w-full max-w-sm print:hidden">
+        <Button onClick={handlePrint} className="w-full h-12 gap-2">
           <Printer className="w-4 h-4" />
           {t("common.print")}
         </Button>
