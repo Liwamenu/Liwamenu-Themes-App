@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useRestaurant, useRestaurantStore } from '@/hooks/useRestaurant';
+import { useLocation } from '@/hooks/useLocation';
 import { apiCallWaiter } from '@/lib/api';
 import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
 import { ChangeTableModal } from './ChangeTableModal';
@@ -20,6 +21,7 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
   const setTableNumber = useRestaurantStore((state) => state.setTableNumber);
+  const { getLocation, checkDistanceWithCoords, getDistanceWithCoords } = useLocation();
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -87,12 +89,46 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   const handleCallWaiter = async () => {
     setIsSubmitting(true);
 
-    const payload = {
-      restaurantId: restaurant.restaurantId,
-      tableNumber: restaurant.tableNumber,
-      reason: reason.trim() || undefined,
-      timestamp: new Date().toISOString(),
-    };
+    // Distance gate — parity with in-person ordering
+    if (restaurant.checkTableOrderDistance) {
+      try {
+        const coords = await getLocation();
+        const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
+        const withinRange = checkDistanceWithCoords(
+          coords.latitude,
+          coords.longitude,
+          restaurant.latitude,
+          restaurant.longitude,
+          maxDistanceKm,
+        );
+        if (!withinRange) {
+          const distanceKm = getDistanceWithCoords(
+            coords.latitude,
+            coords.longitude,
+            restaurant.latitude,
+            restaurant.longitude,
+          );
+          const distanceMeters = distanceKm * 1000;
+          const maxMeters = restaurant.maxTableOrderDistanceMeter;
+          const formatDistance = (meters: number) => {
+            if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
+            return `${Math.round(meters)} ${t('common.meters')}`;
+          };
+          toast.error(
+            t('order.tableOrderOutOfRangeDistance', {
+              distance: formatDistance(distanceMeters),
+              max: formatDistance(maxMeters),
+            }),
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      } catch (error) {
+        toast.error(t('order.locationError'));
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     try {
       await apiCallWaiter({
