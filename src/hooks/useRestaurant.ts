@@ -87,8 +87,19 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
 
 // Call this once at app startup (in MenuPage)
 export function useInitializeRestaurant() {
-  const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error } =
+  const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error, setTableNumber } =
     useRestaurantStore();
+
+  // TTL eviction: clear persisted table after 2h and reflect in store
+  useEffect(() => {
+    const cleanup = startTTLEvictionTimer(
+      tableStorageKey(),
+      TWO_HOURS_MS,
+      60_000,
+      () => setTableNumber(''),
+    );
+    return cleanup;
+  }, [setTableNumber]);
 
   useEffect(() => {
     if (USE_DUMMY_DATA || isInitialized) return;
@@ -110,11 +121,17 @@ export function useInitializeRestaurant() {
             throw new Error('INVALID_TENANT');
           }
 
-          // Extract tableNumber from URL query params on first load
+          // Priority: URL param > persisted localStorage > backend value
           const urlParams = new URLSearchParams(window.location.search);
           const tableParam = urlParams.get('tableNumber');
           if (tableParam && tableParam.trim()) {
             restaurantData.tableNumber = tableParam.trim();
+            writePersistedTable(tableParam.trim());
+          } else {
+            const persisted = readPersistedTable();
+            if (persisted) {
+              restaurantData.tableNumber = persisted;
+            }
           }
 
           setRestaurantData(restaurantData);
