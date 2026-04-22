@@ -6,7 +6,13 @@ import { changeLanguage } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
 import { TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 
-const tableStorageKey = (): string => `restaurant-table-${getTenant()}`;
+const tableStorageKey = (): string => {
+  try {
+    return `restaurant-table-${getTenant()}`;
+  } catch {
+    return `restaurant-table-default`;
+  }
+};
 
 function readPersistedTable(): string | null {
   if (typeof window === 'undefined') return null;
@@ -63,12 +69,18 @@ interface RestaurantStore {
   setTableNumber: (tableNumber: string) => void;
 }
 
-export const useRestaurantStore = create<RestaurantStore>((set) => ({
-  restaurantData: (() => {
-    const base = initialRestaurantData.restaurantData;
+function getInitialRestaurantData(): RestaurantData {
+  const base = initialRestaurantData.restaurantData;
+  try {
     const persisted = readPersistedTable();
     return persisted ? { ...base, tableNumber: persisted } : base;
-  })(),
+  } catch {
+    return base;
+  }
+}
+
+export const useRestaurantStore = create<RestaurantStore>((set) => ({
+  restaurantData: getInitialRestaurantData(),
   isLoading: !USE_DUMMY_DATA,
   error: null,
   isInitialized: USE_DUMMY_DATA,
