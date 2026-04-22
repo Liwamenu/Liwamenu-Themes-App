@@ -95,8 +95,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                     {items.map((item) => {
                       const portion = item.portion;
                       let price = portion.price;
-                      if (portion.specialPrice !== null) price = portion.specialPrice;
-                      else if (portion.campaignPrice !== null) price = portion.campaignPrice;
+                      if ((portion.specialPrice ?? 0) > 0) price = portion.specialPrice;
+                      else if ((portion.campaignPrice ?? 0) > 0) price = portion.campaignPrice;
                       const tagTotal = item.selectedTags.reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
                       const itemTotal = (price + tagTotal) * item.quantity;
 

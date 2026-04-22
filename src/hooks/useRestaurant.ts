@@ -191,7 +191,7 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const campaignProducts = useMemo(() => {
-    const all = data.products.filter(p => !p.hide && p.portions.some(portion => portion.campaignPrice !== null));
+    const all = data.products.filter(p => !p.hide && p.portions.some(portion => (portion.campaignPrice ?? 0) > 0));
     if (allowedCategoryIds) {
       const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
       return filtered.length > 0 ? filtered : all;
