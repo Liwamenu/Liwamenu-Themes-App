@@ -4,6 +4,44 @@ import { restaurantData as initialRestaurantData } from '@/data/restaurant';
 import { RestaurantData, Product, WorkingHour } from '@/types/restaurant';
 import { changeLanguage } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
+import { TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
+
+const tableStorageKey = (): string => `restaurant-table-${getTenant()}`;
+
+function readPersistedTable(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(tableStorageKey());
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const savedAt: number | undefined = parsed?.__savedAt;
+    if (typeof savedAt !== 'number' || Date.now() - savedAt > TWO_HOURS_MS) {
+      localStorage.removeItem(tableStorageKey());
+      return null;
+    }
+    const value = typeof parsed?.value === 'string' ? parsed.value.trim() : '';
+    return value || null;
+  } catch {
+    return null;
+  }
+}
+
+function writePersistedTable(value: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const trimmed = (value ?? '').trim();
+    if (!trimmed) {
+      localStorage.removeItem(tableStorageKey());
+      return;
+    }
+    localStorage.setItem(
+      tableStorageKey(),
+      JSON.stringify({ value: trimmed, __savedAt: Date.now() }),
+    );
+  } catch {
+    /* noop */
+  }
+}
 
 export interface Category {
   id: string;
@@ -26,7 +64,11 @@ interface RestaurantStore {
 }
 
 export const useRestaurantStore = create<RestaurantStore>((set) => ({
-  restaurantData: initialRestaurantData.restaurantData,
+  restaurantData: (() => {
+    const base = initialRestaurantData.restaurantData;
+    const persisted = readPersistedTable();
+    return persisted ? { ...base, tableNumber: persisted } : base;
+  })(),
   isLoading: !USE_DUMMY_DATA,
   error: null,
   isInitialized: USE_DUMMY_DATA,
@@ -35,10 +77,12 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error, isLoading: false }),
   setInitialized: (initialized: boolean) => set({ isInitialized: initialized }),
-  setTableNumber: (tableNumber: string) =>
+  setTableNumber: (tableNumber: string) => {
+    writePersistedTable(tableNumber);
     set((state) => ({
       restaurantData: { ...state.restaurantData, tableNumber },
-    })),
+    }));
+  },
 }));
 
 // Call this once at app startup (in MenuPage)
