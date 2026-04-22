@@ -161,8 +161,8 @@ export function SurveyModal({
     spawnEmojis(rating, event);
   };
   const handleSubmit = async () => {
-    // Check if user has any completed orders
-    const hasCompletedOrder = orders.some(order => order.status === 'delivered');
+    // Allow feedback if user has any order in local history (any status)
+    const hasCompletedOrder = orders.length > 0;
     if (!hasCompletedOrder) {
       toast.error(t("survey.noOrderError"));
       return;
