@@ -1,50 +1,53 @@
+## Answer
 
+The survey gate in `src/components/menu/SurveyModal.tsx` (line 165) is:
 
-## Issue
+```ts
+const hasCompletedOrder = orders.some(order => order.status === 'delivered');
+```
 
-`restaurant.tableNumber` is held only in the in-memory Zustand store (`useRestaurantStore`). On page refresh:
+It is **not** checking "verified" or "paid" — it only checks that at least one order in the local Zustand `useOrder` store has `status === 'delivered'`. So:
 
-1. The store re-initializes from `restaurantData` (no table).
-2. `useInitializeRestaurant` reads `tableNumber` only from the **URL query param** (`?tableNumber=...`).
-3. So if the user typed the URL manually and later scanned a QR (or used "Change Table"), the new table is set in memory only — refresh wipes it.
+- Placing an order is not enough.
+- The restaurant (backend) must mark it delivered, AND the FCM `order_status_changed` event must reach this browser to update the local order's status to `delivered`.
+- Local order history also expires after 2h (TTL), so older delivered orders disappear.
 
-## Fix
+## Why your feedback is still blocked
 
-Persist `tableNumber` in `localStorage` with the same 2-hour TTL already used for cart/orders, scoped per tenant so different restaurants don't collide.
+One of these is true:
 
-### File: `src/hooks/useRestaurant.ts`
+1. Your order is still in an earlier status (`pending` / `preparing` / `ready` / `onTheWay`) — not yet `delivered`.
+2. The status update FCM never arrived (Lovable preview iframe blocks FCM token retrieval per `mem://constraints/lovable-preview-limitations`, and notification permission may be denied).
+3. The order was placed >2h ago and the TTL evicted it from `localStorage`.
 
-1. On store creation, read an initial `tableNumber` from `localStorage` (key: `restaurant-table-<tenant>`) if not expired, and merge it into `restaurantData.tableNumber`.
-2. Wrap `setTableNumber` so it also writes `{ value, __savedAt: Date.now() }` to localStorage under the same key (or removes it if value is empty).
-3. In `useInitializeRestaurant`, after fetching `restaurantData`:
-   - Priority order for tableNumber: **URL param** > **persisted localStorage value** > **backend value (none)**.
-   - If URL param is present, write it to localStorage too (so QR-deep-link survives refreshes that drop the query string — though normally the URL stays).
-   - If no URL param but a valid persisted value exists, apply it.
-4. Start a periodic TTL eviction timer (reuse `startTTLEvictionTimer` from `src/lib/persistTTL.ts`) to clear the key after 2h, and also clear from the in-memory store via `setTableNumber("")` on eviction.
+## Options to fix
 
-### Storage key
+Pick one (I'll implement after you choose):
 
-`restaurant-table-<tenant>` where `<tenant>` comes from `getTenant()` in `src/lib/api.ts`. This prevents one tenant's table from leaking to another.
+**A. Keep current rule (delivered only) — no code change.** Just wait for the restaurant to mark the order delivered on a non-preview URL where FCM works.
 
-### TTL
+**B. Relax the rule — allow feedback if any order exists in local history (any status).** One-line change on line 165:
 
-2 hours, matching cart and order history (consistent "session" semantics).
+```ts
+const hasCompletedOrder = orders.length > 0;
+```
 
-### What this also fixes
+**C. Relax to "order placed and not cancelled".** Allow any status except `cancelled`:
 
-- Manual URL entry → QR scan → refresh: table now persists.
-- "Change Table" modal selection: now persists across refreshes.
-- After 2h of inactivity, table is auto-cleared (consistent with cart/order TTL).
+```ts
+const hasCompletedOrder = orders.some(o => o.status !== 'cancelled');
+```
+
+**D. Add a manual fallback — if FCM didn't arrive but the order is older than X minutes, treat as delivered for survey purposes.** More code; bypasses the FCM-in-preview problem.
+
+## Files that would change (for B/C/D)
+
+- `src/components/menu/SurveyModal.tsx` — line 165 condition.
+- `src/themes/theme-5/SurveyModal.tsx` — if it has its own copy (theme-3 and theme-4 just re-export the main one, so they're covered automatically).
 
 ## Out of scope
 
-- No theme changes (all themes consume the same `useRestaurant` hook).
-- No backend changes.
-- URL-based tenant detection unchanged.
-- No UI changes.
-
-## Files modified
-
-1. `src/hooks/useRestaurant.ts` — read/write `tableNumber` to localStorage with 2h TTL, prioritize URL > persisted on init, wrap `setTableNumber` to persist.
-2. `mem://features/qr-code-table-scanning` + `mem://index.md` — note that `tableNumber` is now persisted with 2h TTL per tenant.
-
+- No backend / FCM / type changes.
+- No UI changes to the modal itself.  
+  
+Go with plan B!
