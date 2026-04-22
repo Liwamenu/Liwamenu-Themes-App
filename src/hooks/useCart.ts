@@ -6,10 +6,10 @@ import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/per
 
 // Shared helper to get the correct display price for a portion
 export function getPortionDisplayPrice(portion: Portion, isSpecialPriceActive: boolean): number {
-  if (isSpecialPriceActive && portion.specialPrice !== null) {
+  if (isSpecialPriceActive && (portion.specialPrice ?? 0) > 0) {
     return portion.specialPrice;
   }
-  if (portion.campaignPrice !== null) {
+  if ((portion.campaignPrice ?? 0) > 0) {
     return portion.campaignPrice;
   }
   return portion.price;
