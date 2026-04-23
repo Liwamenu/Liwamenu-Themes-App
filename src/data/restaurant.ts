@@ -138,6 +138,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryImage: "",
         subCategorySortOrder: 1,
         isNoteAllowed: true,
+        isCampaign: true,
         portions: [
           {
             id: "por-001-mercimek-normal",
@@ -311,6 +312,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Ev Yemekleri",
         subCategoryImage: "",
         subCategorySortOrder: 1,
+        isCampaign: true,
         portions: [
           {
             id: "por-005-kuru-standart",
@@ -342,6 +344,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryImage: "",
         subCategorySortOrder: 2,
         isNoteAllowed: true,
+        isCampaign: true,
         portions: [
           {
             id: "por-006-iskender-yarim",
@@ -453,6 +456,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Et Izgara",
         subCategoryImage: "",
         subCategorySortOrder: 1,
+        isCampaign: true,
         portions: [
           {
             id: "por-008-adana-1sis",
@@ -553,6 +557,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Et Izgara",
         subCategoryImage: "",
         subCategorySortOrder: 1,
+        isCampaign: true,
         portions: [
           {
             id: "por-009-urfa-1sis",
@@ -674,6 +679,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Burger",
         subCategoryImage: "",
         subCategorySortOrder: 1,
+        isCampaign: true,
         portions: [
           {
             id: "por-012-hamburger-tek",
@@ -876,6 +882,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Pizza",
         subCategoryImage: "",
         subCategorySortOrder: 2,
+        isCampaign: true,
         portions: [
           {
             id: "por-014-pizza-orta",
@@ -997,6 +1004,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: "Sütlü",
         subCategoryImage: "",
         subCategorySortOrder: 2,
+        isCampaign: true,
         portions: [
           {
             id: "por-017-sutlac-kase",
@@ -1118,6 +1126,7 @@ export const restaurantData: FullRestaurantInfo = {
         subCategoryName: null,
         subCategoryImage: null,
         subCategorySortOrder: 0,
+        isCampaign: true,
         portions: [
           {
             id: "por-020-cola-330",
