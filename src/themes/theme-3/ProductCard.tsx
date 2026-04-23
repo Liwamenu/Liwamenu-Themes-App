@@ -13,9 +13,9 @@ interface ProductCardProps {
   formatPrice: (price: number) => string;
 }
 
-function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean) {
-  const hasSpecial = isSpecialPriceActive && (portion.specialPrice ?? 0) > 0;
-  const hasCampaign = (portion.campaignPrice ?? 0) > 0;
+function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
+  const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -43,7 +43,7 @@ export const ProductCard = memo(function ProductCard({
 }: ProductCardProps) {
   const { t } = useTranslation();
   const firstPortion = product.portions[0];
-  const { displayPrice, originalPrice, priceType } = getPriceDisplay(firstPortion, isSpecialPriceActive);
+  const { displayPrice, originalPrice, priceType } = getPriceDisplay(firstPortion, isSpecialPriceActive, !!product.isCampaign);
   const hasMultiplePortions = product.portions.length > 1;
 
   const handleClick = useCallback(() => {
