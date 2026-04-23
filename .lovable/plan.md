@@ -1,53 +1,56 @@
-## Answer
 
-The survey gate in `src/components/menu/SurveyModal.tsx` (line 165) is:
 
+## Goal
+
+Switch campaign detection from "price > 0" to the new product-level `isCampaign` flag, and allow displaying special/campaign prices even when they equal 0 (only `null`/`undefined` means "not set").
+
+## New rules
+
+**Campaign active for a portion when:**
+- `product.isCampaign === true` AND
+- `portion.campaignPrice != null` (0 is allowed, only null/undefined excluded)
+
+**Special active for a portion when:**
+- `restaurantData.isSpecialPriceActive === true` AND
+- `portion.specialPrice != null` (0 is allowed)
+
+**Priority unchanged:** special > campaign > normal.
+
+## Type change
+
+`src/types/restaurant.ts` — add to `Product`:
 ```ts
-const hasCompletedOrder = orders.some(order => order.status === 'delivered');
+isCampaign?: boolean;
 ```
 
-It is **not** checking "verified" or "paid" — it only checks that at least one order in the local Zustand `useOrder` store has `status === 'delivered'`. So:
+## Helper signature change
 
-- Placing an order is not enough.
-- The restaurant (backend) must mark it delivered, AND the FCM `order_status_changed` event must reach this browser to update the local order's status to `delivered`.
-- Local order history also expires after 2h (TTL), so older delivered orders disappear.
+All `getPriceDisplay(portion, isSpecialPriceActive)` helpers gain a third arg `isCampaign: boolean`. `useCart.getPortionDisplayPrice` likewise gains `isCampaign`; `getTotal` passes `item.product.isCampaign`.
 
-## Why your feedback is still blocked
-
-One of these is true:
-
-1. Your order is still in an earlier status (`pending` / `preparing` / `ready` / `onTheWay`) — not yet `delivered`.
-2. The status update FCM never arrived (Lovable preview iframe blocks FCM token retrieval per `mem://constraints/lovable-preview-limitations`, and notification permission may be denied).
-3. The order was placed >2h ago and the TTL evicted it from `localStorage`.
-
-## Options to fix
-
-Pick one (I'll implement after you choose):
-
-**A. Keep current rule (delivered only) — no code change.** Just wait for the restaurant to mark the order delivered on a non-preview URL where FCM works.
-
-**B. Relax the rule — allow feedback if any order exists in local history (any status).** One-line change on line 165:
-
+New condition pattern (replaces every `(x ?? 0) > 0` campaign/special check):
 ```ts
-const hasCompletedOrder = orders.length > 0;
+const hasSpecial  = isSpecialPriceActive && portion.specialPrice != null;
+const hasCampaign = !!isCampaign && portion.campaignPrice != null;
 ```
 
-**C. Relax to "order placed and not cancelled".** Allow any status except `cancelled`:
+## Files to edit
 
-```ts
-const hasCompletedOrder = orders.some(o => o.status !== 'cancelled');
-```
-
-**D. Add a manual fallback — if FCM didn't arrive but the order is older than X minutes, treat as delivered for survey purposes.** More code; bypasses the FCM-in-preview problem.
-
-## Files that would change (for B/C/D)
-
-- `src/components/menu/SurveyModal.tsx` — line 165 condition.
-- `src/themes/theme-5/SurveyModal.tsx` — if it has its own copy (theme-3 and theme-4 just re-export the main one, so they're covered automatically).
+1. `src/types/restaurant.ts` — add `isCampaign?: boolean` on `Product`.
+2. `src/hooks/useCart.ts` — update `getPortionDisplayPrice` signature + `null` checks; update `getTotal` to pass `item.product.isCampaign`.
+3. `src/hooks/useRestaurant.ts` — `campaignProducts` filter becomes `p.isCampaign && p.portions.some(po => po.campaignPrice != null)`.
+4. `src/components/menu/ProductCard.tsx` — null check + pass `product.isCampaign`.
+5. `src/components/menu/ProductDetailModal.tsx` — same.
+6. `src/components/menu/CheckoutModal.tsx` — `unitPrice` uses `campaignPrice` only when `item.product.isCampaign && campaignPrice != null`; same for special.
+7. `src/themes/theme-2/ProductCard.tsx`, `theme-2/CartDrawer.tsx` — same.
+8. `src/themes/theme-3/ProductCard.tsx`, `theme-3/ProductDetailModal.tsx`, `theme-3/CartDrawer.tsx` — same.
+9. `src/themes/theme-4/ProductCard.tsx`, `theme-4/ProductDetailModal.tsx`, `theme-4/CartDrawer.tsx` — same.
+10. `src/themes/theme-5/ProductCard.tsx` — same.
+11. `src/data/restaurant.ts` — add `isCampaign: true` to dummy products that already define a `campaignPrice` so preview matches.
+12. `mem://features/campaign-products/system-and-ui` + `mem://index.md` — note campaign is driven by `product.isCampaign` flag; `null` (not 0) means "no special/campaign price".
 
 ## Out of scope
 
-- No backend / FCM / type changes.
-- No UI changes to the modal itself.  
-  
-Go with plan B!
+- No UI/visual changes — only the gating condition + null-vs-zero semantics.
+- No backend / API changes.
+- Special price activation toggle (`isSpecialPriceActive`) unchanged.
+
