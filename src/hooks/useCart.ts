@@ -4,12 +4,18 @@ import { CartItem, Product, Portion, SelectedTagItem } from '@/types/restaurant'
 import { useRestaurantStore } from '@/hooks/useRestaurant';
 import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 
-// Shared helper to get the correct display price for a portion
-export function getPortionDisplayPrice(portion: Portion, isSpecialPriceActive: boolean): number {
-  if (isSpecialPriceActive && (portion.specialPrice ?? 0) > 0) {
+// Shared helper to get the correct display price for a portion.
+// Campaign is gated by the product-level `isCampaign` flag.
+// `null`/`undefined` means "not set" — `0` is a valid price value.
+export function getPortionDisplayPrice(
+  portion: Portion,
+  isSpecialPriceActive: boolean,
+  isCampaign?: boolean,
+): number {
+  if (isSpecialPriceActive && portion.specialPrice != null) {
     return portion.specialPrice;
   }
-  if ((portion.campaignPrice ?? 0) > 0) {
+  if (isCampaign && portion.campaignPrice != null) {
     return portion.campaignPrice;
   }
   return portion.price;
@@ -106,7 +112,7 @@ export const useCart = create<CartState>()(
         const items = get().items;
         const isSpecialPriceActive = useRestaurantStore.getState().restaurantData.isSpecialPriceActive;
         return items.reduce((total, item) => {
-          const price = getPortionDisplayPrice(item.portion, isSpecialPriceActive);
+          const price = getPortionDisplayPrice(item.portion, isSpecialPriceActive, item.product.isCampaign);
           const tagTotal = item.selectedTags.reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
           return total + ((price + tagTotal) * item.quantity);
         }, 0);

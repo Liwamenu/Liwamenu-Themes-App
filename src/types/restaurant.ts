@@ -48,6 +48,7 @@ export interface Product {
   subCategoryImage: string | null;
   subCategorySortOrder: number;
   isNoteAllowed?: boolean;
+  isCampaign?: boolean;
   portions: Portion[];
 }
 
