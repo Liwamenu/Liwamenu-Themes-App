@@ -134,6 +134,7 @@ export interface RestaurantData {
   address: string;
   isActive: boolean;
   imageAbsoluteUrl: string;
+  userIsActive?: boolean;
   defaultLang: string;
   slogan1: string;
   slogan2: string;
