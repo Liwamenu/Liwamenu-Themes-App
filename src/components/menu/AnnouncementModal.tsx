@@ -14,8 +14,15 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
   ({ isOpen, onClose, htmlContent }, ref) => {
     const { t } = useTranslation();
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
+    const timeoutsRef = useRef<number[]>([]);
+
+    const clearPendingTimeouts = useCallback(() => {
+      timeoutsRef.current.forEach((id) => clearTimeout(id));
+      timeoutsRef.current = [];
+    }, []);
 
     const srcDoc = useMemo(() => {
+      if (!isOpen) return "";
       const isFullDoc = /<html[\s>]/i.test(htmlContent) || /<!doctype/i.test(htmlContent);
 
       // Permissive sanitization — user explicitly opted in to allow scripts
@@ -45,7 +52,7 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
         return sanitized.replace(/<html[^>]*>/i, (m) => `${m}<head>${heightOverride}</head>`);
       }
       return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${sanitized}</body></html>`;
-    }, [htmlContent]);
+    }, [htmlContent, isOpen]);
 
     const resizeIframe = useCallback(() => {
       const iframe = iframeRef.current;
@@ -71,6 +78,7 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
     }, []);
 
     const handleIframeLoad = useCallback(() => {
+      clearPendingTimeouts();
       resizeIframe();
       const iframe = iframeRef.current;
       const doc = iframe?.contentDocument;
@@ -87,7 +95,8 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
 
       // Tailwind CDN / async stylesheets inject styles after load — re-measure a few times
       [100, 400, 1000, 2000].forEach((delay) => {
-        setTimeout(resizeIframe, delay);
+        const id = window.setTimeout(resizeIframe, delay);
+        timeoutsRef.current.push(id);
       });
 
       try {
@@ -102,7 +111,16 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       } catch {
         /* noop */
       }
-    }, [resizeIframe]);
+    }, [resizeIframe, clearPendingTimeouts]);
+
+    useEffect(() => {
+      return () => {
+        clearPendingTimeouts();
+        const iframe = iframeRef.current as any;
+        iframe?._ro?.disconnect?.();
+        if (iframe) iframe._ro = null;
+      };
+    }, [clearPendingTimeouts]);
 
     useEffect(() => {
       if (isOpen) {
@@ -149,6 +167,7 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 srcDoc={srcDoc}
                 sandbox="allow-same-origin allow-scripts allow-popups"
                 referrerPolicy="no-referrer"
+                loading="lazy"
                 onLoad={handleIframeLoad}
                 style={{ height: 400 }}
                 className="w-full border-0 bg-transparent block"

@@ -22,6 +22,7 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
+import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 
@@ -126,6 +127,14 @@ export function MenuPage() {
       .map((cat) => ({ ...cat, products: cat.products.filter((p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery)) }))
       .filter((cat) => cat.products.length > 0);
   }, [categories, searchQuery]);
+
+  const isCampaignActive = activeCategory === '__campaign__';
+  const visibleCategories = useMemo(
+    () => (isCampaignActive ? [] : filteredCategories),
+    [isCampaignActive, filteredCategories],
+  );
+  const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
+  const { slicedCategories, sentinelRef, hasMore } = useInfiniteProducts(visibleCategories, resetKey);
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
@@ -240,30 +249,30 @@ export function MenuPage() {
               <span className="text-sm font-normal text-muted-foreground">({campaignProducts.length})</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <AnimatePresence mode="popLayout">
-                {campaignProducts.map((product) => (
-                  <ProductCard key={`campaign-${product.id}`} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
-                ))}
-              </AnimatePresence>
+              {campaignProducts.map((product) => (
+                <ProductCard key={`campaign-${product.id}`} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
+              ))}
             </div>
           </section>
         )}
 
-        {activeCategory !== CAMPAIGN_CATEGORY_ID && filteredCategories.map((category) => (
+        {activeCategory !== CAMPAIGN_CATEGORY_ID && slicedCategories.map((category) => (
           <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)} className="mb-8">
             <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
               {category.name}
               <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <AnimatePresence mode="popLayout">
-                {category.products.map((product) => (
-                  <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
-                ))}
-              </AnimatePresence>
+              {category.products.map((product) => (
+                <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
+              ))}
             </div>
           </section>
         ))}
+
+        {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
+          <div ref={sentinelRef} aria-hidden="true" className="h-10" />
+        )}
 
         {filteredCategories.length === 0 && searchQuery && (
           <div className="text-center py-12">
