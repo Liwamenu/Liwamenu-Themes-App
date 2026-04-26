@@ -4,7 +4,6 @@ import { Product } from "@/types/restaurant";
 interface CategoryLike {
   id: string;
   products: Product[];
-  [k: string]: unknown;
 }
 
 const PAGE_SIZE = 50;
