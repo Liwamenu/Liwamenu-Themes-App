@@ -1,48 +1,102 @@
-## Why mobile crashes only on some restaurants (themes 3 & 4)
-
-The crashes are caused by **CSS that's fine on desktop but pathological on mobile GPUs**, and only triggers on restaurants with **many categories or large hero/category images**. That's why your phone crashes on some restaurants and not others, and why your desktop never crashes.
-
-### Root cause #1 — Theme 4: `background-attachment: fixed` everywhere
-`src/themes/theme-4/MenuPage.tsx`:
-- Line 308: hero banner (`50vh`) uses `backgroundAttachment: "fixed"` with `restaurant.imageAbsoluteUrl`
-- Line 366: **every category section banner** (`40vh`) uses `backgroundAttachment: "fixed"` with `category.image`
-
-A restaurant with 8 categories renders **9 large fixed-attachment background images** stacked on one page. iOS Safari and mobile Chrome repaint the entire viewport on every scroll frame for fixed backgrounds — combined GPU memory blows past the per-tab limit (~200–400 MB on iOS) and the tab is killed. This is a long-known mobile killer (`-webkit-overflow-scrolling` interaction) and matches the "only on mobile, only some restaurants" pattern exactly.
-
-### Root cause #2 — Theme 3: stacked backdrop-blur over scrolling content
-`src/themes/theme-3/MenuPage.tsx`:
-- Line 181: sticky header uses `backdrop-blur-lg` (large radius, expensive)
-- Line 224: every recommended-product chip uses `backdrop-blur-sm`
-- Plus modal overlays also use `backdrop-blur-sm`
-
-`backdrop-filter: blur()` re-samples the layer beneath every frame. A sticky `backdrop-blur-lg` over a scrolling menu with many product cards is enough to push low-end mobile devices over the edge, especially combined with the AnnouncementModal iframe.
-
-### Why "only some restaurants"
-Both failure modes scale with **number of categories** and **size of `restaurant.imageAbsoluteUrl` / `category.image`**. Restaurants with few categories or small images survive; restaurants with many categories and large hero images crash.
+## Goal
+Stop mobile browser crashes (iOS/Android, Safari/Chrome) on Themes 3 and 4 for restaurants with very large menus, by reducing simultaneously-mounted DOM nodes, decoded images, and GPU layers.
 
 ---
 
-## Proposed fix (CSS/markup only, no logic changes)
+### 1. Infinite scroll rendering (Themes 3 & 4)
 
-### Theme 4 — `src/themes/theme-4/MenuPage.tsx`
-1. **Remove `backgroundAttachment: "fixed"` from the hero banner** (line 308). Keep the background image but let it scroll normally. Optionally simulate the parallax feel with a cheap `transform: translateZ(0)` wrapper — but plain scroll is the safe choice.
-2. **Remove `backgroundAttachment: "fixed"` from every category banner** (line 366). Same rationale — this is the multiplier that kills mobile.
-3. Optionally add `loading="lazy"` semantics by switching the category banners from `background-image` to a real `<img>` with `loading="lazy"` so off-screen banners aren't decoded until needed. (Recommended but optional — happy to defer.)
+Replace the current "render every product in every category" approach with a **scroll-triggered progressive renderer**.
 
-### Theme 3 — `src/themes/theme-3/MenuPage.tsx`
-1. **Downgrade the sticky search header** from `backdrop-blur-lg` to a solid `bg-background` (no blur). Removes the per-frame re-sample.
-2. **Drop `backdrop-blur-sm` from the recommended-product label chip** (line 224) — replace with a slightly stronger solid `bg-black/80` so the text stays readable without the blur cost.
+- Default visible product count: **50**.
+- When the user nears the bottom of the list (IntersectionObserver sentinel ~600px before end), load the **next 50**.
+- Continue until all filtered products are rendered.
+- Reset the counter back to 50 whenever:
+  - `searchQuery` changes,
+  - `activeCategory` changes (incl. switching to/from the `__campaign__` tab),
+  - `categories` reference changes (tenant reload).
 
-### Out of scope
-- Not touching `AnnouncementModal.tsx` (declined previously).
-- Not touching modal overlays' `backdrop-blur-sm` — these only render while a modal is open, so they aren't on the always-on hot path.
-- No changes to themes 1, 2, 5 — they don't show the issue.
+**Implementation detail (both `theme-3/MenuPage.tsx` and `theme-4/MenuPage.tsx`)**:
+- Build a single flat list `[{ category, product }, ...]` from `filteredCategories` in the order they currently render.
+- Slice `[0, displayCount]` and group back by category for rendering, so category headers/banners only appear if at least one of their products is in the visible slice.
+- Use a hidden `<div ref={sentinelRef} />` after the last rendered section; an `IntersectionObserver` with `rootMargin: "600px"` increments `displayCount` by 50.
+- Disconnect the observer when `displayCount >= total`.
 
-### Expected result
-- Mobile tabs stop crashing on theme-4 restaurants regardless of category count or image size.
-- Theme-3 scrolling becomes noticeably smoother on low-end Android.
-- Visual change is minimal: hero/category banners scroll with the page instead of pinning (a parallax effect most users don't notice on mobile, since iOS Safari already silently disables `background-attachment: fixed` in many contexts).
+This keeps the existing scroll-spy category highlighting working (it reads `categoryRefs` which only exist for mounted sections — acceptable, the active category just updates as more sections mount).
 
-### Files to edit
-- `src/themes/theme-4/MenuPage.tsx` (2 small style changes)
-- `src/themes/theme-3/MenuPage.tsx` (2 small className changes)
+---
+
+### 2. Remove expensive Framer Motion `layout` animations from product grids
+
+In Themes 3 and 4, the product grids currently wrap every card in `<AnimatePresence mode="popLayout">` and the cards themselves use `layout` + `initial/animate/exit`. With 200+ cards this is a major source of mobile memory pressure and main-thread work.
+
+- `src/themes/theme-3/ProductCard.tsx` and `src/themes/theme-4/ProductCard.tsx`:
+  - Drop `layout`, `initial`, `animate`, `exit`, `whileHover`. Keep only `whileTap={{ scale: 0.98 }}` (cheap, transform-only).
+- `src/themes/theme-3/MenuPage.tsx` and `src/themes/theme-4/MenuPage.tsx`:
+  - Remove `<AnimatePresence mode="popLayout">` wrappers around the product grid maps. Render plain children.
+
+Also add CSS containment hints to the cards (matches what Theme 1 already does):
+```tsx
+style={{ contentVisibility: "auto", containIntrinsicSize: "320px" } as React.CSSProperties}
+```
+This lets the browser skip rendering off-screen cards entirely.
+
+---
+
+### 3. Theme 4 category banner image optimization
+
+Theme 4 currently uses a CSS `background-image: url(...)` on every category banner. Browsers eagerly decode all of them when the section mounts.
+
+- Replace each category banner's CSS `background-image` with a real `<img loading="lazy" decoding="async" />` positioned absolutely behind the gradient overlay.
+- Same for the campaign banner if it ever uses an image.
+- Hero banner (top of page) stays as `background-image` (only one).
+
+This pairs with the infinite-scroll change above: banners for not-yet-rendered sections never decode.
+
+---
+
+### 4. Theme 4 remaining `backdrop-blur`
+
+`src/themes/theme-4/MenuPage.tsx` line ~282 still uses `bg-background/95 backdrop-blur-sm` on the sticky search bar. Replace with solid `bg-background border-b border-border`. Same for any other `backdrop-blur*` in Theme 4 that sits on a scrolling parent.
+
+---
+
+### 5. Harden `AnnouncementModal` ResizeObserver / timers
+
+`src/components/menu/AnnouncementModal.tsx` currently:
+- schedules `setTimeout(resizeIframe, ...)` at 100/400/1000/2000ms with no clearing,
+- attaches `ResizeObserver` but only disconnects on the next iframe load,
+- keeps the iframe mounted even when `isOpen` is false (component returns null inside `AnimatePresence`, but `srcDoc` is computed regardless).
+
+Changes:
+- Track timeout IDs in a ref array; on `handleIframeLoad` re-entry and on unmount, clear all pending timeouts.
+- On unmount, call `(iframe as any)._ro?.disconnect?.()` and null it out.
+- Only compute `srcDoc` and render the `<iframe>` when `isOpen` is true (gate with the existing `AnimatePresence` so the iframe element is actually unmounted on close → frees memory + stops the Tailwind CDN runtime).
+- Add `loading="lazy"` to the iframe.
+
+Behavior is unchanged for the user; memory is reclaimed cleanly between opens.
+
+---
+
+### 6. Files to edit
+
+- `src/themes/theme-3/MenuPage.tsx` — infinite scroll, drop AnimatePresence/layout, sentinel observer.
+- `src/themes/theme-3/ProductCard.tsx` — drop layout animations, add `contentVisibility`.
+- `src/themes/theme-4/MenuPage.tsx` — infinite scroll, drop AnimatePresence/layout, sentinel observer, replace banner background-image with `<img loading="lazy">`, replace remaining `backdrop-blur`.
+- `src/themes/theme-4/ProductCard.tsx` — drop layout animations, add `contentVisibility`.
+- `src/components/menu/AnnouncementModal.tsx` — timeout cleanup, observer cleanup on unmount, gate iframe mount on `isOpen`.
+
+### 7. Out of scope / preserved
+
+- Existing memory rules (announcement shows once per `restaurantData` config, etc.) are preserved.
+- Themes 1, 2, 5 are not modified.
+- Search filtering, category scroll-spy, campaign tab, and all ordering flows continue to work unchanged.
+- Cart, checkout, receipts, modals — untouched.
+
+### 8. Validation after implementation
+
+- On a large-menu tenant (200+ products), open Themes 3 and 4 on mobile and verify:
+  - Initial paint shows ~50 products.
+  - Scrolling smoothly loads the next 50 without visible jank.
+  - Switching category resets to first 50 of the new category.
+  - Searching resets to 50 results and grows on scroll.
+  - Announcement modal opens, closes, and re-opens on reload without leaking memory (no console "ResizeObserver loop" warnings).
