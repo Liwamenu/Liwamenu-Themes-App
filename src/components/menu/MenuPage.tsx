@@ -13,6 +13,7 @@ import { OrderReceipt } from "@/components/menu/OrderReceipt";
 import { Footer } from "@/components/menu/Footer";
 import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { AnnouncementModal } from "@/components/menu/AnnouncementModal";
@@ -378,7 +379,7 @@ export function MenuPage() {
                 className="flex-shrink-0 w-40 cursor-pointer"
               >
                 <div className="relative aspect-square rounded-[4px] overflow-hidden mb-2">
-                  <img src={product.imageURL} alt={product.name} width={160} height={160} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                  <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} width={160} height={160} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
                   <span className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm text-white text-sm font-light text-center line-clamp-2 px-2 py-1 rounded-[4px]">
                     {product.name}

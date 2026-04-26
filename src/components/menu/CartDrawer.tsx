@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
 import { useCart, getCartItemDisplayPrice } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
+import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -152,7 +153,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                           className="flex gap-4 bg-secondary/50 rounded-2xl p-3"
                         >
                           <img
-                            src={item.product.imageURL}
+                            src={getProductImageSrc(item.product.imageURL)}
+                            onError={handleProductImageError}
                             alt={item.product.name}
                             className="w-20 h-20 rounded-xl object-cover"
                           />

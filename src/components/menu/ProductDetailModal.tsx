@@ -9,6 +9,7 @@ import { useFlyingEmoji } from '@/hooks/useFlyingEmoji';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { toast } from 'sonner';
 
 interface ProductDetailModalProps {
@@ -217,7 +218,8 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         {/* Header Image */}
         <div className="relative h-56">
           <img
-            src={product.imageURL}
+            src={getProductImageSrc(product.imageURL)}
+            onError={handleProductImageError}
             alt={product.name}
             width={800}
             height={448}
