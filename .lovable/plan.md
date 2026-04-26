@@ -1,72 +1,48 @@
-## Goal
+## Why mobile crashes only on some restaurants (themes 3 & 4)
 
-Extend the existing `hide` gate in `ThemeRouter` so the themes are also blocked (with the same localized "Menu Unavailable" style message) when **any** of the following is true:
+The crashes are caused by **CSS that's fine on desktop but pathological on mobile GPUs**, and only triggers on restaurants with **many categories or large hero/category images**. That's why your phone crashes on some restaurants and not others, and why your desktop never crashes.
 
-- `restaurantData.hide === true` (already handled)
-- `restaurantData.isActive === false` (restaurant disabled)
-- `restaurantData.userIsActive === false` (account owner disabled) — **new field**
-- `restaurantData.licenseIsActive === false` (license expired/inactive)
+### Root cause #1 — Theme 4: `background-attachment: fixed` everywhere
+`src/themes/theme-4/MenuPage.tsx`:
+- Line 308: hero banner (`50vh`) uses `backgroundAttachment: "fixed"` with `restaurant.imageAbsoluteUrl`
+- Line 366: **every category section banner** (`40vh`) uses `backgroundAttachment: "fixed"` with `category.image`
 
-In all these cases, render the same fallback UI used today for `hide` (no themes, no header, no menu) — language picked from browser → `menuLang` → English.
+A restaurant with 8 categories renders **9 large fixed-attachment background images** stacked on one page. iOS Safari and mobile Chrome repaint the entire viewport on every scroll frame for fixed backgrounds — combined GPU memory blows past the per-tab limit (~200–400 MB on iOS) and the tab is killed. This is a long-known mobile killer (`-webkit-overflow-scrolling` interaction) and matches the "only on mobile, only some restaurants" pattern exactly.
 
-## Why one shared fallback
+### Root cause #2 — Theme 3: stacked backdrop-blur over scrolling content
+`src/themes/theme-3/MenuPage.tsx`:
+- Line 181: sticky header uses `backdrop-blur-lg` (large radius, expensive)
+- Line 224: every recommended-product chip uses `backdrop-blur-sm`
+- Plus modal overlays also use `backdrop-blur-sm`
 
-Same UX intent ("this menu can't be shown right now") and same data signal source. Keeps logic centralized in `ThemeRouter` (single source of truth) instead of leaking into every theme.
+`backdrop-filter: blur()` re-samples the layer beneath every frame. A sticky `backdrop-blur-lg` over a scrolling menu with many product cards is enough to push low-end mobile devices over the edge, especially combined with the AnnouncementModal iframe.
 
-## Type change
+### Why "only some restaurants"
+Both failure modes scale with **number of categories** and **size of `restaurant.imageAbsoluteUrl` / `category.image`**. Restaurants with few categories or small images survive; restaurants with many categories and large hero images crash.
 
-`src/types/restaurant.ts` — add to `RestaurantData`:
-```ts
-userIsActive?: boolean;
-```
-(Optional to stay backward-compatible with current backend payloads. Treated as `true` when omitted, so existing tenants keep working.)
+---
 
-## Logic change
+## Proposed fix (CSS/markup only, no logic changes)
 
-`src/themes/ThemeRouter.tsx`:
+### Theme 4 — `src/themes/theme-4/MenuPage.tsx`
+1. **Remove `backgroundAttachment: "fixed"` from the hero banner** (line 308). Keep the background image but let it scroll normally. Optionally simulate the parallax feel with a cheap `transform: translateZ(0)` wrapper — but plain scroll is the safe choice.
+2. **Remove `backgroundAttachment: "fixed"` from every category banner** (line 366). Same rationale — this is the multiplier that kills mobile.
+3. Optionally add `loading="lazy"` semantics by switching the category banners from `background-image` to a real `<img>` with `loading="lazy"` so off-screen banners aren't decoded until needed. (Recommended but optional — happy to defer.)
 
-1. Destructure the new flags from the store:
-   ```ts
-   const { themeId, products, hide, menuLang, isActive, licenseIsActive, userIsActive } =
-     useRestaurantStore(useShallow((s) => ({
-       themeId: s.restaurantData.themeId,
-       products: s.restaurantData.products,
-       hide: s.restaurantData.hide,
-       menuLang: s.restaurantData.menuLang,
-       isActive: s.restaurantData.isActive,
-       licenseIsActive: s.restaurantData.licenseIsActive,
-       userIsActive: s.restaurantData.userIsActive,
-     })));
-   ```
-2. Compute one combined gate:
-   ```ts
-   const isBlocked =
-     hide ||
-     isActive === false ||
-     licenseIsActive === false ||
-     userIsActive === false; // undefined => allowed
-   ```
-3. Replace `if (hide) return <HiddenRestaurantFallback ... />;` with `if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} />;`
+### Theme 3 — `src/themes/theme-3/MenuPage.tsx`
+1. **Downgrade the sticky search header** from `backdrop-blur-lg` to a solid `bg-background` (no blur). Removes the per-frame re-sample.
+2. **Drop `backdrop-blur-sm` from the recommended-product label chip** (line 224) — replace with a slightly stronger solid `bg-black/80` so the text stays readable without the blur cost.
 
-No changes to `HIDDEN_MESSAGES` — same copy for all blocked reasons (per request: "just show a message based on the browser language").
+### Out of scope
+- Not touching `AnnouncementModal.tsx` (declined previously).
+- Not touching modal overlays' `backdrop-blur-sm` — these only render while a modal is open, so they aren't on the always-on hot path.
+- No changes to themes 1, 2, 5 — they don't show the issue.
 
-## `useRestaurant.isRestaurantActive`
+### Expected result
+- Mobile tabs stop crashing on theme-4 restaurants regardless of category count or image size.
+- Theme-3 scrolling becomes noticeably smoother on low-end Android.
+- Visual change is minimal: hero/category banners scroll with the page instead of pinning (a parallax effect most users don't notice on mobile, since iOS Safari already silently disables `background-attachment: fixed` in many contexts).
 
-Already returns `data.isActive && data.licenseIsActive && !data.hide`. Update to also factor `userIsActive` so downstream cart/checkout gates stay consistent:
-```ts
-return data.isActive && data.licenseIsActive && data.userIsActive !== false && !data.hide;
-```
-
-## Files to edit
-
-1. `src/types/restaurant.ts` — add `userIsActive?: boolean` to `RestaurantData`.
-2. `src/themes/ThemeRouter.tsx` — pull new flags from store, compute `isBlocked`, render fallback for any blocked reason.
-3. `src/hooks/useRestaurant.ts` — include `userIsActive !== false` in `isRestaurantActive` memo.
-4. `mem://architecture/error-and-empty-state-handling` + `mem://index.md` — note that the `ThemeRouter` block-gate now covers `hide`, `isActive`, `licenseIsActive`, and `userIsActive`.
-
-## Out of scope
-
-- No new translations or per-reason messages — single shared "Menu Unavailable" copy.
-- No backend / API changes.
-- No theme-internal UI changes.
-- Dummy data in `src/data/restaurant.ts` stays as-is (all flags already true / field optional).
+### Files to edit
+- `src/themes/theme-4/MenuPage.tsx` (2 small style changes)
+- `src/themes/theme-3/MenuPage.tsx` (2 small className changes)
