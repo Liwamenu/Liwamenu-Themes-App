@@ -121,7 +121,7 @@ export function MenuPage() {
     () => (isCampaignActive ? [] : filteredCategories),
     [isCampaignActive, filteredCategories],
   );
-  const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
+  const resetKey = `${searchQuery}|${categories.length}`;
   const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
 
   const scrollToCategory = useCallback((categoryId: string) => {
