@@ -22,6 +22,39 @@ const themeComponents: Record<number, React.LazyExoticComponent<React.ComponentT
 
 const DEFAULT_THEME_ID = 0;
 
+const HIDDEN_MESSAGES: Record<string, { title: string; desc: string }> = {
+  tr: { title: "Menü Şu Anda Kullanılamıyor", desc: "Bu restoranın menüsü şu anda kullanıma kapalıdır. Lütfen daha sonra tekrar deneyin." },
+  en: { title: "Menu Unavailable", desc: "This restaurant's menu is currently unavailable. Please check back later." },
+  de: { title: "Menü Nicht Verfügbar", desc: "Das Menü dieses Restaurants ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut." },
+  fr: { title: "Menu Indisponible", desc: "Le menu de ce restaurant est actuellement indisponible. Veuillez réessayer plus tard." },
+  it: { title: "Menu Non Disponibile", desc: "Il menu di questo ristorante non è attualmente disponibile. Si prega di riprovare più tardi." },
+  es: { title: "Menú No Disponible", desc: "El menú de este restaurante no está disponible en este momento. Por favor, inténtelo más tarde." },
+  ar: { title: "القائمة غير متوفرة", desc: "قائمة هذا المطعم غير متوفرة حاليًا. يرجى المحاولة لاحقًا." },
+  az: { title: "Menyu Əlçatan Deyil", desc: "Bu restoranın menyusu hazırda əlçatan deyil. Zəhmət olmasa daha sonra yenidən cəhd edin." },
+  ru: { title: "Меню Недоступно", desc: "Меню этого ресторана в настоящее время недоступно. Пожалуйста, зайдите позже." },
+  el: { title: "Το Μενού Δεν Είναι Διαθέσιμο", desc: "Το μενού αυτού του εστιατορίου δεν είναι διαθέσιμο αυτή τη στιγμή. Παρακαλώ δοκιμάστε ξανά αργότερα." },
+  zh: { title: "菜单不可用", desc: "该餐厅的菜单目前不可用。请稍后再试。" },
+};
+
+function HiddenRestaurantFallback({ menuLang }: { menuLang?: string }) {
+  const browserLang = (typeof navigator !== "undefined" ? navigator.language : "").slice(0, 2).toLowerCase();
+  const fallbackLang = (menuLang ?? "tr").toLowerCase();
+  const msg =
+    HIDDEN_MESSAGES[browserLang] ?? HIDDEN_MESSAGES[fallbackLang] ?? HIDDEN_MESSAGES.en;
+  const dir = browserLang === "ar" ? "rtl" : "ltr";
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6" dir={dir}>
+      <div className="text-center space-y-6 max-w-md">
+        <div className="text-6xl">🚫</div>
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold text-foreground">{msg.title}</h1>
+          <p className="text-muted-foreground text-sm">{msg.desc}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LoadingFallback() {
   const { t } = useTranslation();
   return (
@@ -90,10 +123,12 @@ function EmptyMenuFallback() {
 
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
-  const { themeId, products } = useRestaurantStore(
+  const { themeId, products, hide, menuLang } = useRestaurantStore(
     useShallow((s) => ({
       themeId: s.restaurantData.themeId,
       products: s.restaurantData.products,
+      hide: s.restaurantData.hide,
+      menuLang: s.restaurantData.menuLang,
     }))
   );
 
@@ -106,6 +141,7 @@ export function ThemeRouter() {
 
   if (isLoading) return <LoadingFallback />;
   if (error) return <ErrorFallback error={error} />;
+  if (hide) return <HiddenRestaurantFallback menuLang={menuLang} />;
   if (!products || products.length === 0) return <EmptyMenuFallback />;
 
   const resolvedThemeId = themeId ?? DEFAULT_THEME_ID;
