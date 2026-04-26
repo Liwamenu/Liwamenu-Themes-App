@@ -56,7 +56,8 @@
     "myOrder": "My Order",
     "recommended": "Recommended",
     "campaignProducts": "Campaign Products",
-    "noResults": "No results for \"{{query}}\""
+    "noResults": "No results for \"{{query}}\"",
+    "loadingMore": "Loading more…"
   },
   "cart": {
     "title": "My Cart",
