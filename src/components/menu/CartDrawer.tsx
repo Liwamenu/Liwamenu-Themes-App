@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
-import { useCart, getPortionDisplayPrice } from '@/hooks/useCart';
+import { useCart, getCartItemDisplayPrice } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -138,7 +138,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                 ) : (
                   <AnimatePresence mode="popLayout">
                     {items.map((item) => {
-                      const price = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive, item.product.isCampaign);
+                      const price = getCartItemDisplayPrice(item, restaurant.isSpecialPriceActive);
                       const tagTotal = item.selectedTags.reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
                       const itemTotal = (price + tagTotal) * item.quantity;
 
