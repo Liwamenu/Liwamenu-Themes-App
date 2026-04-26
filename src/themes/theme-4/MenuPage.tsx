@@ -347,18 +347,16 @@ export function MenuPage() {
             </div>
             <div className="max-w-5xl mx-auto px-4 pt-10 pb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
-                <AnimatePresence mode="popLayout">
-                  {campaignProducts.map((product) => (
-                    <ProductCard
-                      key={`campaign-${product.id}`}
-                      product={product}
-                      onSelect={handleSelectProduct}
-                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                      specialPriceName={restaurant.specialPriceName}
-                      formatPrice={formatPrice}
-                    />
-                  ))}
-                </AnimatePresence>
+                {campaignProducts.map((product) => (
+                  <ProductCard
+                    key={`campaign-${product.id}`}
+                    product={product}
+                    onSelect={handleSelectProduct}
+                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                    specialPriceName={restaurant.specialPriceName}
+                    formatPrice={formatPrice}
+                  />
+                ))}
               </div>
             </div>
           </section>
