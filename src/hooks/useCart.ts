@@ -21,6 +21,22 @@ export function getPortionDisplayPrice(
   return portion.price;
 }
 
+export function getCartItemDisplayPrice(
+  item: CartItem,
+  isSpecialPriceActive: boolean,
+): number {
+  const liveProduct = useRestaurantStore
+    .getState()
+    .restaurantData.products.find((product) => product.id === item.product.id);
+  const livePortion = liveProduct?.portions.find((portion) => portion.id === item.portion.id);
+
+  return getPortionDisplayPrice(
+    livePortion ?? item.portion,
+    isSpecialPriceActive,
+    liveProduct?.isCampaign ?? item.product.isCampaign,
+  );
+}
+
 interface CartState {
   items: CartItem[];
   addItem: (product: Product, portion: Portion, selectedTags: SelectedTagItem[], quantity?: number, note?: string) => void;
@@ -112,7 +128,7 @@ export const useCart = create<CartState>()(
         const items = get().items;
         const isSpecialPriceActive = useRestaurantStore.getState().restaurantData.isSpecialPriceActive;
         return items.reduce((total, item) => {
-          const price = getPortionDisplayPrice(item.portion, isSpecialPriceActive, item.product.isCampaign);
+          const price = getCartItemDisplayPrice(item, isSpecialPriceActive);
           const tagTotal = item.selectedTags.reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
           return total + ((price + tagTotal) * item.quantity);
         }, 0);
