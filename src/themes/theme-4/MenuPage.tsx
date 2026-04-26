@@ -20,6 +20,7 @@ import { FlyingEmoji } from "./FlyingEmoji";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
+import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 
@@ -154,6 +155,14 @@ export function MenuPage() {
       .filter((cat) => cat.products.length > 0);
   }, [categories, searchQuery]);
 
+  const isCampaignActive = activeCategory === "__campaign__";
+  const visibleCategories = useMemo(
+    () => (isCampaignActive ? [] : filteredCategories),
+    [isCampaignActive, filteredCategories],
+  );
+  const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
+  const { slicedCategories, sentinelRef, hasMore } = useInfiniteProducts(visibleCategories, resetKey);
+
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
   const handleOrderComplete = useCallback((order: Order, orderType: "inPerson" | "online") => {
@@ -279,7 +288,7 @@ export function MenuPage() {
       <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {searchQuery !== null && (
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="sticky top-0 z-40 bg-background border-b border-border">
           <div className="max-w-5xl mx-auto px-4 py-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -356,17 +365,20 @@ export function MenuPage() {
         )}
 
         {activeCategory !== CAMPAIGN_CATEGORY_ID &&
-          filteredCategories.map((category) => (
+          slicedCategories.map((category) => (
             <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)}>
               {!searchQuery && (
-                <div
-                  className="relative w-full h-[40vh] min-h-[250px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
-                  style={
-                    category.image
-                      ? { backgroundImage: `url(${category.image})` }
-                      : undefined
-                  }
-                >
+                <div className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden">
+                  {category.image && (
+                    <img
+                      src={category.image}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
@@ -383,22 +395,24 @@ export function MenuPage() {
                   </h2>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
-                  <AnimatePresence mode="popLayout">
-                    {category.products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onSelect={handleSelectProduct}
-                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                        specialPriceName={restaurant.specialPriceName}
-                        formatPrice={formatPrice}
-                      />
-                    ))}
-                  </AnimatePresence>
+                  {category.products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={handleSelectProduct}
+                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                      specialPriceName={restaurant.specialPriceName}
+                      formatPrice={formatPrice}
+                    />
+                  ))}
                 </div>
               </div>
             </section>
           ))}
+
+        {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
+          <div ref={sentinelRef} aria-hidden="true" className="h-10" />
+        )}
 
         {filteredCategories.length === 0 && searchQuery && (
           <div className="text-center py-12">
