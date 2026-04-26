@@ -281,7 +281,9 @@ export function MenuPage() {
         ))}
 
         {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
-          <div ref={sentinelRef} aria-hidden="true" className="h-10" />
+          <div ref={sentinelRef} className="min-h-[60vh] flex items-start justify-center pt-8">
+            <span className="text-sm text-muted-foreground">{t("menu.loadingMore", { defaultValue: "Loading more…" })}</span>
+          </div>
         )}
 
         {filteredCategories.length === 0 && searchQuery && (
