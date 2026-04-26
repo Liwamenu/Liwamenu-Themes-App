@@ -243,6 +243,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     setStep("form");
     setVerificationCode("");
     setReservationId("");
+    setPhoneCountry("TR");
+    setPhoneSubscriber("");
     setFormData({
       fullName: "",
       phone: "",
@@ -255,7 +257,10 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   };
 
   const handleClose = () => {
-    resetForm();
+    // Preserve form data when closing so user doesn't lose what they typed.
+    // Only return to the form step if they were mid-verification.
+    setStep("form");
+    setVerificationCode("");
     onClose();
   };
 
