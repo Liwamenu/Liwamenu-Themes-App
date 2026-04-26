@@ -178,7 +178,7 @@ export function MenuPage() {
       <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {/* Search Bar */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg">
+      <div className="sticky top-0 z-50 bg-background">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
             <div className="relative flex-1">
@@ -221,7 +221,7 @@ export function MenuPage() {
                 <div className="relative aspect-square rounded-[4px] overflow-hidden mb-2">
                   <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
-                  <span className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm text-white text-sm font-light text-center line-clamp-2 px-2 py-1 rounded-[4px]">
+                  <span className="absolute bottom-2 left-2 right-2 bg-black/80 text-white text-sm font-light text-center line-clamp-2 px-2 py-1 rounded-[4px]">
                     {product.name}
                   </span>
                 </div>
