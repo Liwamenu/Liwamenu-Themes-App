@@ -172,7 +172,12 @@ export function useRestaurant() {
   const { restaurantData: data, setTableNumber } = useRestaurantStore();
 
   const isRestaurantActive = useMemo(() => {
-    return data.isActive && data.licenseIsActive && !data.hide;
+    return (
+      data.isActive &&
+      data.licenseIsActive &&
+      data.userIsActive !== false &&
+      !data.hide
+    );
   }, [data]);
 
   const getCurrentWorkingHour = useMemo((): WorkingHour | null => {

@@ -123,14 +123,18 @@ function EmptyMenuFallback() {
 
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
-  const { themeId, products, hide, menuLang } = useRestaurantStore(
-    useShallow((s) => ({
-      themeId: s.restaurantData.themeId,
-      products: s.restaurantData.products,
-      hide: s.restaurantData.hide,
-      menuLang: s.restaurantData.menuLang,
-    }))
-  );
+  const { themeId, products, hide, menuLang, isActive, licenseIsActive, userIsActive } =
+    useRestaurantStore(
+      useShallow((s) => ({
+        themeId: s.restaurantData.themeId,
+        products: s.restaurantData.products,
+        hide: s.restaurantData.hide,
+        menuLang: s.restaurantData.menuLang,
+        isActive: s.restaurantData.isActive,
+        licenseIsActive: s.restaurantData.licenseIsActive,
+        userIsActive: s.restaurantData.userIsActive,
+      }))
+    );
 
   // Initialize Firebase messaging once restaurant data is loaded
   useEffect(() => {
@@ -141,7 +145,12 @@ export function ThemeRouter() {
 
   if (isLoading) return <LoadingFallback />;
   if (error) return <ErrorFallback error={error} />;
-  if (hide) return <HiddenRestaurantFallback menuLang={menuLang} />;
+  const isBlocked =
+    hide ||
+    isActive === false ||
+    licenseIsActive === false ||
+    userIsActive === false;
+  if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} />;
   if (!products || products.length === 0) return <EmptyMenuFallback />;
 
   const resolvedThemeId = themeId ?? DEFAULT_THEME_ID;

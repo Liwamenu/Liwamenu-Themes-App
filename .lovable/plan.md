@@ -1,56 +1,72 @@
-
-
 ## Goal
 
-Switch campaign detection from "price > 0" to the new product-level `isCampaign` flag, and allow displaying special/campaign prices even when they equal 0 (only `null`/`undefined` means "not set").
+Extend the existing `hide` gate in `ThemeRouter` so the themes are also blocked (with the same localized "Menu Unavailable" style message) when **any** of the following is true:
 
-## New rules
+- `restaurantData.hide === true` (already handled)
+- `restaurantData.isActive === false` (restaurant disabled)
+- `restaurantData.userIsActive === false` (account owner disabled) — **new field**
+- `restaurantData.licenseIsActive === false` (license expired/inactive)
 
-**Campaign active for a portion when:**
-- `product.isCampaign === true` AND
-- `portion.campaignPrice != null` (0 is allowed, only null/undefined excluded)
+In all these cases, render the same fallback UI used today for `hide` (no themes, no header, no menu) — language picked from browser → `menuLang` → English.
 
-**Special active for a portion when:**
-- `restaurantData.isSpecialPriceActive === true` AND
-- `portion.specialPrice != null` (0 is allowed)
+## Why one shared fallback
 
-**Priority unchanged:** special > campaign > normal.
+Same UX intent ("this menu can't be shown right now") and same data signal source. Keeps logic centralized in `ThemeRouter` (single source of truth) instead of leaking into every theme.
 
 ## Type change
 
-`src/types/restaurant.ts` — add to `Product`:
+`src/types/restaurant.ts` — add to `RestaurantData`:
 ```ts
-isCampaign?: boolean;
+userIsActive?: boolean;
 ```
+(Optional to stay backward-compatible with current backend payloads. Treated as `true` when omitted, so existing tenants keep working.)
 
-## Helper signature change
+## Logic change
 
-All `getPriceDisplay(portion, isSpecialPriceActive)` helpers gain a third arg `isCampaign: boolean`. `useCart.getPortionDisplayPrice` likewise gains `isCampaign`; `getTotal` passes `item.product.isCampaign`.
+`src/themes/ThemeRouter.tsx`:
 
-New condition pattern (replaces every `(x ?? 0) > 0` campaign/special check):
+1. Destructure the new flags from the store:
+   ```ts
+   const { themeId, products, hide, menuLang, isActive, licenseIsActive, userIsActive } =
+     useRestaurantStore(useShallow((s) => ({
+       themeId: s.restaurantData.themeId,
+       products: s.restaurantData.products,
+       hide: s.restaurantData.hide,
+       menuLang: s.restaurantData.menuLang,
+       isActive: s.restaurantData.isActive,
+       licenseIsActive: s.restaurantData.licenseIsActive,
+       userIsActive: s.restaurantData.userIsActive,
+     })));
+   ```
+2. Compute one combined gate:
+   ```ts
+   const isBlocked =
+     hide ||
+     isActive === false ||
+     licenseIsActive === false ||
+     userIsActive === false; // undefined => allowed
+   ```
+3. Replace `if (hide) return <HiddenRestaurantFallback ... />;` with `if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} />;`
+
+No changes to `HIDDEN_MESSAGES` — same copy for all blocked reasons (per request: "just show a message based on the browser language").
+
+## `useRestaurant.isRestaurantActive`
+
+Already returns `data.isActive && data.licenseIsActive && !data.hide`. Update to also factor `userIsActive` so downstream cart/checkout gates stay consistent:
 ```ts
-const hasSpecial  = isSpecialPriceActive && portion.specialPrice != null;
-const hasCampaign = !!isCampaign && portion.campaignPrice != null;
+return data.isActive && data.licenseIsActive && data.userIsActive !== false && !data.hide;
 ```
 
 ## Files to edit
 
-1. `src/types/restaurant.ts` — add `isCampaign?: boolean` on `Product`.
-2. `src/hooks/useCart.ts` — update `getPortionDisplayPrice` signature + `null` checks; update `getTotal` to pass `item.product.isCampaign`.
-3. `src/hooks/useRestaurant.ts` — `campaignProducts` filter becomes `p.isCampaign && p.portions.some(po => po.campaignPrice != null)`.
-4. `src/components/menu/ProductCard.tsx` — null check + pass `product.isCampaign`.
-5. `src/components/menu/ProductDetailModal.tsx` — same.
-6. `src/components/menu/CheckoutModal.tsx` — `unitPrice` uses `campaignPrice` only when `item.product.isCampaign && campaignPrice != null`; same for special.
-7. `src/themes/theme-2/ProductCard.tsx`, `theme-2/CartDrawer.tsx` — same.
-8. `src/themes/theme-3/ProductCard.tsx`, `theme-3/ProductDetailModal.tsx`, `theme-3/CartDrawer.tsx` — same.
-9. `src/themes/theme-4/ProductCard.tsx`, `theme-4/ProductDetailModal.tsx`, `theme-4/CartDrawer.tsx` — same.
-10. `src/themes/theme-5/ProductCard.tsx` — same.
-11. `src/data/restaurant.ts` — add `isCampaign: true` to dummy products that already define a `campaignPrice` so preview matches.
-12. `mem://features/campaign-products/system-and-ui` + `mem://index.md` — note campaign is driven by `product.isCampaign` flag; `null` (not 0) means "no special/campaign price".
+1. `src/types/restaurant.ts` — add `userIsActive?: boolean` to `RestaurantData`.
+2. `src/themes/ThemeRouter.tsx` — pull new flags from store, compute `isBlocked`, render fallback for any blocked reason.
+3. `src/hooks/useRestaurant.ts` — include `userIsActive !== false` in `isRestaurantActive` memo.
+4. `mem://architecture/error-and-empty-state-handling` + `mem://index.md` — note that the `ThemeRouter` block-gate now covers `hide`, `isActive`, `licenseIsActive`, and `userIsActive`.
 
 ## Out of scope
 
-- No UI/visual changes — only the gating condition + null-vs-zero semantics.
+- No new translations or per-reason messages — single shared "Menu Unavailable" copy.
 - No backend / API changes.
-- Special price activation toggle (`isSpecialPriceActive`) unchanged.
-
+- No theme-internal UI changes.
+- Dummy data in `src/data/restaurant.ts` stays as-is (all flags already true / field optional).
