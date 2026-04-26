@@ -555,12 +555,7 @@ export function CheckoutModal({
 
                 <div className="border-t border-border pt-3 space-y-3">
                   {items.map(item => {
-                const unitPrice =
-                  item.portion.specialPrice != null
-                    ? item.portion.specialPrice
-                    : item.product.isCampaign && item.portion.campaignPrice != null
-                      ? item.portion.campaignPrice
-                      : item.portion.price;
+                const unitPrice = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive, item.product.isCampaign);
                 const tagTotal = item.selectedTags.reduce((sum, tag) => sum + tag.price * tag.quantity, 0);
                 const itemTotal = (unitPrice + tagTotal) * item.quantity;
                 return <div key={item.id} className="space-y-1">
