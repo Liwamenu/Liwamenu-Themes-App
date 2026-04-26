@@ -138,7 +138,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                 ) : (
                   <AnimatePresence mode="popLayout">
                     {items.map((item) => {
-                      const price = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive);
+                      const price = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive, item.product.isCampaign);
                       const tagTotal = item.selectedTags.reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
                       const itemTotal = (price + tagTotal) * item.quantity;
 
