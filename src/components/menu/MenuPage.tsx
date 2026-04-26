@@ -13,6 +13,7 @@ import { OrderReceipt } from "@/components/menu/OrderReceipt";
 import { Footer } from "@/components/menu/Footer";
 import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { AnnouncementModal } from "@/components/menu/AnnouncementModal";

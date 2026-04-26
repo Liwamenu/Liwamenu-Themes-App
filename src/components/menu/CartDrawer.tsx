@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
 import { useCart, getCartItemDisplayPrice } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
+import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
