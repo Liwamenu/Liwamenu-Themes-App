@@ -108,6 +108,22 @@ export function MenuPage() {
 
   const CAMPAIGN_CATEGORY_ID = '__campaign__';
 
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery) return categories;
+    const lowerQuery = String(searchQuery ?? "").toLowerCase();
+    return categories
+      .map((cat) => ({ ...cat, products: cat.products.filter((p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery)) }))
+      .filter((cat) => cat.products.length > 0);
+  }, [categories, searchQuery]);
+
+  const isCampaignActive = activeCategory === '__campaign__';
+  const visibleCategories = useMemo(
+    () => (isCampaignActive ? [] : filteredCategories),
+    [isCampaignActive, filteredCategories],
+  );
+  const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
+  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
+
   const scrollToCategory = useCallback((categoryId: string) => {
     if (categoryId === CAMPAIGN_CATEGORY_ID) {
       setActiveCategory(CAMPAIGN_CATEGORY_ID);
@@ -129,22 +145,6 @@ export function MenuPage() {
     };
     requestAnimationFrame(() => tryScroll(3));
   }, [CAMPAIGN_CATEGORY_ID, ensureCategoryRendered]);
-
-  const filteredCategories = useMemo(() => {
-    if (!searchQuery) return categories;
-    const lowerQuery = String(searchQuery ?? "").toLowerCase();
-    return categories
-      .map((cat) => ({ ...cat, products: cat.products.filter((p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery)) }))
-      .filter((cat) => cat.products.length > 0);
-  }, [categories, searchQuery]);
-
-  const isCampaignActive = activeCategory === '__campaign__';
-  const visibleCategories = useMemo(
-    () => (isCampaignActive ? [] : filteredCategories),
-    [isCampaignActive, filteredCategories],
-  );
-  const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
-  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
