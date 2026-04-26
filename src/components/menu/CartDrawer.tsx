@@ -152,7 +152,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                           className="flex gap-4 bg-secondary/50 rounded-2xl p-3"
                         >
                           <img
-                            src={item.product.imageURL}
+                            src={getProductImageSrc(item.product.imageURL)}
+                            onError={handleProductImageError}
                             alt={item.product.name}
                             className="w-20 h-20 rounded-xl object-cover"
                           />

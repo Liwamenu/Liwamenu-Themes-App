@@ -217,7 +217,8 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         {/* Header Image */}
         <div className="relative h-56">
           <img
-            src={product.imageURL}
+            src={getProductImageSrc(product.imageURL)}
+            onError={handleProductImageError}
             alt={product.name}
             width={800}
             height={448}

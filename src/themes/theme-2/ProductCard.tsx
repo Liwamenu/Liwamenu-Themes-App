@@ -4,6 +4,7 @@ import { Star, ShoppingCart } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 
 interface ProductCardProps {
   product: Product;
@@ -63,7 +64,8 @@ export const ProductCard = memo(function ProductCard({
       {/* Image - Left side, square */}
       <div className="relative w-28 h-28 flex-shrink-0 overflow-hidden">
         <img
-          src={product.imageURL}
+          src={getProductImageSrc(product.imageURL)}
+          onError={handleProductImageError}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
