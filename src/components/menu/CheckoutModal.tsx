@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
-import { useCart, getPortionDisplayPrice } from "@/hooks/useCart";
+import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
 import { useLocation } from "@/hooks/useLocation";
 import { useOrder } from "@/hooks/useOrder";
 import { Button } from "@/components/ui/button";
@@ -226,7 +226,7 @@ export function CheckoutModal({
       restaurantId: restaurant.restaurantId,
       orderType: orderType!,
       items: items.map(item => {
-        const unitPrice = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive, item.product.isCampaign);
+        const unitPrice = getCartItemDisplayPrice(item, restaurant.isSpecialPriceActive);
         const tagTotal = item.selectedTags.reduce((sum, tag) => sum + tag.price * tag.quantity, 0);
         const itemTotal = (unitPrice + tagTotal) * item.quantity;
         return {
@@ -555,7 +555,7 @@ export function CheckoutModal({
 
                 <div className="border-t border-border pt-3 space-y-3">
                   {items.map(item => {
-                const unitPrice = getPortionDisplayPrice(item.portion, restaurant.isSpecialPriceActive, item.product.isCampaign);
+                const unitPrice = getCartItemDisplayPrice(item, restaurant.isSpecialPriceActive);
                 const tagTotal = item.selectedTags.reduce((sum, tag) => sum + tag.price * tag.quantity, 0);
                 const itemTotal = (unitPrice + tagTotal) * item.quantity;
                 return <div key={item.id} className="space-y-1">
