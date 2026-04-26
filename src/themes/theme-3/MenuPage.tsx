@@ -110,15 +110,25 @@ export function MenuPage() {
 
   const scrollToCategory = useCallback((categoryId: string) => {
     if (categoryId === CAMPAIGN_CATEGORY_ID) {
-      const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
-      if (element) window.scrollTo({ top: element.offsetTop - 140, behavior: "smooth" });
       setActiveCategory(CAMPAIGN_CATEGORY_ID);
+      requestAnimationFrame(() => {
+        const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+        if (element) window.scrollTo({ top: element.offsetTop - 140, behavior: "auto" });
+      });
       return;
     }
-    const element = categoryRefs.current[categoryId];
-    if (element) window.scrollTo({ top: element.offsetTop - 140, behavior: "smooth" });
+    ensureCategoryRendered(categoryId);
     setActiveCategory(categoryId);
-  }, [CAMPAIGN_CATEGORY_ID]);
+    const tryScroll = (retry: number) => {
+      const el = categoryRefs.current[categoryId];
+      if (el) {
+        window.scrollTo({ top: el.offsetTop - 140, behavior: "auto" });
+      } else if (retry > 0) {
+        requestAnimationFrame(() => tryScroll(retry - 1));
+      }
+    };
+    requestAnimationFrame(() => tryScroll(3));
+  }, [CAMPAIGN_CATEGORY_ID, ensureCategoryRendered]);
 
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return categories;
@@ -134,7 +144,7 @@ export function MenuPage() {
     [isCampaignActive, filteredCategories],
   );
   const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
-  const { slicedCategories, sentinelRef, hasMore } = useInfiniteProducts(visibleCategories, resetKey);
+  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
