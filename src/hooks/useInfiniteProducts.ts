@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Product } from "@/types/restaurant";
 
 interface CategoryLike {
@@ -6,7 +6,7 @@ interface CategoryLike {
   products: Product[];
 }
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 100;
 
 /**
  * Progressive renderer for theme menu pages. Returns a sliced version of
@@ -46,10 +46,10 @@ export function useInfiniteProducts<T extends CategoryLike>(
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          setDisplayCount((c) => Math.min(c + PAGE_SIZE, Math.max(total, c + PAGE_SIZE)));
+          setDisplayCount((c) => Math.min(c + PAGE_SIZE, total));
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "1500px 0px" },
     );
     io.observe(node);
     return () => io.disconnect();
@@ -71,10 +71,30 @@ export function useInfiniteProducts<T extends CategoryLike>(
     return out;
   }, [categories, displayCount]);
 
+  const loadMore = useCallback(() => {
+    setDisplayCount((c) => Math.min(c + PAGE_SIZE, total));
+  }, [total]);
+
+  const ensureCategoryRendered = useCallback(
+    (categoryId: string) => {
+      let acc = 0;
+      for (const cat of categories) {
+        acc += cat.products.length;
+        if (cat.id === categoryId) {
+          setDisplayCount((c) => Math.max(c, acc));
+          return;
+        }
+      }
+    },
+    [categories],
+  );
+
   return {
     slicedCategories,
     sentinelRef,
     hasMore: displayCount < total,
     total,
+    loadMore,
+    ensureCategoryRendered,
   };
 }
