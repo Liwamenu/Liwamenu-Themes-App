@@ -119,29 +119,6 @@ export function MenuPage() {
 
   const CAMPAIGN_CATEGORY_ID = "__campaign__";
 
-  const scrollToCategory = useCallback(
-    (categoryId: string) => {
-      if (categoryId === CAMPAIGN_CATEGORY_ID) {
-        const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
-        if (element) {
-          const offset = 80;
-          const elementPosition = element.offsetTop - offset;
-          window.scrollTo({ top: elementPosition, behavior: "smooth" });
-        }
-        setActiveCategory(CAMPAIGN_CATEGORY_ID);
-        return;
-      }
-      const element = categoryRefs.current[categoryId];
-      if (element) {
-        const offset = 80;
-        const elementPosition = element.offsetTop - offset;
-        window.scrollTo({ top: elementPosition, behavior: "smooth" });
-      }
-      setActiveCategory(categoryId);
-    },
-    [CAMPAIGN_CATEGORY_ID],
-  );
-
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return categories;
     const lowerQuery = String(searchQuery ?? "").toLowerCase();
@@ -161,7 +138,32 @@ export function MenuPage() {
     [isCampaignActive, filteredCategories],
   );
   const resetKey = `${searchQuery}|${activeCategory}|${categories.length}`;
-  const { slicedCategories, sentinelRef, hasMore } = useInfiniteProducts(visibleCategories, resetKey);
+  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
+
+  const scrollToCategory = useCallback(
+    (categoryId: string) => {
+      if (categoryId === CAMPAIGN_CATEGORY_ID) {
+        setActiveCategory(CAMPAIGN_CATEGORY_ID);
+        requestAnimationFrame(() => {
+          const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+          if (element) window.scrollTo({ top: element.offsetTop - 80, behavior: "auto" });
+        });
+        return;
+      }
+      ensureCategoryRendered(categoryId);
+      setActiveCategory(categoryId);
+      const tryScroll = (retry: number) => {
+        const el = categoryRefs.current[categoryId];
+        if (el) {
+          window.scrollTo({ top: el.offsetTop - 80, behavior: "auto" });
+        } else if (retry > 0) {
+          requestAnimationFrame(() => tryScroll(retry - 1));
+        }
+      };
+      requestAnimationFrame(() => tryScroll(3));
+    },
+    [CAMPAIGN_CATEGORY_ID, ensureCategoryRendered],
+  );
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
@@ -409,7 +411,9 @@ export function MenuPage() {
           ))}
 
         {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
-          <div ref={sentinelRef} aria-hidden="true" className="h-10" />
+          <div ref={sentinelRef} className="min-h-[60vh] flex items-start justify-center pt-8">
+            <span className="text-sm text-muted-foreground">{t("menu.loadingMore", { defaultValue: "Loading more…" })}</span>
+          </div>
         )}
 
         {filteredCategories.length === 0 && searchQuery && (
