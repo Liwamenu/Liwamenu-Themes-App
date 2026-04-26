@@ -411,7 +411,7 @@ export function MenuPage() {
           ))}
 
         {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
-          <div ref={sentinelRef} className="min-h-[60vh] flex items-start justify-center pt-8">
+          <div ref={sentinelRef} className="py-8 flex items-center justify-center" aria-hidden>
             <span className="text-sm text-muted-foreground">{t("menu.loadingMore", { defaultValue: "Loading more…" })}</span>
           </div>
         )}
