@@ -196,9 +196,9 @@ export function MenuPage() {
   }, []);
 
   const handleSelectProduct = useCallback((product: Product) => {
-    if (!canOrderOnline && !canOrderInPerson) return;
+    if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
     setSelectedProduct(product);
-  }, [canOrderOnline, canOrderInPerson]);
+  }, [restaurant.onlineOrder, restaurant.inPersonOrder]);
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);
