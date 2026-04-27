@@ -489,7 +489,7 @@ export function MenuPage() {
       )}
 
       {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-        <div className="fixed top-[100px] right-4 z-50">
+        <div className="fixed top-[170px] right-4 z-50">
           <button
             onClick={handleOpenCallWaiterFloating}
             disabled={waiterCooldown > 0}
