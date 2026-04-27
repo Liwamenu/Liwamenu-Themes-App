@@ -24,6 +24,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
+import { groupBySubcategory } from "@/lib/groupBySubcategory";
 
 type View = "menu" | "order";
 
