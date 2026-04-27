@@ -41,7 +41,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export function MenuPage() {
   const { t } = useTranslation();
-  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, canOrderOnline, canOrderInPerson, restaurant, formatPrice, setTableNumber } = useRestaurant();
+  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");

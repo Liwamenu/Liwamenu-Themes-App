@@ -46,8 +46,6 @@ export function MenuPage() {
     campaignProducts,
     isRestaurantActive,
     isCurrentlyOpen,
-    canOrderOnline,
-    canOrderInPerson,
     restaurant,
     formatPrice,
     setTableNumber,
