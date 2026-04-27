@@ -46,6 +46,8 @@ export function MenuPage() {
     campaignProducts,
     isRestaurantActive,
     isCurrentlyOpen,
+    canOrderOnline,
+    canOrderInPerson,
     restaurant,
     formatPrice,
     setTableNumber,
@@ -194,8 +196,9 @@ export function MenuPage() {
   }, []);
 
   const handleSelectProduct = useCallback((product: Product) => {
+    if (!canOrderOnline && !canOrderInPerson) return;
     setSelectedProduct(product);
-  }, []);
+  }, [canOrderOnline, canOrderInPerson]);
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);

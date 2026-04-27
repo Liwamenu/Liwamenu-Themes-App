@@ -43,7 +43,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 export function MenuPage() {
   const { t } = useTranslation();
   const { isLoading, error } = useInitializeRestaurant();
-  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
+  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, canOrderOnline, canOrderInPerson, restaurant, formatPrice, setTableNumber } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
@@ -196,8 +196,9 @@ export function MenuPage() {
   }, []);
 
   const handleSelectProduct = useCallback((product: Product) => {
+    if (!canOrderOnline && !canOrderInPerson) return;
     setSelectedProduct(product);
-  }, []);
+  }, [canOrderOnline, canOrderInPerson]);
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);
