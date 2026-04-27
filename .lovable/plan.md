@@ -1,75 +1,81 @@
 ## Goal
-Resolve four concrete issues with the Themes 3 & 4 progressive renderer:
 
-1. White flash mid-scroll and only ~10-15 products loading after the first 50.
-2. Footer briefly visible before the next batch loads ("footer flash").
-3. Scrolling sometimes stalls when crossing a category boundary.
-4. Clicking a category in the bottom tab bar does not jump to it when that category is not yet rendered.
+Inside each category section (e.g. Tatlılar), group products by their `subCategoryName` and render each group under a smaller subheading (e.g. "Şerbetli", "Sütlü"). The category tab bar stays exactly as it is — one tab per parent category. Products without a subcategory render directly under the category, before any subgroups.
 
----
+## Why the user thought Tatlılar wasn't showing
 
-### Root causes
+Categories with subcategories DO render today, but every product is dumped into one flat grid under the category title. When a category has only subcategorized products and no visual grouping, it visually looks the same as the others and the subcategory information silently disappears. The user expected the subcategories to appear as labeled groups.
 
-- `useInfiniteProducts` slices a single flat list across all categories. Categories beyond the first ~50 products are **never mounted** until you scroll there, so `categoryRefs.current[id]` is `null` for them and `scrollToCategory` becomes a no-op.
-- The sentinel is a 10px div placed **directly above the footer**. By the time the IntersectionObserver fires, the footer is already visible.
-- Page size is 50 (small for a fast scroller on mobile) → user blasts past the trigger before React commits the next batch, producing a perceived "stuck at 60-65 products" state.
-- The observer effect re-creates the observer on every `displayCount` change; combined with the small sentinel and zero bottom padding, the scroll position can land in a brief empty gap → white flash.
-- Smooth scroll on iOS interacts badly with layout growth happening mid-animation; clicking a category currently calls `window.scrollTo({ behavior: "smooth" })` while the page height is still expanding from a recent batch load.
+## Scope
 
----
+Apply consistently to all 5 themes that render category sections:
+- `src/components/menu/MenuPage.tsx` (theme 1)
+- `src/themes/theme-2/MenuPage.tsx`
+- `src/themes/theme-3/MenuPage.tsx`
+- `src/themes/theme-4/MenuPage.tsx`
+- `src/themes/theme-5/MenuPage.tsx`
 
-### Changes
+No changes to `useRestaurant.ts` category grouping, no changes to `CategoryTabs`, no changes to `useInfiniteProducts` slicing logic.
 
-#### 1. `src/hooks/useInfiniteProducts.ts` — bigger batches, bigger trigger zone, render-ahead
+## Implementation
 
-- Bump `PAGE_SIZE` from `50` → **`100`**.
-- Replace the increment `Math.min(c + PAGE_SIZE, Math.max(total, c + PAGE_SIZE))` with `Math.min(c + PAGE_SIZE, total)` (clean clamp, no `Math.max` quirk).
-- Expand observer `rootMargin` from `"600px 0px"` → **`"1500px 0px"`** so the next 100 products start mounting **well before** the user reaches the footer area.
-- Add a `loadMore()` callback in the return value so callers can imperatively trigger a batch load (used by the category-jump fix below).
-- Add a second exposed helper: `ensureCategoryRendered(categoryId: string)` that bumps `displayCount` to whatever total is needed so the requested category and **everything before it** is mounted. Implementation: walk `categories` accumulating `products.length`; once the matching id is found, `setDisplayCount(Math.max(currentCount, accumulatedTotal))`.
+1. **New helper** `src/lib/groupBySubcategory.ts`:
+   - Input: a `Product[]` (already sorted by `sortOrder`).
+   - Output: an ordered array `[{ subId: string|null, subName: string|null, subSortOrder: number, products: Product[] }, ...]`.
+   - Rules:
+     - Products with `subCategoryId == null` go into one leading bucket with `subName: null`.
+     - Other products are grouped by `subCategoryId`; group order is by `subCategorySortOrder` ascending, ties broken by `subCategoryName`.
+     - Inside each group, preserve incoming product order.
+   - Defensive: coerce `subCategoryName` with `String(... ?? "")` and treat empty strings as null.
 
-#### 2. `src/themes/theme-3/MenuPage.tsx` & `src/themes/theme-4/MenuPage.tsx` — fix category jump + footer flash + scroll lock
+2. **Render change in each theme's MenuPage**: where the category section currently does
 
-- Pull `ensureCategoryRendered` out of the `useInfiniteProducts` return.
-- Rewrite `scrollToCategory(categoryId)`:
-  1. Call `ensureCategoryRendered(categoryId)` first.
-  2. `setActiveCategory(categoryId)`.
-  3. In a `requestAnimationFrame` (after React commits and the section is in the DOM), look up `categoryRefs.current[categoryId]`.
-  4. If it exists, scroll with `behavior: "auto"` (instant) instead of `"smooth"`. Instant scroll avoids the iOS smooth-scroll-vs-layout-growth bug and matches user intent for tab clicks. Keep the existing 80/140px header offset.
-  5. If still missing (edge case during very first paint), fall back to a single retry on the next frame.
-- Increase the sentinel from `h-10` to a real spacer: `h-[60vh]` and add `aria-hidden`. Reasoning: the sentinel itself becomes the buffer between the last loaded section and the footer, so even if the next batch is still loading, the user never sees the footer first. As soon as the batch lands, the sentinel un-mounts (since `hasMore` flips to `false` once everything is loaded) and the footer slides up naturally.
-- Move the `<Footer />` render to be conditional on `!hasMore` **OR** keep it always rendered but ensure it sits beneath the tall sentinel. Picking the simpler option: keep `<Footer />` always rendered, rely on the tall sentinel to push it offscreen until ready. (No conditional unmount of footer — avoids layout jank when reaching the end.)
-- Add a small visible loading indicator inside the sentinel (`<div className="py-8 text-center text-sm text-muted-foreground">{t("menu.loadingMore") || "Loading…"}</div>`) so users see progress instead of an empty white area. Use the existing `t` from `useTranslation`; if the key is missing, the literal fallback renders.
+   ```
+   <h2>{category.name} ({count})</h2>
+   <div class="grid ...">{category.products.map(ProductCard)}</div>
+   ```
 
-#### 3. Scroll-spy stability
+   replace with:
 
-The existing window scroll listener in both themes iterates `categories` and reads `categoryRefs.current[category.id]`. With incremental mounting that's fine — sections that aren't mounted return `null` and are simply skipped. No change needed there beyond the new render-ahead logic above.
+   ```
+   <h2>{category.name} ({category.products.length})</h2>
+   {groups.map(group => (
+     <div key={group.subId ?? "__none__"} className="mb-6">
+       {group.subName && (
+         <h3 className="theme-appropriate subheading classes">
+           {group.subName}
+           <span className="opacity-70 text-xs ml-2">({group.products.length})</span>
+         </h3>
+       )}
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+         {group.products.map(p => <ProductCard ... />)}
+       </div>
+     </div>
+   ))}
+   ```
 
-#### 4. Translation key (optional, additive only)
+   The category-level count stays as the total of all products (same as today), so users see the full count at the top.
 
-- Add `menu.loadingMore: "Loading more…"` to `src/locales/en/translation.json` (and a hardcoded English fallback at the call site so missing translations don't show the raw key). Other locales fall back to English via the existing i18n config.
+3. **Subheading styling per theme** (kept lightweight, no new design tokens):
+   - Theme 1 / 3 / 4: `text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center`
+   - Theme 2: match the existing serif/display family used for category titles, one size smaller
+   - Theme 5: match its existing accent style, one size smaller than the category title
 
----
+   Each theme keeps its own existing typography classes — pulled from how their `<h2>` category title is currently styled, then dropped one tier.
 
-### Files to edit
+4. **Infinite scroll compatibility**: `slicedCategories` already returns categories with a possibly-truncated `products` array. We simply group whatever products are present in that array. As more products load, new subgroups appear naturally and existing ones grow. No changes needed to `useInfiniteProducts`.
 
-- `src/hooks/useInfiniteProducts.ts` — page size 100, larger rootMargin, add `ensureCategoryRendered` + `loadMore`.
-- `src/themes/theme-3/MenuPage.tsx` — use `ensureCategoryRendered` in `scrollToCategory`, instant scroll, tall sentinel with loading text.
-- `src/themes/theme-4/MenuPage.tsx` — same changes as theme-3.
-- `src/locales/en/translation.json` — add `menu.loadingMore` key.
+5. **Search compatibility**: when `searchQuery` is active, the category's products are already filtered by the existing `filteredCategories` logic. Subgroups render only for matching products; empty subgroups are skipped automatically because they have zero items.
 
-### Out of scope / preserved
+6. **Scroll-spy / category refs**: unchanged. The `categoryRefs` still attach to the outer `<section>` per category, so clicking a tab still scrolls to the parent category. Subheadings are not individually navigable.
 
-- All existing performance wins from the previous pass (no `layout` animations, `contentVisibility`, lazy banner `<img>`, AnnouncementModal hardening, no `backdrop-blur`).
-- Themes 1, 2, 5 — untouched.
-- Search behavior, campaign tab logic, cart/checkout/receipt flows — unchanged.
-- Category banner heights, ProductCard markup — unchanged.
+## Out of scope
 
-### Validation after implementation
+- No new tabs, no nested tab UI.
+- No changes to `Category` type in `useRestaurant.ts`.
+- No backend or data shape changes.
+- No memory updates needed (this is a render-layer enhancement, not a new architectural rule).
 
-On a large-menu tenant (200+ products) on mobile Theme 3 and Theme 4:
-- First paint shows ~100 products.
-- Fast-scrolling reaches the bottom and the next 100 are already mounted before the footer appears (no white flash, no footer flash).
-- Tapping any category in the bottom bar — including ones far down the list — instantly scrolls to that section.
-- Smooth scrolling does not stall when crossing category boundaries.
-- Switching category or typing in search resets to the first 100 of the new view and grows on scroll.
+## Risk
+
+Low. Pure render-layer change, additive, gracefully degrades for categories with no subcategories (single ungrouped grid, same as today).

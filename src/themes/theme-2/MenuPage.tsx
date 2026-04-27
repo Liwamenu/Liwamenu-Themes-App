@@ -24,6 +24,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
+import { groupBySubcategory } from "@/lib/groupBySubcategory";
 
 type View = "menu" | "order";
 
@@ -275,13 +276,23 @@ export function MenuPage() {
               {category.name}
               <span className="text-sm font-normal text-muted-foreground ml-2">({category.products.length})</span>
             </h2>
-            <div className="grid grid-cols-1 gap-3">
-              <AnimatePresence mode="popLayout">
-                {category.products.map((product) => (
-                  <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
-                ))}
-              </AnimatePresence>
-            </div>
+            {groupBySubcategory(category.products).map((group) => (
+              <div key={group.subId ?? "__none__"} className="mb-5">
+                {group.subName && (
+                  <h3 className="font-display text-base font-semibold text-foreground/80 mb-2 mt-1 flex items-center">
+                    {group.subName}
+                    <span className="text-xs font-normal text-muted-foreground ml-2">({group.products.length})</span>
+                  </h3>
+                )}
+                <div className="grid grid-cols-1 gap-3">
+                  <AnimatePresence mode="popLayout">
+                    {group.products.map((product) => (
+                      <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} isSpecialPriceActive={restaurant.isSpecialPriceActive} specialPriceName={restaurant.specialPriceName} formatPrice={formatPrice} />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            ))}
           </section>
         ))}
 

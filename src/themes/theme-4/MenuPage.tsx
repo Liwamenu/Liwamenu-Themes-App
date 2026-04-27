@@ -22,6 +22,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
 import { Product, Order } from "@/types/restaurant";
+import { groupBySubcategory } from "@/lib/groupBySubcategory";
 import { Input } from "@/components/ui/input";
 
 type View = "menu" | "order";
@@ -395,15 +396,27 @@ export function MenuPage() {
                   </h2>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
-                  {category.products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onSelect={handleSelectProduct}
-                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                      specialPriceName={restaurant.specialPriceName}
-                      formatPrice={formatPrice}
-                    />
+                  {groupBySubcategory(category.products).map((group) => (
+                    <div key={group.subId ?? "__none__"} className="md:col-span-2">
+                      {group.subName && (
+                        <h3 className="font-display text-lg font-semibold text-foreground/80 mb-3 mt-2 flex items-center uppercase tracking-wide">
+                          {group.subName}
+                          <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">({group.products.length})</span>
+                        </h3>
+                      )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {group.products.map((product) => (
+                          <ProductCard
+                            key={product.id}
+                            product={product}
+                            onSelect={handleSelectProduct}
+                            isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                            specialPriceName={restaurant.specialPriceName}
+                            formatPrice={formatPrice}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>

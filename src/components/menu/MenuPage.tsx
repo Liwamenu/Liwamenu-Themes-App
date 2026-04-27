@@ -24,6 +24,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
+import { groupBySubcategory } from "@/lib/groupBySubcategory";
 
 type View = "menu" | "order";
 
@@ -425,18 +426,28 @@ export function MenuPage() {
               {category.name}
               <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {category.products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onSelect={handleSelectProduct}
-                  isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                  specialPriceName={restaurant.specialPriceName}
-                  formatPrice={formatPrice}
-                />
-              ))}
-            </div>
+            {groupBySubcategory(category.products).map((group) => (
+              <div key={group.subId ?? "__none__"} className="mb-6">
+                {group.subName && (
+                  <h3 className="text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center">
+                    {group.subName}
+                    <span className="text-xs font-normal text-muted-foreground ml-2">({group.products.length})</span>
+                  </h3>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {group.products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={handleSelectProduct}
+                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                      specialPriceName={restaurant.specialPriceName}
+                      formatPrice={formatPrice}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </section>
         ))}
 
