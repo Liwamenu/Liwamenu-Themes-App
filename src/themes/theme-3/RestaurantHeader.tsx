@@ -40,7 +40,6 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
             className="w-full h-full object-cover"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         </div>
       )}
 
@@ -66,7 +65,9 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
 
             <div className="flex flex-col">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground leading-tight">{restaurant.name}</h1>
-              <p className="text-muted-foreground text-sm">{restaurant.slogan1}</p>
+              {restaurant.slogan1 && (
+                <p className="text-muted-foreground text-sm">{restaurant.slogan1}</p>
+              )}
               <div className="mt-2">
                 {!isRestaurantActive ? (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-destructive/10 text-destructive rounded-full text-xs font-medium">

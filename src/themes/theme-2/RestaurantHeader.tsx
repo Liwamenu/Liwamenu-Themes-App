@@ -32,7 +32,6 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           alt={restaurant.name}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
 
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 z-10">
@@ -97,11 +96,12 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
           className="flex whitespace-nowrap"
         >
-          {[...Array(10)].map((_, i) => (
-            <span key={i} className="text-lg font-display font-bold text-primary-foreground mx-8">
-              {restaurant.slogan1 || restaurant.slogan2} ✦
-            </span>
-          ))}
+          {(restaurant.slogan1 || restaurant.slogan2) &&
+            [...Array(10)].map((_, i) => (
+              <span key={i} className="text-lg font-display font-bold text-primary-foreground mx-8">
+                {restaurant.slogan1 || restaurant.slogan2}
+              </span>
+            ))}
         </motion.div>
       </div>
 
