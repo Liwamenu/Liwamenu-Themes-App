@@ -28,7 +28,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
       {/* Hero Banner */}
       <div className="relative h-64 sm:h-80 overflow-hidden">
         <img
-          src={restaurant.imageAbsoluteUrl || restaurant.heroImageUrl}
+          src={restaurant.heroImageUrl || restaurant.imageAbsoluteUrl}
           alt={restaurant.name}
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -99,7 +99,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
         >
           {[...Array(10)].map((_, i) => (
             <span key={i} className="text-lg font-display font-bold text-primary-foreground mx-8">
-              {restaurant.slogan2 || "Lezzetin Adresi"} ✦
+              {restaurant.slogan1 || restaurant.slogan2} ✦
             </span>
           ))}
         </motion.div>
