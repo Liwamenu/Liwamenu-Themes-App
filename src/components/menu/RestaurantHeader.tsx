@@ -26,16 +26,14 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
   return (
     <header className="relative overflow-hidden">
       {/* Hero Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background" />
       <div
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0"
         style={{
           backgroundImage: `url(${restaurant.imageAbsoluteUrl || restaurant.heroImageUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
       <div className="relative container px-4 pt-8 pb-6">
         {/* Language & Theme Switcher */}

@@ -32,7 +32,6 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           alt={restaurant.name}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
 
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 z-10">

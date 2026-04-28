@@ -320,7 +320,6 @@ export function MenuPage() {
             className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
             style={heroBg ? { backgroundImage: `url(${heroBg})` } : undefined}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               {(restaurant.logoImageUrl || (restaurant as any).logoUrl) && (
                 <img

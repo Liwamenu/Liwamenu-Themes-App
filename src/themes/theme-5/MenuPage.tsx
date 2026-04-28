@@ -392,7 +392,6 @@ export function MenuPage() {
               style={{ backgroundImage: `url(${restaurantHeroImage})` }}
             />
           )}
-          <div className="absolute inset-0 bg-primary/60" />
           <div className="flex z-10 justify-center items-center h-full relative flex-col gap-2">
             <h1 className="font-bold text-[36px] lg:text-[52px] text-primary-foreground z-10 flex items-center justify-center font-display tracking-wider">
               {restaurant.name}
