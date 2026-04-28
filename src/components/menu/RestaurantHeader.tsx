@@ -141,10 +141,10 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           </div>
 
           {/* Info Row */}
-          <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
+          <div className="flex flex-wrap gap-2 justify-center text-sm">
             <a
               href={`tel:${restaurant.phoneNumber}`}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/90 backdrop-blur-sm text-foreground shadow-sm hover:text-primary transition-colors"
             >
               <Phone className="w-4 h-4" />
               <span>{restaurant.phoneNumber}</span>
@@ -153,7 +153,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               href={`https://www.google.com/maps?q=${restaurant.latitude},${restaurant.longitude}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/90 backdrop-blur-sm text-foreground shadow-sm hover:text-primary transition-colors"
             >
               <MapPin className="w-4 h-4" />
               <span>
