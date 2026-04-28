@@ -37,7 +37,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
 
       <div className="relative container px-4 pt-8 pb-6">
         {/* Language & Theme Switcher */}
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-card/90 backdrop-blur-sm shadow-sm">
           <ThemeSwitcher />
           <LanguageSwitcher />
         </div>
