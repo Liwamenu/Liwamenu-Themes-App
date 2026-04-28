@@ -22,7 +22,8 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
   const workingHour = getCurrentWorkingHour;
-  const heroImage = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
+  const heroImage = restaurant.heroImageUrl || restaurant.imageAbsoluteUrl;
+  const logoImage = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
 
   return (
     <header className="relative bg-background">
@@ -30,6 +31,18 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
         <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
+
+      {heroImage && (
+        <div className="relative w-full h-40 md:h-56 overflow-hidden">
+          <img
+            src={heroImage}
+            alt={restaurant.name}
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        </div>
+      )}
 
       <div className="container px-4 py-6">
         <motion.div
@@ -42,7 +55,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
             <div className="relative">
               <div
                 className="w-20 h-20 md:w-24 md:h-24 rounded-2xl shadow-lg overflow-hidden border-4 border-primary/20"
-                style={{ backgroundImage: `url(${heroImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                style={{ backgroundImage: `url(${logoImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
               />
               {isRestaurantActive && isCurrentlyOpen && (
                 <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full border-2 border-background flex items-center justify-center">
