@@ -14,6 +14,12 @@ interface OrderState {
 
 const STORAGE_KEY = 'restaurant-orders';
 
+const isFresh = (order: Order, ttlMs: number): boolean => {
+  const createdAt = order?.createdAt ? new Date(order.createdAt).getTime() : NaN;
+  if (!Number.isFinite(createdAt)) return false;
+  return Date.now() - createdAt <= ttlMs;
+};
+
 export const useOrder = create<OrderState>()(
   persist(
     (set, get) => ({
@@ -47,13 +53,31 @@ export const useOrder = create<OrderState>()(
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => createTTLStorage(TWO_HOURS_MS)),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const fresh = (state.orders || []).filter((o) => isFresh(o, TWO_HOURS_MS));
+        const current = state.currentOrder && isFresh(state.currentOrder, TWO_HOURS_MS)
+          ? state.currentOrder
+          : null;
+        if (fresh.length !== state.orders.length || current !== state.currentOrder) {
+          useOrder.setState({ orders: fresh, currentOrder: current });
+        }
+      },
     }
   )
 );
 
-// Periodically evict expired persisted state and reset in-memory store
+// Periodically evict expired persisted state and prune stale orders by their own createdAt
 if (typeof window !== 'undefined') {
   startTTLEvictionTimer(STORAGE_KEY, TWO_HOURS_MS, 60_000, () => {
     useOrder.setState({ orders: [], currentOrder: null });
   });
+  setInterval(() => {
+    const { orders, currentOrder } = useOrder.getState();
+    const fresh = orders.filter((o) => isFresh(o, TWO_HOURS_MS));
+    const current = currentOrder && isFresh(currentOrder, TWO_HOURS_MS) ? currentOrder : null;
+    if (fresh.length !== orders.length || current !== currentOrder) {
+      useOrder.setState({ orders: fresh, currentOrder: current });
+    }
+  }, 60_000);
 }
