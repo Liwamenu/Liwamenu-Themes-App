@@ -96,11 +96,12 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
           className="flex whitespace-nowrap"
         >
-          {[...Array(10)].map((_, i) => (
-            <span key={i} className="text-lg font-display font-bold text-primary-foreground mx-8">
-              {restaurant.slogan1 || restaurant.slogan2} ✦
-            </span>
-          ))}
+          {(restaurant.slogan1 || restaurant.slogan2) &&
+            [...Array(10)].map((_, i) => (
+              <span key={i} className="text-lg font-display font-bold text-primary-foreground mx-8">
+                {restaurant.slogan1 || restaurant.slogan2}
+              </span>
+            ))}
         </motion.div>
       </div>
 
