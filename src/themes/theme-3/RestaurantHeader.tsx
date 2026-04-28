@@ -22,8 +22,8 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
   const workingHour = getCurrentWorkingHour;
-  const heroImage = restaurant.heroImageUrl || restaurant.imageAbsoluteUrl;
-  const logoImage = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
+  const heroImage = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
+  const logoImage = restaurant.heroImageUrl || restaurant.imageAbsoluteUrl;
 
   return (
     <header className="relative bg-background">
