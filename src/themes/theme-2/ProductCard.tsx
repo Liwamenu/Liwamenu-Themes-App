@@ -43,7 +43,8 @@ export const ProductCard = memo(function ProductCard({
   formatPrice 
 }: ProductCardProps) {
   const { t } = useTranslation();
-  const firstPortion = product.portions[0];
+  const firstPortion = product.portions?.[0];
+  if (!firstPortion) return null;
   const { displayPrice, originalPrice, priceType } = getPriceDisplay(firstPortion, isSpecialPriceActive, !!product.isCampaign);
 
   const handleClick = useCallback(() => {
