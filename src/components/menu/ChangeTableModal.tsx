@@ -19,7 +19,15 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
   const [scannedTable, setScannedTable] = useState<string | null>(null);
   const [scannerError, setScannerError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerBoxRef = useRef<HTMLDivElement | null>(null);
   const scannerContainerId = "qr-reader";
+
+  const getScannerBoxSize = () => {
+    const bounds = scannerBoxRef.current?.getBoundingClientRect();
+    const visibleWidth = bounds?.width || window.innerWidth;
+    const visibleHeight = bounds?.height || visibleWidth;
+    return Math.floor(Math.min(visibleWidth, visibleHeight));
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -83,8 +91,9 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
         {
           fps: 10,
           qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
-            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            const size = Math.floor(minEdge * 0.9);
+            const renderedBoxSize = getScannerBoxSize();
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight, renderedBoxSize);
+            const size = Math.max(150, Math.floor(minEdge));
             return { width: size, height: size };
           },
           aspectRatio: 1,
@@ -215,7 +224,7 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
                 {!scannedTable ? (
                   <>
                     {/* QR Scanner Area */}
-                    <div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden border-2 border-dashed border-border">
+                    <div ref={scannerBoxRef} className="relative aspect-square bg-secondary rounded-2xl overflow-hidden border-2 border-dashed border-border">
                       {isScanning ? (
                         <div id={scannerContainerId} className="w-full h-full" />
                       ) : (
