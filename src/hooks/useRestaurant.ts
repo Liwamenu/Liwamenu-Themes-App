@@ -187,14 +187,32 @@ export function useRestaurant() {
   }, [data]);
 
   const isCurrentlyOpen = useMemo(() => {
-    const workingHour = getCurrentWorkingHour;
-    if (!workingHour || workingHour.isClosed) return false;
-
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    
-    return currentTime >= workingHour.open && currentTime <= workingHour.close;
-  }, [getCurrentWorkingHour]);
+    const todayDow = now.getDay() === 0 ? 7 : now.getDay();
+    const yesterdayDow = todayDow === 1 ? 7 : todayDow - 1;
+
+    // Case 1: today's working hour
+    const today = data.workingHours.find(wh => wh.day === todayDow);
+    if (today && !today.isClosed) {
+      const isOvernight = today.close < today.open;
+      if (isOvernight) {
+        // e.g. 16:00 - 02:00: open if currentTime >= open (evening side)
+        if (currentTime >= today.open) return true;
+      } else {
+        if (currentTime >= today.open && currentTime <= today.close) return true;
+      }
+    }
+
+    // Case 2: yesterday's overnight session spilling into today's early morning
+    const yesterday = data.workingHours.find(wh => wh.day === yesterdayDow);
+    if (yesterday && !yesterday.isClosed) {
+      const isOvernight = yesterday.close < yesterday.open;
+      if (isOvernight && currentTime <= yesterday.close) return true;
+    }
+
+    return false;
+  }, [data, getCurrentWorkingHour]);
 
   const activeMenu = useMemo(() => {
     const now = new Date();
