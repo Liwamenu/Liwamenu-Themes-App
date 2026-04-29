@@ -82,7 +82,12 @@ export function ChangeTableModal({ isOpen, onClose, onTableChange, currentTable 
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 },
+          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const size = Math.floor(minEdge * 0.9);
+            return { width: size, height: size };
+          },
+          aspectRatio: 1,
         },
         (decodedText) => {
           // Successfully scanned
