@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { Country } from "react-phone-number-input";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
+import { getMaxSubscriberDigits } from "@/lib/phoneValidation";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,7 @@ function onlyDigits(value: string) {
 
 export type Phone10FieldValue = {
   country: Country;
-  subscriber: string; // digits only, max 10
+  subscriber: string; // digits only, max per country
 };
 
 type Props = {
@@ -43,6 +44,7 @@ function CountryFlag({ country }: { country: Country }) {
 export function Phone10Field({ value, onChange, className, disabled, subscriberPlaceholder }: Props) {
   const countries = useMemo(() => getCountries(), []);
   const callingCode = useMemo(() => getCountryCallingCode(value.country), [value.country]);
+  const maxDigits = useMemo(() => getMaxSubscriberDigits(value.country), [value.country]);
 
   return (
     <div className={cn("grid grid-cols-[160px_1fr] gap-2", className)}>
@@ -74,29 +76,27 @@ export function Phone10Field({ value, onChange, className, disabled, subscriberP
         </SelectContent>
       </Select>
 
-      {/* Phone number input (10 digits) */}
+      {/* Phone number input */}
       <div className="h-12 rounded-[3px] border border-border bg-background px-3 flex items-center">
         <Input
           value={value.subscriber}
           onChange={(e) => {
             const digits = onlyDigits(e.target.value);
-            // Hard-stop at 10 digits while typing (do NOT shift digits).
-            onChange({ country: value.country, subscriber: digits.slice(0, 10) });
+            onChange({ country: value.country, subscriber: digits.slice(0, maxDigits) });
           }}
           onPaste={(e) => {
             const pasted = e.clipboardData.getData("text");
             const digits = onlyDigits(pasted);
-            // If pasted value includes country/extra digits, keep the last 10.
-            const subscriber = digits.length > 10 ? digits.slice(-10) : digits.slice(0, 10);
+            const subscriber = digits.length > maxDigits ? digits.slice(-maxDigits) : digits.slice(0, maxDigits);
             e.preventDefault();
             onChange({ country: value.country, subscriber });
           }}
           disabled={disabled}
           inputMode="numeric"
           autoComplete="tel-national"
-          placeholder={subscriberPlaceholder || "XXXXXXXXXX"}
+          placeholder={subscriberPlaceholder || "X".repeat(maxDigits)}
           className="h-10 border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 leading-normal text-base"
-          maxLength={10}
+          maxLength={maxDigits}
           style={{ fontSize: "16px", lineHeight: "1.5" }}
         />
       </div>
