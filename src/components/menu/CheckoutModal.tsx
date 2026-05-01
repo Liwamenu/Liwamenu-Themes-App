@@ -19,7 +19,7 @@ import { useFirebaseMessagingStore } from "@/hooks/useFirebaseMessaging";
 import { initFirebaseMessaging } from "@/lib/firebase";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import confetti from "canvas-confetti";
-import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
 interface CheckoutModalProps {
   onClose: () => void;
@@ -89,7 +89,7 @@ export function CheckoutModal({
   const tableNumber = restaurant.tableNumber;
 
   // Phone validation
-  const isPhoneValid = phoneSubscriber.length === 10;
+  const isPhoneValid = validatePhoneForCountry(buildE164Phone(phoneCountry, phoneSubscriber), phoneCountry);
 
   // Calculate discount and final total
   const getDiscountRate = () => {
@@ -190,7 +190,7 @@ export function CheckoutModal({
       // For in-person, skip payment and go to confirm
       setStep("confirm");
     } else {
-      if (!customerInfo.name.trim() || phoneSubscriber.length !== 10 || !customerInfo.address.trim()) {
+      if (!customerInfo.name.trim() || !phoneSubscriber.trim() || !customerInfo.address.trim()) {
         toast.error(t("order.fillAllFields"));
         return;
       }
@@ -470,7 +470,7 @@ export function CheckoutModal({
                     country: phoneCountry,
                     subscriber: phoneSubscriber
                   }} onChange={next => {
-                    const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                    const subscriber = sanitizeSubscriberDigits(next.subscriber, getMaxSubscriberDigits(next.country));
                     setPhoneCountry(next.country);
                     setPhoneSubscriber(subscriber);
                     setCustomerInfo(prev => ({

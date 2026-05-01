@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservation as apiVerifyReservation, getResponseData } from "@/lib/api";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
 
 interface ReservationModalProps {
@@ -111,7 +111,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const isPhoneValid = phoneSubscriber.length === 10;
+  const isPhoneValid = validatePhoneForCountry(buildE164Phone(phoneCountry, phoneSubscriber), phoneCountry);
 
   const validateForm = (): boolean => {
     if (!formData.fullName.trim()) {
@@ -329,7 +329,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                 <Phone10Field
                   value={{ country: phoneCountry, subscriber: phoneSubscriber }}
                   onChange={(next) => {
-                    const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                    const subscriber = sanitizeSubscriberDigits(next.subscriber, getMaxSubscriberDigits(next.country));
                     setPhoneCountry(next.country);
                     setPhoneSubscriber(subscriber);
                     handleInputChange("phone", buildE164Phone(next.country, subscriber));

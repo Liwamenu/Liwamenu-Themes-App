@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Star, Send, CheckCircle, Sparkles, UtensilsCrossed, Users, MessageSquare, SprayCan, UserCheck, X } from "lucide-react";
-import { buildE164Phone, sanitizeSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -123,7 +123,7 @@ export function SurveyModal({
 
   // Phone validation (optional field - only validate if user started entering)
   const hasPhoneInput = phoneSubscriber.length > 0;
-  const isPhoneValid = !hasPhoneInput || phoneSubscriber.length === 10;
+  const isPhoneValid = !hasPhoneInput || validatePhoneForCountry(buildE164Phone(phoneCountry, phoneSubscriber), phoneCountry);
   const spawnEmojis = (rating: number, event: React.MouseEvent) => {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const modalContent = document.querySelector('[role="dialog"]');
@@ -379,7 +379,7 @@ export function SurveyModal({
                     country: phoneCountry,
                     subscriber: phoneSubscriber
                   }} onChange={next => {
-                    const subscriber = sanitizeSubscriberDigits(next.subscriber, 10);
+                    const subscriber = sanitizeSubscriberDigits(next.subscriber, getMaxSubscriberDigits(next.country));
                     setPhoneCountry(next.country);
                     setPhoneSubscriber(subscriber);
                     setFormData(prev => ({
