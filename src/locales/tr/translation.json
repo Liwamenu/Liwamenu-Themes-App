@@ -28,7 +28,7 @@
     "selectDate": "Tarih seçin",
     "selectTime": "Saat seçin",
     "okay": "Tamam",
-    "phoneError": "Ülke kodundan sonra tam 10 rakam giriniz",
+    "phoneError": "Lütfen seçilen ülke için geçerli bir telefon numarası giriniz",
     "callWaiter": "Garson Çağır",
     "closedHours": "Şu anda çalışma saatleri dışındayız.",
     "max": "maks",

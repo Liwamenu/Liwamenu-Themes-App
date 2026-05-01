@@ -28,7 +28,7 @@
     "selectDate": "Select date",
     "selectTime": "Select time",
     "okay": "OK",
-    "phoneError": "Please enter exactly 10 digits after the country code",
+    "phoneError": "Please enter a valid phone number for the selected country",
     "callWaiter": "Call Waiter",
     "closedHours": "We are currently outside of working hours.",
     "max": "max",

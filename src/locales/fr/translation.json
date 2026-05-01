@@ -27,7 +27,7 @@
     "selectDate": "Sélectionner une date",
     "selectTime": "Sélectionner une heure",
     "okay": "OK",
-    "phoneError": "Veuillez entrer exactement 10 chiffres après l'indicatif du pays",
+    "phoneError": "Veuillez entrer un numéro de téléphone valide pour le pays sélectionné",
     "callWaiter": "Appeler le serveur",
     "closedHours": "Nous sommes actuellement en dehors des heures d'ouverture.",
     "max": "max",

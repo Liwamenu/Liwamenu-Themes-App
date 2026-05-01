@@ -27,7 +27,7 @@
     "selectDate": "选择日期",
     "selectTime": "选择时间",
     "okay": "好的",
-    "phoneError": "请在国家代码后输入正好10位数字",
+    "phoneError": "请输入所选国家的有效电话号码",
     "callWaiter": "呼叫服务员",
     "closedHours": "我们目前不在工作时间。",
     "max": "最大",

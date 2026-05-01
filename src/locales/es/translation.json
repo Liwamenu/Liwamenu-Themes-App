@@ -27,7 +27,7 @@
     "selectDate": "Seleccionar fecha",
     "selectTime": "Seleccionar hora",
     "okay": "OK",
-    "phoneError": "Por favor ingrese exactamente 10 dígitos después del código de país",
+    "phoneError": "Por favor ingrese un número de teléfono válido para el país seleccionado",
     "callWaiter": "Llamar camarero",
     "closedHours": "Actualmente estamos fuera del horario de trabajo.",
     "max": "máx",
