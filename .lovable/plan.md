@@ -1,81 +1,50 @@
-## Goal
+# Fix phone validation per country
 
-Inside each category section (e.g. Tatlılar), group products by their `subCategoryName` and render each group under a smaller subheading (e.g. "Şerbetli", "Sütlü"). The category tab bar stays exactly as it is — one tab per parent category. Products without a subcategory render directly under the category, before any subgroups.
+## Problem
+The phone number `+968 97360742` (Oman) is correct — Omani mobile numbers are 8 digits. But the app currently requires **exactly 10 digits after the country code for every country**, hardcoded in:
+- `src/components/phone/Phone10Field.tsx` (input `maxLength={10}`, slices to 10)
+- `src/lib/phoneValidation.ts` (`requiredDigits = 10` default)
+- `src/components/menu/CheckoutModal.tsx`, `ReservationModal.tsx`, `SurveyModal.tsx` (`sanitizeSubscriberDigits(..., 10)`)
+- Error message "Please enter exactly 10 digits after the country code" (all 11 locales)
 
-## Why the user thought Tatlılar wasn't showing
+Subscriber length actually varies a lot (UK 10, Oman 8, UAE 9, France 9, US 10, Germany variable, etc.). A single hardcoded number can never be right globally.
 
-Categories with subcategories DO render today, but every product is dumped into one flat grid under the category title. When a category has only subcategorized products and no visual grouping, it visually looks the same as the others and the subcategory information silently disappears. The user expected the subcategories to appear as labeled groups.
+## Solution
+Use `libphonenumber-js` (already a dependency via `react-phone-number-input`) to validate per-country. It knows each country's valid mobile/landline length(s) and patterns.
 
-## Scope
+### 1. New per-country helpers in `src/lib/phoneValidation.ts`
+- `getMaxSubscriberDigits(country)` — returns the maximum national number length for that country (using `getExampleNumber` + metadata, fallback 15). Used to cap input length while typing.
+- `validatePhoneForCountry(e164, country)` — uses `isValidPhoneNumber(e164, country)` from `libphonenumber-js`. Returns boolean.
+- Keep old helpers but make them per-country-aware (no fixed 10).
 
-Apply consistently to all 5 themes that render category sections:
-- `src/components/menu/MenuPage.tsx` (theme 1)
-- `src/themes/theme-2/MenuPage.tsx`
-- `src/themes/theme-3/MenuPage.tsx`
-- `src/themes/theme-4/MenuPage.tsx`
-- `src/themes/theme-5/MenuPage.tsx`
+### 2. Update `src/components/phone/Phone10Field.tsx`
+- Rename internally is optional, keep filename for minimal diff.
+- Replace hardcoded `10` with dynamic `maxDigits = getMaxSubscriberDigits(value.country)`.
+- `maxLength` and slice operations both use `maxDigits`.
+- Recompute when country changes; if current `subscriber` exceeds new max, trim it.
 
-No changes to `useRestaurant.ts` category grouping, no changes to `CategoryTabs`, no changes to `useInfiniteProducts` slicing logic.
+### 3. Update call sites
+In `CheckoutModal.tsx`, `ReservationModal.tsx`, `SurveyModal.tsx`:
+- Replace `sanitizeSubscriberDigits(next.subscriber, 10)` with the country-aware max.
+- Replace the validation check (currently uses 10) with `validatePhoneForCountry(buildE164Phone(country, subscriber), country)`.
+- On invalid, show the new error key `common.phoneError` with updated message (see below).
 
-## Implementation
+### 4. Update error message in all 11 locales
+Change `common.phoneError` from "Please enter exactly 10 digits after the country code" to a country-agnostic message like:
+- en: "Please enter a valid phone number for the selected country"
+- and equivalent translations for ar, az, de, el, es, fr, it, ru, tr, zh.
 
-1. **New helper** `src/lib/groupBySubcategory.ts`:
-   - Input: a `Product[]` (already sorted by `sortOrder`).
-   - Output: an ordered array `[{ subId: string|null, subName: string|null, subSortOrder: number, products: Product[] }, ...]`.
-   - Rules:
-     - Products with `subCategoryId == null` go into one leading bucket with `subName: null`.
-     - Other products are grouped by `subCategoryId`; group order is by `subCategorySortOrder` ascending, ties broken by `subCategoryName`.
-     - Inside each group, preserve incoming product order.
-   - Defensive: coerce `subCategoryName` with `String(... ?? "")` and treat empty strings as null.
+## Files to modify
+- `src/lib/phoneValidation.ts`
+- `src/lib/phone.ts` (drop hardcoded 10 default)
+- `src/components/phone/Phone10Field.tsx`
+- `src/components/menu/CheckoutModal.tsx`
+- `src/components/menu/ReservationModal.tsx`
+- `src/components/menu/SurveyModal.tsx`
+- `src/locales/{en,ar,az,de,el,es,fr,it,ru,tr,zh}/translation.json`
 
-2. **Render change in each theme's MenuPage**: where the category section currently does
-
-   ```
-   <h2>{category.name} ({count})</h2>
-   <div class="grid ...">{category.products.map(ProductCard)}</div>
-   ```
-
-   replace with:
-
-   ```
-   <h2>{category.name} ({category.products.length})</h2>
-   {groups.map(group => (
-     <div key={group.subId ?? "__none__"} className="mb-6">
-       {group.subName && (
-         <h3 className="theme-appropriate subheading classes">
-           {group.subName}
-           <span className="opacity-70 text-xs ml-2">({group.products.length})</span>
-         </h3>
-       )}
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-         {group.products.map(p => <ProductCard ... />)}
-       </div>
-     </div>
-   ))}
-   ```
-
-   The category-level count stays as the total of all products (same as today), so users see the full count at the top.
-
-3. **Subheading styling per theme** (kept lightweight, no new design tokens):
-   - Theme 1 / 3 / 4: `text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center`
-   - Theme 2: match the existing serif/display family used for category titles, one size smaller
-   - Theme 5: match its existing accent style, one size smaller than the category title
-
-   Each theme keeps its own existing typography classes — pulled from how their `<h2>` category title is currently styled, then dropped one tier.
-
-4. **Infinite scroll compatibility**: `slicedCategories` already returns categories with a possibly-truncated `products` array. We simply group whatever products are present in that array. As more products load, new subgroups appear naturally and existing ones grow. No changes needed to `useInfiniteProducts`.
-
-5. **Search compatibility**: when `searchQuery` is active, the category's products are already filtered by the existing `filteredCategories` logic. Subgroups render only for matching products; empty subgroups are skipped automatically because they have zero items.
-
-6. **Scroll-spy / category refs**: unchanged. The `categoryRefs` still attach to the outer `<section>` per category, so clicking a tab still scrolls to the parent category. Subheadings are not individually navigable.
-
-## Out of scope
-
-- No new tabs, no nested tab UI.
-- No changes to `Category` type in `useRestaurant.ts`.
-- No backend or data shape changes.
-- No memory updates needed (this is a render-layer enhancement, not a new architectural rule).
-
-## Risk
-
-Low. Pure render-layer change, additive, gracefully degrades for categories with no subcategories (single ungrouped grid, same as today).
+## Result
+- Oman `+968 97360742` (8 digits) → valid.
+- UAE `+971 5XXXXXXXX` (9 digits) → valid.
+- US `+1 XXXXXXXXXX` (10 digits) → valid.
+- Validation, input cap, and error messaging all driven per-country by `libphonenumber-js` — no hardcoded length anywhere.
