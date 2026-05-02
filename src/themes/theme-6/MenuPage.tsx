@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Bell, ChevronDown } from "lucide-react";
+import { Search, X, Bell } from "lucide-react";
 import { getProductImageSrc } from "@/lib/productImage";
 import { RestaurantHeader } from "./RestaurantHeader";
 import { ProductCard } from "./ProductCard";
@@ -53,14 +53,11 @@ function CategoryBanner({
           style={{ backgroundImage: `url(${image})` }}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/80 via-primary/55 to-transparent" />
-      <div className="relative z-10 flex items-center justify-between h-full px-5">
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/20" />
+      <div className="relative z-10 flex items-center h-full px-5">
         <h2 className="font-display text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">
           {name}
         </h2>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-          <ChevronDown className="w-6 h-6 text-white/80" />
-        </motion.div>
       </div>
     </motion.button>
   );
@@ -375,8 +372,8 @@ export function MenuPage() {
                                       style={{ backgroundImage: `url(${getProductImageSrc(group.products[0].imageURL)})` }}
                                     />
                                   )}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/70 via-primary/50 to-transparent" />
-                                  <div className="relative z-10 flex items-center justify-between h-full px-4">
+                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/20" />
+                                  <div className="relative z-10 flex items-center h-full px-4">
                                     <div>
                                       <h3 className="font-display text-lg font-bold text-white uppercase tracking-wide drop-shadow">
                                         {group.subName}
@@ -385,12 +382,6 @@ export function MenuPage() {
                                         {group.products.length} {t("menu.items", { defaultValue: "items" })}
                                       </span>
                                     </div>
-                                    <motion.div
-                                      animate={{ rotate: expandedSubcategory === group.subId ? 180 : 0 }}
-                                      transition={{ duration: 0.3 }}
-                                    >
-                                      <ChevronDown className="w-5 h-5 text-white/80" />
-                                    </motion.div>
                                   </div>
                                 </motion.button>
                               </div>
