@@ -1,50 +1,51 @@
-# Fix phone validation per country
 
-## Problem
-The phone number `+968 97360742` (Oman) is correct — Omani mobile numbers are 8 digits. But the app currently requires **exactly 10 digits after the country code for every country**, hardcoded in:
-- `src/components/phone/Phone10Field.tsx` (input `maxLength={10}`, slices to 10)
-- `src/lib/phoneValidation.ts` (`requiredDigits = 10` default)
-- `src/components/menu/CheckoutModal.tsx`, `ReservationModal.tsx`, `SurveyModal.tsx` (`sanitizeSubscriberDigits(..., 10)`)
-- Error message "Please enter exactly 10 digits after the country code" (all 11 locales)
+# Theme 6: Warm Cream & Purple-Gold (Artisan Style)
 
-Subscriber length actually varies a lot (UK 10, Oman 8, UAE 9, France 9, US 10, Germany variable, etc.). A single hardcoded number can never be right globally.
+Inspired by the uploaded reference (Cadinin Evi), this theme features a warm cream background, deep purple headings, gold accents, and serif-style display fonts -- giving it a boutique/artisan restaurant feel distinct from all existing themes.
 
-## Solution
-Use `libphonenumber-js` (already a dependency via `react-phone-number-input`) to validate per-country. It knows each country's valid mobile/landline length(s) and patterns.
+## Visual Identity
 
-### 1. New per-country helpers in `src/lib/phoneValidation.ts`
-- `getMaxSubscriberDigits(country)` — returns the maximum national number length for that country (using `getExampleNumber` + metadata, fallback 15). Used to cap input length while typing.
-- `validatePhoneForCountry(e164, country)` — uses `isValidPhoneNumber(e164, country)` from `libphonenumber-js`. Returns boolean.
-- Keep old helpers but make them per-country-aware (no fixed 10).
+- **Palette**: Warm cream (#f5efe4) background, deep purple (#3f2a56) headings, purple-violet (#7856FF) primary, bronze-gold (#b37c46) secondary accents
+- **Fonts**: `Playfair Display` for headings (serif, elegant), `DM Sans` for body (clean sans-serif) -- a unique combo not used in any other theme
+- **Card style**: Tall portrait product images (3:4 ratio) with rounded corners, cream card backgrounds, subtle warm shadows
+- **Category banners**: Full-width cards with background image + purple gradient overlay and category name (inspired by the reference's category banner style)
 
-### 2. Update `src/components/phone/Phone10Field.tsx`
-- Rename internally is optional, keep filename for minimal diff.
-- Replace hardcoded `10` with dynamic `maxDigits = getMaxSubscriberDigits(value.country)`.
-- `maxLength` and slice operations both use `maxDigits`.
-- Recompute when country changes; if current `subscriber` exceeds new max, trim it.
+## Unique Interaction Patterns (same page structure, new opening styles)
 
-### 3. Update call sites
-In `CheckoutModal.tsx`, `ReservationModal.tsx`, `SurveyModal.tsx`:
-- Replace `sanitizeSubscriberDigits(next.subscriber, 10)` with the country-aware max.
-- Replace the validation check (currently uses 10) with `validatePhoneForCountry(buildE164Phone(country, subscriber), country)`.
-- On invalid, show the new error key `common.phoneError` with updated message (see below).
+- **Product Detail Modal**: Slides up from bottom as a "sheet" style with a spring animation and draggable close handle (vs. the centered modal in other themes)
+- **Cart Drawer**: Opens from the left side (other themes use right) with a curtain-reveal animation
+- **Category Tabs**: Pill-shaped tabs with an animated underline that morphs between selections using `layoutId`
+- **Product Cards**: Horizontal layout with tall portrait image on the left (3:4 ratio), info on the right -- matching the reference's product list style
+- **Hover/tap**: Cards lift with a warm glow shadow on hover
 
-### 4. Update error message in all 11 locales
-Change `common.phoneError` from "Please enter exactly 10 digits after the country code" to a country-agnostic message like:
-- en: "Please enter a valid phone number for the selected country"
-- and equivalent translations for ar, az, de, el, es, fr, it, ru, tr, zh.
+## Files to Create (under `src/themes/theme-6/`)
 
-## Files to modify
-- `src/lib/phoneValidation.ts`
-- `src/lib/phone.ts` (drop hardcoded 10 default)
-- `src/components/phone/Phone10Field.tsx`
-- `src/components/menu/CheckoutModal.tsx`
-- `src/components/menu/ReservationModal.tsx`
-- `src/components/menu/SurveyModal.tsx`
-- `src/locales/{en,ar,az,de,el,es,fr,it,ru,tr,zh}/translation.json`
+| File | Type | Description |
+|------|------|-------------|
+| `index.tsx` | Custom | Theme entry, imports theme.css |
+| `theme.css` | Custom | Full color palette (light+dark), fonts, animations, shadows |
+| `MenuPage.tsx` | Custom | Same structure as other themes but uses theme-6 class, left-side cart, bottom-sheet product detail |
+| `RestaurantHeader.tsx` | Custom | Warm header with serif logo display, gradient background inspired by reference |
+| `CategoryTabs.tsx` | Custom | Pill tabs with `layoutId` animated indicator |
+| `ProductCard.tsx` | Custom | Horizontal card with tall portrait image (3:4) |
+| `Footer.tsx` | Custom | Warm-toned footer matching theme palette |
+| `CartDrawer.tsx` | Re-export | `export { CartDrawer, CartButton } from "@/components/menu/CartDrawer"` (left-side handled via CSS transform) |
+| All other modals | Re-export | CheckoutModal, OrderReceipt, ReservationModal, SurveyModal, CallWaiterModal, ChangeTableModal, AnnouncementModal, SoundPermissionModal, FlyingEmoji, WaiterSuccessAnimation, LanguageSwitcher, ThemeSwitcher, ProductDetailModal |
 
-## Result
-- Oman `+968 97360742` (8 digits) → valid.
-- UAE `+971 5XXXXXXXX` (9 digits) → valid.
-- US `+1 XXXXXXXXXX` (10 digits) → valid.
-- Validation, input cap, and error messaging all driven per-country by `libphonenumber-js` — no hardcoded length anywhere.
+## Registration
+
+- Add entry `5: lazy(() => import("./theme-6"))` to `ThemeRouter.tsx` (themeId 5 maps to theme-6 folder)
+
+## What stays the same
+
+- Same single-page architecture: menu view + order receipt view (no extra pages)
+- All shared modals (checkout, order receipt, reservation, survey, etc.) re-exported from `@/components/menu/`
+- Same data flow, cart logic, waiter call, scroll sync, search
+- Product detail shown as modal (just different animation style)
+
+## Technical Details
+
+- ~6 custom files + ~14 re-export one-liners + 1 CSS file
+- CSS scoped under `.theme-6` class, no global leaks
+- Fonts loaded via Google Fonts `@import` in theme.css
+- All color tokens follow the existing HSL format used by shadcn/ui
