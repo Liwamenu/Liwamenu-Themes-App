@@ -86,6 +86,7 @@ export function MenuPage() {
   } = useFlyingEmoji();
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [expandedSubcategory, setExpandedSubcategory] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -133,7 +134,15 @@ export function MenuPage() {
   }, []);
 
   const toggleCategory = useCallback((id: string) => {
-    setExpandedCategory((prev) => (prev === id ? null : id));
+    setExpandedCategory((prev) => {
+      if (prev === id) return null;
+      setExpandedSubcategory(null);
+      return id;
+    });
+  }, []);
+
+  const toggleSubcategory = useCallback((id: string) => {
+    setExpandedSubcategory((prev) => (prev === id ? null : id));
   }, []);
 
   const filteredCategories = useMemo(() => {
@@ -350,24 +359,79 @@ export function MenuPage() {
                     <div className="pt-2">
                       {groupBySubcategory(category.products).map((group) => (
                         <div key={group.subId ?? "__none__"}>
-                          {group.subName && (
-                            <h3 className="font-display text-base font-semibold text-foreground/80 mb-2 mt-3 italic tracking-wide">
-                              {group.subName}
-                              <span className="text-xs font-normal text-muted-foreground ml-2 not-italic">
-                                ({group.products.length})
-                              </span>
-                            </h3>
+                          {group.subName && group.subId ? (
+                            <>
+                              {/* Subcategory accordion banner — smaller, indented */}
+                              <div className="pl-3 mt-2">
+                                <motion.button
+                                  onClick={() => toggleSubcategory(group.subId!)}
+                                  className="relative w-full h-[80px] rounded-md overflow-hidden group"
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  {/* Use first product image as background */}
+                                  {group.products[0]?.imageURL && (
+                                    <div
+                                      className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                                      style={{ backgroundImage: `url(${getProductImageSrc(group.products[0].imageURL)})` }}
+                                    />
+                                  )}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/70 via-primary/50 to-transparent" />
+                                  <div className="relative z-10 flex items-center justify-between h-full px-4">
+                                    <div>
+                                      <h3 className="font-display text-lg font-bold text-white uppercase tracking-wide drop-shadow">
+                                        {group.subName}
+                                      </h3>
+                                      <span className="text-white/70 text-xs">
+                                        {group.products.length} {t("menu.items", { defaultValue: "items" })}
+                                      </span>
+                                    </div>
+                                    <motion.div
+                                      animate={{ rotate: expandedSubcategory === group.subId ? 180 : 0 }}
+                                      transition={{ duration: 0.3 }}
+                                    >
+                                      <ChevronDown className="w-5 h-5 text-white/80" />
+                                    </motion.div>
+                                  </div>
+                                </motion.button>
+                              </div>
+                              <AnimatePresence initial={false}>
+                                {expandedSubcategory === group.subId && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="pl-3 pt-1">
+                                      {group.products.map((product) => (
+                                        <ProductCard
+                                          key={product.id}
+                                          product={product}
+                                          onSelect={handleSelectProduct}
+                                          isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                                          specialPriceName={restaurant.specialPriceName}
+                                          formatPrice={formatPrice}
+                                        />
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </>
+                          ) : (
+                            /* Products without subcategory — show directly */
+                            group.products.map((product) => (
+                              <ProductCard
+                                key={product.id}
+                                product={product}
+                                onSelect={handleSelectProduct}
+                                isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                                specialPriceName={restaurant.specialPriceName}
+                                formatPrice={formatPrice}
+                              />
+                            ))
                           )}
-                          {group.products.map((product) => (
-                            <ProductCard
-                              key={product.id}
-                              product={product}
-                              onSelect={handleSelectProduct}
-                              isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                              specialPriceName={restaurant.specialPriceName}
-                              formatPrice={formatPrice}
-                            />
-                          ))}
                         </div>
                       ))}
                     </div>
