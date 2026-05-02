@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Bell, ChevronDown } from "lucide-react";
-import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { getProductImageSrc } from "@/lib/productImage";
 import { RestaurantHeader } from "./RestaurantHeader";
 import { ProductCard } from "./ProductCard";
 import { ProductDetailModal } from "./ProductDetailModal";
