@@ -365,14 +365,14 @@ export function MenuPage() {
                               <div className="pl-3 mt-2">
                                 <motion.button
                                   onClick={() => toggleSubcategory(group.subId!)}
-                                  className="relative w-full h-[80px] rounded-md overflow-hidden group"
+                                  className="relative w-full h-[100px] rounded-md overflow-hidden group"
                                   whileTap={{ scale: 0.98 }}
                                 >
-                                  {/* Use first product image as background */}
-                                  {group.products[0]?.imageURL && (
+                                  {/* Use subcategory image or first product image as background */}
+                                  {(group.products[0]?.subCategoryImage || group.products[0]?.imageURL) && (
                                     <div
                                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                                      style={{ backgroundImage: `url(${getProductImageSrc(group.products[0].imageURL)})` }}
+                                      style={{ backgroundImage: `url(${group.products[0]?.subCategoryImage || getProductImageSrc(group.products[0].imageURL)})` }}
                                     />
                                   )}
                                   <div
