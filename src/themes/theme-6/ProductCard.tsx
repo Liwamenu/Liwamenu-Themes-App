@@ -1,8 +1,5 @@
-import { memo, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { memo, useCallback, useState } from "react";
 import { Product, Portion } from "@/types/restaurant";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 
@@ -43,82 +40,70 @@ export const ProductCard = memo(function ProductCard({
   const firstPortion = product.portions?.[0];
   if (!firstPortion) return null;
   const { displayPrice, originalPrice, priceType } = getPriceDisplay(firstPortion, isSpecialPriceActive, !!product.isCampaign);
+  const [showFullDesc, setShowFullDesc] = useState(false);
 
   const handleClick = useCallback(() => {
     onSelect(product);
   }, [onSelect, product]);
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -3, boxShadow: "var(--shadow-lg)" }}
-      whileTap={{ scale: 0.98 }}
+    <div
       onClick={handleClick}
-      className="group relative bg-card rounded-2xl overflow-hidden shadow-card cursor-pointer flex items-stretch"
+      className="flex items-stretch gap-4 py-3 border-b border-secondary/40 cursor-pointer group"
     >
-      {/* Badge */}
-      {priceType !== "normal" && (
-        <div
-          className={cn(
-            "absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md",
-            priceType === "campaign"
-              ? "bg-campaign text-campaign-foreground"
-              : "bg-special text-special-foreground"
-          )}
-        >
-          {priceType === "special" ? specialPriceName : t("productCard.campaign")}
-        </div>
-      )}
-
-      {/* Tall portrait image */}
-      <div className="w-[110px] flex-shrink-0 relative overflow-hidden">
+      {/* Portrait image */}
+      <div className="w-[85px] flex-shrink-0 relative overflow-hidden rounded-md">
         <img
           src={getProductImageSrc(product.imageURL)}
           onError={handleProductImageError}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover aspect-[3/4]"
           loading="lazy"
           decoding="async"
         />
+        {/* Badge */}
+        {priceType !== "normal" && (
+          <span
+            className={`absolute top-1 left-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+              priceType === "campaign" ? "bg-campaign text-campaign-foreground" : "bg-special text-special-foreground"
+            }`}
+          >
+            {priceType === "special" ? specialPriceName : t("productCard.campaign")}
+          </span>
+        )}
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-between p-3 min-w-0 min-h-[130px]">
-        <div>
-          <h3 className="font-display text-base font-semibold text-foreground leading-tight line-clamp-1">
+      <div className="flex-1 flex justify-between items-start min-w-0">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display text-lg font-semibold text-foreground leading-tight line-clamp-1">
             {product.name}
           </h3>
-          <p className="text-muted-foreground text-xs line-clamp-2 mt-1 leading-relaxed">
-            {product.description}
-          </p>
+          {product.description && (
+            <p
+              className={`text-muted-foreground text-[13px] leading-snug mt-1 ${showFullDesc ? "" : "line-clamp-2"}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowFullDesc((v) => !v);
+              }}
+            >
+              {product.description}
+            </p>
+          )}
         </div>
 
-        {/* Price row */}
-        <div className="flex items-end justify-between mt-2">
-          <div>
-            <span className="text-lg font-bold text-foreground font-display">
-              {formatPrice(displayPrice)}
+        {/* Price */}
+        <div className="flex flex-col items-end ml-3 flex-shrink-0">
+          <span className="text-xl font-bold text-foreground font-display">
+            {formatPrice(displayPrice)}
+          </span>
+          {originalPrice && (
+            <span className="text-xs text-muted-foreground line-through">
+              {formatPrice(originalPrice)}
             </span>
-            {originalPrice && (
-              <span className="ml-2 text-xs text-muted-foreground line-through">
-                {formatPrice(originalPrice)}
-              </span>
-            )}
-          </div>
-          <button
-            className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:shadow-glow transition-all active:scale-90"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClick();
-            }}
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });
