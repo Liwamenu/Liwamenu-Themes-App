@@ -76,7 +76,7 @@ export const ProductCard = memo(function ProductCard({
       {/* Content */}
       <div className="flex-1 flex justify-between items-start min-w-0">
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-lg font-semibold text-foreground leading-tight line-clamp-1">
+          <h3 className="font-display text-[22px] font-semibold text-foreground leading-tight line-clamp-1">
             {product.name}
           </h3>
           {product.description && (
@@ -94,7 +94,7 @@ export const ProductCard = memo(function ProductCard({
 
         {/* Price */}
         <div className="flex flex-col items-end ml-3 flex-shrink-0">
-          <span className="text-xl font-bold text-foreground font-display">
+          <span className="text-base font-medium text-muted-foreground">
             {formatPrice(displayPrice)}
           </span>
           {originalPrice && (
