@@ -53,7 +53,10 @@ function CategoryBanner({
           style={{ backgroundImage: `url(${image})` }}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/20" />
+      <div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) 40%, hsl(var(--primary) / 0.6) 50%, transparent 60%)' }}
+      />
       <div className="relative z-10 flex items-center h-full px-5">
         <h2 className="font-display text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">
           {name}
@@ -372,7 +375,10 @@ export function MenuPage() {
                                       style={{ backgroundImage: `url(${getProductImageSrc(group.products[0].imageURL)})` }}
                                     />
                                   )}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/20" />
+                                  <div
+                                    className="absolute inset-0"
+                                    style={{ background: 'linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) 35%, hsl(var(--primary) / 0.6) 45%, transparent 55%)' }}
+                                  />
                                   <div className="relative z-10 flex items-center h-full px-4">
                                     <div>
                                       <h3 className="font-display text-lg font-bold text-white uppercase tracking-wide drop-shadow">
