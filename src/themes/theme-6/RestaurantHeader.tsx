@@ -12,23 +12,16 @@ import { Order } from "@/types/restaurant";
 interface RestaurantHeaderProps {
   orders?: Order[];
   onViewOrder?: (order: Order) => void;
-  isVisible?: boolean;
 }
 
-export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true }: RestaurantHeaderProps) {
+export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderProps) {
   const { restaurant } = useRestaurant();
   const { t } = useTranslation();
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
   return (
-    <motion.header
-      initial={{ y: 0 }}
-      animate={{ y: isVisible ? 0 : -100 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border/40 transition-shadow"
-      style={{ boxShadow: isVisible ? 'var(--shadow-sm)' : 'none' }}
-    >
+    <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border/40" style={{ boxShadow: 'var(--shadow-sm)' }}>
       <div className="flex items-center justify-between px-4 py-2 max-w-[600px] mx-auto">
         {/* Logo */}
         <motion.div
@@ -71,6 +64,6 @@ export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true }:
 
       <ReservationModal isOpen={isReservationOpen} onClose={() => setIsReservationOpen(false)} />
       <SurveyModal isOpen={isSurveyOpen} onClose={() => setIsSurveyOpen(false)} />
-    </motion.header>
+    </header>
   );
 }
