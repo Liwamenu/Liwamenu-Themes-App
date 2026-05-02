@@ -296,7 +296,7 @@ export function MenuPage() {
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${restaurantHeroImage})` }} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/30 to-transparent" />
-          <div className="flex z-10 justify-center items-end h-full relative pb-8 flex-col items-center gap-2">
+          <div className="flex z-10 justify-center items-end h-full relative pb-8 flex-col gap-2">
             <h1 className="font-display text-4xl lg:text-5xl text-white z-10 italic font-bold tracking-wide drop-shadow-lg">
               {restaurant.name}
             </h1>
