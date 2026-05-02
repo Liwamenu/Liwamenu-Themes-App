@@ -108,7 +108,7 @@ export function getTenant(): string {
     hostname.endsWith(".lovableproject.com") ||
     hostname.endsWith(".lovable.app")
   ) {
-    return "jralkhuwair";
+    return "demo1";
   }
 
   // Subdomain-based: addis.liwamenu.com → "addis"
@@ -123,7 +123,7 @@ export function getTenant(): string {
     return pathSegment;
   }
 
-  return "jralkhuwair"; // fallback
+  return "demo1"; // fallback
 }
 
 // Helper to check if phone is Turkish based on the phone number
