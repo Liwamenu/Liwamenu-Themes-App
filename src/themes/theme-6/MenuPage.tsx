@@ -55,10 +55,10 @@ function CategoryBanner({
       )}
       <div
         className="absolute inset-0"
-        style={{ background: 'linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) 40%, hsl(var(--primary) / 0.6) 50%, transparent 60%)' }}
+        style={{ background: 'linear-gradient(to right, #7555BE 0%, #7555BE 40%, rgba(117,85,190,0.6) 50%, transparent 60%)' }}
       />
       <div className="relative z-10 flex items-center h-full px-5">
-        <h2 className="font-display text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">
+        <h2 className="text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">
           {name}
         </h2>
       </div>
@@ -377,11 +377,11 @@ export function MenuPage() {
                                   )}
                                   <div
                                     className="absolute inset-0"
-                                    style={{ background: 'linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) 35%, hsl(var(--primary) / 0.6) 45%, transparent 55%)' }}
+                                    style={{ background: 'linear-gradient(to right, #7555BE 0%, #7555BE 35%, rgba(117,85,190,0.6) 45%, transparent 55%)' }}
                                   />
                                   <div className="relative z-10 flex items-center h-full px-4">
                                     <div>
-                                      <h3 className="font-display text-lg font-bold text-white uppercase tracking-wide drop-shadow">
+                                      <h3 className="text-lg font-bold text-white uppercase tracking-wide drop-shadow">
                                         {group.subName}
                                       </h3>
                                       <span className="text-white/70 text-xs">
