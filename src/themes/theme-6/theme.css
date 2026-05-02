@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* Theme 6: Warm Cream & Purple-Gold (Artisan) — scoped under .theme-6 */
+.theme-6 {
+  --background: 34 38% 93%;
+  --foreground: 270 30% 18%;
+
+  --card: 36 33% 97%;
+  --card-foreground: 270 30% 18%;
+
+  --popover: 36 33% 97%;
+  --popover-foreground: 270 30% 18%;
+
+  --primary: 261 100% 67%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 34 40% 53%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 34 25% 88%;
+  --muted-foreground: 270 10% 45%;
+
+  --accent: 34 38% 90%;
+  --accent-foreground: 270 40% 25%;
+
+  --destructive: 0 65% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 36%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 261 80% 62%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 34 60% 48%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 261 100% 67%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 34 25% 85%;
+  --input: 34 30% 90%;
+  --ring: 261 100% 67%;
+
+  --shadow-sm: 0 1px 3px hsla(34, 20%, 30%, 0.06);
+  --shadow-md: 0 4px 16px hsla(34, 20%, 30%, 0.08);
+  --shadow-lg: 0 8px 30px hsla(34, 20%, 30%, 0.12);
+  --shadow-xl: 0 16px 48px hsla(34, 20%, 30%, 0.16);
+  --shadow-glow: 0 0 24px hsla(261, 100%, 67%, 0.2);
+}
+
+.dark .theme-6 {
+  --background: 270 20% 8%;
+  --foreground: 34 30% 92%;
+
+  --card: 270 20% 12%;
+  --card-foreground: 34 30% 92%;
+
+  --popover: 270 20% 12%;
+  --popover-foreground: 34 30% 92%;
+
+  --primary: 261 80% 70%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 34 40% 40%;
+  --secondary-foreground: 34 30% 92%;
+
+  --muted: 270 15% 18%;
+  --muted-foreground: 34 15% 55%;
+
+  --accent: 261 40% 20%;
+  --accent-foreground: 261 80% 75%;
+
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 40%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 261 70% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 34 50% 50%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 261 80% 70%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 270 15% 20%;
+  --input: 270 15% 20%;
+  --ring: 261 80% 70%;
+
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 48px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(261, 80%, 70%, 0.3);
+}
+
+/* Theme-6 fonts */
+.theme-6,
+.theme-6 * {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.theme-6 .font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.theme-6 .font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Theme-6 glass effect */
+.theme-6 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(34, 38%, 93%, 0.92);
+}
+
+.dark .theme-6 .glass {
+  background: hsla(270, 20%, 10%, 0.92);
+}
+
+/* Theme-6 shadow utilities */
+.theme-6 .shadow-card {
+  box-shadow: var(--shadow-md);
+}
+
+.theme-6 .shadow-card-hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-6 .shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.theme-6 .shadow-elegant {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Theme-6 animations */
+@keyframes theme6-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes theme6-slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes theme6-slideInLeft {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes theme6-sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes theme6-bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes theme6-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) rotate(-3deg); }
+  20%, 40%, 60%, 80% { transform: translateX(2px) rotate(3deg); }
+}
+
+@keyframes theme6-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.theme-6 .animate-fade-in {
+  animation: theme6-fadeIn 0.3s ease-out;
+}
+
+.theme-6 .animate-slide-up {
+  animation: theme6-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-6 .animate-slide-in-left {
+  animation: theme6-slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-6 .animate-sheet-up {
+  animation: theme6-sheetUp 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.theme-6 .animate-bounce-in {
+  animation: theme6-bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-6 .animate-shake {
+  animation: theme6-shake 0.5s ease-in-out;
+}
+
+.theme-6 .animate-shimmer {
+  background: linear-gradient(90deg, transparent, hsla(261, 100%, 67%, 0.08), transparent);
+  background-size: 200% 100%;
+  animation: theme6-shimmer 2s ease-in-out infinite;
+}
+
+/* Theme-6 hide-scrollbar */
+.theme-6 .hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.theme-6 .hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
