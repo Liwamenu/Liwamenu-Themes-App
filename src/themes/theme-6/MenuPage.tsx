@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Bell } from "lucide-react";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { RestaurantHeader } from "./RestaurantHeader";
 import { CategoryTabs } from "./CategoryTabs";
 import { ProductCard } from "./ProductCard";
@@ -464,5 +465,3 @@ export function MenuPage() {
     </div>
   );
 }
-
-import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
