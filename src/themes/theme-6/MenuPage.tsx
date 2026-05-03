@@ -57,12 +57,12 @@ function CategoryBanner({
       )}
       <div
         className="absolute inset-0"
-        style={{ background: 'linear-gradient(to right, #7555BE 0%, #7555BE 40%, rgba(117,85,190,0.6) 50%, transparent 60%)' }}
+        style={{
+          background: "linear-gradient(to right, #7555BE 0%, #7555BE 40%, rgba(117,85,190,0.6) 50%, transparent 60%)",
+        }}
       />
       <div className="relative z-10 flex items-center h-full px-5">
-        <h2 className="text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">
-          {name}
-        </h2>
+        <h2 className="text-2xl font-bold text-white uppercase tracking-wider drop-shadow-lg">{name}</h2>
       </div>
     </motion.button>
   );
@@ -81,11 +81,7 @@ export function MenuPage() {
     setTableNumber,
   } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
-  const {
-    isVisible: isFlyingEmojiVisible,
-    startPosition: flyingEmojiPosition,
-    hideFlyingEmoji,
-  } = useFlyingEmoji();
+  const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedSubcategories, setExpandedSubcategories] = useState<Set<string>>(new Set());
@@ -111,7 +107,14 @@ export function MenuPage() {
   });
 
   const isAnyOverlayOpen =
-    !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+    !!selectedProduct ||
+    isCartOpen ||
+    isCheckoutOpen ||
+    showCallWaiter ||
+    showReservation ||
+    showTableSelection ||
+    showSoundPermission ||
+    showAnnouncement;
   useBodyScrollLock(currentView === "menu" && isAnyOverlayOpen);
 
   useEffect(() => {
@@ -162,8 +165,12 @@ export function MenuPage() {
         ...cat,
         products: cat.products.filter(
           (p) =>
-            String(p.name ?? "").toLowerCase().includes(lq) ||
-            String(p.description ?? "").toLowerCase().includes(lq),
+            String(p.name ?? "")
+              .toLowerCase()
+              .includes(lq) ||
+            String(p.description ?? "")
+              .toLowerCase()
+              .includes(lq),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
@@ -258,19 +265,21 @@ export function MenuPage() {
   const handleCloseReservation = useCallback(() => setShowReservation(false), []);
 
   /** Get representative image for a category banner */
-  const getCategoryImage = useCallback(
-    (cat: { image?: string; products: Product[] }) => {
-      if (cat.image) return cat.image;
-      const first = cat.products.find((p) => p.imageURL);
-      return first ? getProductImageSrc(first.imageURL) : undefined;
-    },
-    [],
-  );
+  const getCategoryImage = useCallback((cat: { image?: string; products: Product[] }) => {
+    if (cat.image) return cat.image;
+    const first = cat.products.find((p) => p.imageURL);
+    return first ? getProductImageSrc(first.imageURL) : undefined;
+  }, []);
 
   if (currentView === "order" && viewingOrder) {
     return (
       <div className="theme-6">
-        <OrderReceipt orderId={viewingOrder.id} onBack={handleBackToMenu} waiterCooldown={waiterCooldown} onWaiterSuccess={handleWaiterSuccess} />
+        <OrderReceipt
+          orderId={viewingOrder.id}
+          onBack={handleBackToMenu}
+          waiterCooldown={waiterCooldown}
+          onWaiterSuccess={handleWaiterSuccess}
+        />
       </div>
     );
   }
@@ -381,12 +390,17 @@ export function MenuPage() {
                                   {(group.products[0]?.subCategoryImage || group.products[0]?.imageURL) && (
                                     <div
                                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                                      style={{ backgroundImage: `url(${group.products[0]?.subCategoryImage || getProductImageSrc(group.products[0].imageURL)})` }}
+                                      style={{
+                                        backgroundImage: `url(${group.products[0]?.subCategoryImage || getProductImageSrc(group.products[0].imageURL)})`,
+                                      }}
                                     />
                                   )}
                                   <div
                                     className="absolute inset-0"
-                                    style={{ background: 'linear-gradient(to right, #7555BE 0%, #7555BE 35%, rgba(117,85,190,0.6) 45%, transparent 55%)' }}
+                                    style={{
+                                      background:
+                                        "linear-gradient(to right, #7555BE 0%, #7555BE 35%, rgba(117,85,190,0.6) 45%, transparent 55%)",
+                                    }}
                                   />
                                   <div className="relative z-10 flex items-center h-full px-4">
                                     <div>
@@ -455,15 +469,17 @@ export function MenuPage() {
         )}
 
         {/* External Page Button - at the very bottom */}
-        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-          <section>
-            <CategoryBanner
-              name={`📄 ${restaurant.externalPageButtonName}`}
-              isOpen={false}
-              onToggle={() => setShowExternalPage(true)}
-            />
-          </section>
-        )}
+        {!searchQuery &&
+          restaurant.externalPageButtonName &&
+          (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+            <section>
+              <CategoryBanner
+                name={`${restaurant.externalPageButtonName}`}
+                isOpen={false}
+                onToggle={() => setShowExternalPage(true)}
+              />
+            </section>
+          )}
       </div>
 
       <Footer />
@@ -483,18 +499,31 @@ export function MenuPage() {
 
       <AnimatePresence>
         {isCheckoutOpen && (
-          <CheckoutModal onClose={handleCloseCheckout} onOrderComplete={handleOrderComplete} onShowSoundPermission={handleShowSoundPermission} />
+          <CheckoutModal
+            onClose={handleCloseCheckout}
+            onOrderComplete={handleOrderComplete}
+            onShowSoundPermission={handleShowSoundPermission}
+          />
         )}
       </AnimatePresence>
 
       <SoundPermissionModal isOpen={showSoundPermission} onAllow={handleAllowSound} onDeny={handleDenySound} />
       <CallWaiterModal isOpen={showCallWaiter} onClose={handleCloseCallWaiter} onSuccess={handleWaiterSuccess} />
       <ReservationModal isOpen={showReservation} onClose={handleCloseReservation} />
-      <ChangeTableModal isOpen={showTableSelection} onClose={() => setShowTableSelection(false)} onTableChange={handleTableSelected} currentTable={undefined} />
+      <ChangeTableModal
+        isOpen={showTableSelection}
+        onClose={() => setShowTableSelection(false)}
+        onTableChange={handleTableSelected}
+        currentTable={undefined}
+      />
       <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
 
       {restaurant.announcementSettings?.enabled && restaurant.announcementSettings?.htmlContent && (
-        <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings.htmlContent} />
+        <AnnouncementModal
+          isOpen={showAnnouncement}
+          onClose={() => setShowAnnouncement(false)}
+          htmlContent={restaurant.announcementSettings.htmlContent}
+        />
       )}
 
       {showExternalPage && (
@@ -506,21 +535,28 @@ export function MenuPage() {
       )}
 
       {/* Floating Call Waiter Button */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-        <div className="fixed top-[110px] right-4 z-40">
-          <button
-            onClick={handleOpenCallWaiterFloating}
-            disabled={waiterCooldown > 0}
-            className={`h-9 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-              waiterCooldown > 0 ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-secondary text-secondary-foreground hover:opacity-90"
-            }`}
-            aria-label={t("waiter.title")}
-          >
-            <Bell className="w-4 h-4" />
-            <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-          </button>
-        </div>
-      )}
+      {!isCartOpen &&
+        !selectedProduct &&
+        !showCallWaiter &&
+        !isCheckoutOpen &&
+        !showReservation &&
+        !showTableSelection && (
+          <div className="fixed top-[110px] right-4 z-40">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              className={`h-9 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-secondary text-secondary-foreground hover:opacity-90"
+              }`}
+              aria-label={t("waiter.title")}
+            >
+              <Bell className="w-4 h-4" />
+              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
+          </div>
+        )}
 
       {/* Floating Cart Button */}
       {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (

@@ -159,7 +159,6 @@ export function MenuPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [categories, campaignProducts.length, searchQuery, isHeaderVisible]);
 
-
   const getStickyOffset = useCallback(() => {
     // header(52) + category tabs(~58) + search bar(~46) + buffer
     return isHeaderVisible ? 200 : 148;
@@ -209,7 +208,13 @@ export function MenuPage() {
       .map((cat) => ({
         ...cat,
         products: cat.products.filter(
-          (p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery),
+          (p) =>
+            String(p.name ?? "")
+              .toLowerCase()
+              .includes(lowerQuery) ||
+            String(p.description ?? "")
+              .toLowerCase()
+              .includes(lowerQuery),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
@@ -242,10 +247,13 @@ export function MenuPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSelectProduct = useCallback((product: Product) => {
-    if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
-    setSelectedProduct(product);
-  }, [restaurant.onlineOrder, restaurant.inPersonOrder]);
+  const handleSelectProduct = useCallback(
+    (product: Product) => {
+      if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
+      setSelectedProduct(product);
+    },
+    [restaurant.onlineOrder, restaurant.inPersonOrder],
+  );
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);
@@ -471,7 +479,9 @@ export function MenuPage() {
                     {group.subName && (
                       <h3 className="font-display text-lg font-semibold text-foreground/80 mb-3 mt-2 flex items-center uppercase tracking-wide">
                         {group.subName}
-                        <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">({group.products.length})</span>
+                        <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">
+                          ({group.products.length})
+                        </span>
                       </h3>
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -502,17 +512,19 @@ export function MenuPage() {
         )}
 
         {/* External Page Button - styled like a category banner */}
-        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-          <button
-            onClick={() => setShowExternalPage(true)}
-            className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden mt-[30px] group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
-            <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10 group-hover:scale-105 transition-transform">
-              restaurant.externalPageButtonName}
-            </h2>
-          </button>
-        )}
+        {!searchQuery &&
+          restaurant.externalPageButtonName &&
+          (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+            <button
+              onClick={() => setShowExternalPage(true)}
+              className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden mt-[30px] group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10 group-hover:scale-105 transition-transform">
+                {restaurant.externalPageButtonName}
+              </h2>
+            </button>
+          )}
       </div>
 
       {/* Footer */}
@@ -582,23 +594,28 @@ export function MenuPage() {
       )}
 
       {/* Floating Call Waiter Button */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-        <div className="fixed top-[170px] right-4 z-40">
-          <button
-            onClick={handleOpenCallWaiterFloating}
-            disabled={waiterCooldown > 0}
-            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-              waiterCooldown > 0
-                ? "bg-muted text-muted-foreground cursor-not-allowed"
-                : "bg-primary text-primary-foreground hover:opacity-90"
-            }`}
-            aria-label={t("waiter.title")}
-          >
-            <Bell className="w-4 h-4" />
-            <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-          </button>
-        </div>
-      )}
+      {!isCartOpen &&
+        !selectedProduct &&
+        !showCallWaiter &&
+        !isCheckoutOpen &&
+        !showReservation &&
+        !showTableSelection && (
+          <div className="fixed top-[170px] right-4 z-40">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
+              }`}
+              aria-label={t("waiter.title")}
+            >
+              <Bell className="w-4 h-4" />
+              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
+          </div>
+        )}
 
       {/* Floating Cart Button */}
       {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
