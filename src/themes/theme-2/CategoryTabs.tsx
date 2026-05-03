@@ -12,10 +12,6 @@ interface CategoryTabsProps {
     name: string;
     count: number;
   } | null;
-  externalPageTab?: {
-    id: string;
-    name: string;
-  } | null;
 }
 
 function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
@@ -29,7 +25,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
   }) as T;
 }
 
-export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, externalPageTab }: CategoryTabsProps) {
+export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isSticky, setIsSticky] = useState(false);
 
@@ -96,18 +92,6 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
             <span className="text-xs opacity-60 bg-white/10 px-1.5 py-0.5 rounded-full">{category.products.length}</span>
           </motion.button>
         ))}
-
-        {externalPageTab && (
-          <motion.button
-            key={externalPageTab.id}
-            data-category={externalPageTab.id}
-            onClick={() => handleClick(externalPageTab.id)}
-            whileTap={{ scale: 0.95 }}
-            className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 bg-secondary text-secondary-foreground hover:bg-primary/20"
-          >
-            📄 {externalPageTab.name}
-          </motion.button>
-        )}
       </div>
     </div>
   );

@@ -13,10 +13,6 @@ interface CategoryTabsProps {
     name: string;
     count: number;
   } | null;
-  externalPageTab?: {
-    id: string;
-    name: string;
-  } | null;
 }
 
 const getCategoryIcon = (categoryName: string) => {
@@ -36,7 +32,7 @@ const getCategoryIcon = (categoryName: string) => {
   return UtensilsCrossed;
 };
 
-export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, externalPageTab }: CategoryTabsProps) {
+export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -104,21 +100,6 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
             </motion.button>
           );
         })}
-
-        {externalPageTab && (
-          <motion.button
-            key={externalPageTab.id}
-            data-category={externalPageTab.id}
-            onClick={() => handleClick(externalPageTab.id)}
-            whileTap={{ scale: 0.9 }}
-            className="flex-shrink-0 min-w-[80px] flex flex-col items-center gap-1 py-3 px-3 transition-all duration-200 relative text-muted-foreground hover:text-foreground"
-          >
-            <UtensilsCrossed className="w-5 h-5" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider truncate max-w-full">
-              {externalPageTab.name}
-            </span>
-          </motion.button>
-        )}
       </div>
     </div>
   );

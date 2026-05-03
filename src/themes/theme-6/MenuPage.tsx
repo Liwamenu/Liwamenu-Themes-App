@@ -337,17 +337,6 @@ export function MenuPage() {
           </section>
         )}
 
-        {/* External Page Button */}
-        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-          <section>
-            <CategoryBanner
-              name={`📄 ${restaurant.externalPageButtonName}`}
-              isOpen={false}
-              onToggle={() => setShowExternalPage(true)}
-            />
-          </section>
-        )}
-
         {/* Regular Categories — Accordion */}
         {filteredCategories.map((category) => {
           const isOpen = expandedCategories.has(category.id) || !!searchQuery;
@@ -463,6 +452,17 @@ export function MenuPage() {
           <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">{t("menu.noResults", { query: searchQuery })}</p>
           </div>
+        )}
+
+        {/* External Page Button - at the very bottom */}
+        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+          <section>
+            <CategoryBanner
+              name={`📄 ${restaurant.externalPageButtonName}`}
+              isOpen={false}
+              onToggle={() => setShowExternalPage(true)}
+            />
+          </section>
         )}
       </div>
 

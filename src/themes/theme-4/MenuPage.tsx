@@ -442,6 +442,21 @@ export function MenuPage() {
         )}
       </div>
 
+      {/* External Page Button - styled like a category banner */}
+      {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+        <button
+          onClick={() => setShowExternalPage(true)}
+          className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden group"
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full group-hover:scale-105 transition-transform">
+              📄 {restaurant.externalPageButtonName}
+            </h2>
+          </div>
+        </button>
+      )}
+
       <Footer />
 
       {!searchQuery && (
@@ -458,10 +473,6 @@ export function MenuPage() {
                 }
               : null
           }
-          externalPageTab={restaurant.externalPageButtonName ? {
-            id: EXTERNAL_PAGE_ID,
-            name: restaurant.externalPageButtonName,
-          } : null}
         />
       )}
 

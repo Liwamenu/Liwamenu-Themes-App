@@ -372,10 +372,6 @@ export function MenuPage() {
               name: t('menu.campaignProducts'),
               count: campaignProducts.length
             } : null}
-            externalPageTab={restaurant.externalPageButtonName ? {
-              id: EXTERNAL_PAGE_ID,
-              name: restaurant.externalPageButtonName,
-            } : null}
           />
         )}
       </div>
@@ -468,6 +464,18 @@ export function MenuPage() {
           <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">{t("menu.noResults", { query: searchQuery })}</p>
           </div>
+        )}
+
+        {/* External Page Button - at the very bottom */}
+        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+          <button
+            onClick={() => setShowExternalPage(true)}
+            className="w-full mb-8 py-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+          >
+            <h2 className="font-display text-xl font-bold text-primary flex items-center justify-center gap-2">
+              📄 {restaurant.externalPageButtonName}
+            </h2>
+          </button>
         )}
       </div>
 
