@@ -12,10 +12,6 @@ interface CategoryTabsProps {
     name: string;
     count: number;
   } | null;
-  externalPageTab?: {
-    id: string;
-    name: string;
-  } | null;
 }
 
 // Throttle helper function
@@ -30,7 +26,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
   }) as T;
 }
 
-export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, externalPageTab }: CategoryTabsProps) {
+export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isSticky, setIsSticky] = useState(false);
 
@@ -106,18 +102,6 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
             </span>
           </motion.button>
         ))}
-
-        {externalPageTab && (
-          <motion.button
-            key={externalPageTab.id}
-            data-category={externalPageTab.id}
-            onClick={() => handleClick(externalPageTab.id)}
-            whileTap={{ scale: 0.95 }}
-            className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-secondary text-secondary-foreground hover:bg-secondary/80"
-          >
-            📄 {externalPageTab.name}
-          </motion.button>
-        )}
       </div>
     </div>
   );
