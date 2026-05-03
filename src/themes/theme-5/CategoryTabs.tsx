@@ -14,6 +14,10 @@ interface CategoryTabsProps {
     count: number;
   } | null;
   isHeaderVisible?: boolean;
+  externalPageTab?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 const getCategoryIcon = (categoryName: string) => {
@@ -33,7 +37,7 @@ const getCategoryIcon = (categoryName: string) => {
   return UtensilsCrossed;
 };
 
-export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, isHeaderVisible = true }: CategoryTabsProps) {
+export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, isHeaderVisible = true, externalPageTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -105,6 +109,21 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
             </motion.button>
           );
         })}
+
+        {externalPageTab && (
+          <motion.button
+            key={externalPageTab.id}
+            data-category={externalPageTab.id}
+            onClick={() => handleClick(externalPageTab.id)}
+            whileTap={{ scale: 0.9 }}
+            className="flex-shrink-0 min-w-[80px] flex flex-col items-center gap-1 py-3 px-4 transition-all duration-200 border-b-2 text-muted-foreground hover:text-foreground border-transparent"
+          >
+            <UtensilsCrossed className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider truncate max-w-full font-barlow">
+              {externalPageTab.name}
+            </span>
+          </motion.button>
+        )}
       </div>
     </div>
   );

@@ -160,6 +160,9 @@ export interface RestaurantData {
   moneySign?: string | null;
   heroImageUrl: string;
   logoImageUrl: string;
+  externalPageHTML?: string | null;
+  externalPageImage?: string | null;
+  externalPageButtonName?: string | null;
   announcementSettings?: AnnouncementSettings;
   reservationSettings?: ReservationSettings;
   surveySettings?: SurveySettings;

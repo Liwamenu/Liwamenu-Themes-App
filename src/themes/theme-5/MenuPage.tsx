@@ -17,6 +17,7 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
+import { ExternalPageView } from "@/components/menu/ExternalPageView";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -65,6 +66,7 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [showExternalPage, setShowExternalPage] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
@@ -190,7 +192,11 @@ export function MenuPage() {
 
   const scrollToCategory = useCallback(
     (categoryId: string) => {
-      scrollToSection(categoryId === CAMPAIGN_CATEGORY_ID ? CAMPAIGN_CATEGORY_ID : categoryId);
+      if (categoryId === "__external__") {
+        setShowExternalPage(true);
+        return;
+      }
+      scrollToSection(categoryId);
     },
     [scrollToSection],
   );
@@ -354,6 +360,10 @@ export function MenuPage() {
                 }
               : null
           }
+          externalPageTab={restaurant.externalPageButtonName ? {
+            id: "__external__",
+            name: restaurant.externalPageButtonName,
+          } : null}
         />
       )}
 
@@ -551,6 +561,14 @@ export function MenuPage() {
           isOpen={showAnnouncement}
           onClose={() => setShowAnnouncement(false)}
           htmlContent={restaurant.announcementSettings.htmlContent}
+        />
+      )}
+
+      {showExternalPage && (
+        <ExternalPageView
+          html={restaurant.externalPageHTML}
+          image={restaurant.externalPageImage}
+          onClose={() => setShowExternalPage(false)}
         />
       )}
 

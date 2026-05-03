@@ -18,6 +18,7 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
+import { ExternalPageView } from "@/components/menu/ExternalPageView";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -28,6 +29,8 @@ import { Input } from "@/components/ui/input";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
 
 type View = "menu" | "order";
+
+const EXTERNAL_PAGE_ID = "__external__";
 
 function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
   let lastCall = 0;
@@ -54,6 +57,7 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [showExternalPage, setShowExternalPage] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem('waiterCooldownEnd');
     if (savedEndTime) {
@@ -126,6 +130,10 @@ export function MenuPage() {
   const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
 
   const scrollToCategory = useCallback((categoryId: string) => {
+    if (categoryId === EXTERNAL_PAGE_ID) {
+      setShowExternalPage(true);
+      return;
+    }
     if (categoryId === CAMPAIGN_CATEGORY_ID) {
       setActiveCategory(CAMPAIGN_CATEGORY_ID);
       requestAnimationFrame(() => {
@@ -230,6 +238,10 @@ export function MenuPage() {
             activeCategory={activeCategory}
             onCategoryChange={scrollToCategory}
             campaignTab={campaignProducts.length > 0 ? { id: CAMPAIGN_CATEGORY_ID, name: t('menu.campaignProducts'), count: campaignProducts.length } : null}
+            externalPageTab={restaurant.externalPageButtonName ? {
+              id: EXTERNAL_PAGE_ID,
+              name: restaurant.externalPageButtonName,
+            } : null}
           />
         )}
       </div>
@@ -325,6 +337,14 @@ export function MenuPage() {
       <ChangeTableModal isOpen={showTableSelection} onClose={() => setShowTableSelection(false)} onTableChange={handleTableSelected} currentTable={undefined} />
       <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
       <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings?.htmlContent || ""} />
+
+      {showExternalPage && (
+        <ExternalPageView
+          html={restaurant.externalPageHTML}
+          image={restaurant.externalPageImage}
+          onClose={() => setShowExternalPage(false)}
+        />
+      )}
 
       {/* Floating Call Waiter Button */}
       {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
