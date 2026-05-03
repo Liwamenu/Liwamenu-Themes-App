@@ -131,7 +131,13 @@ export function MenuPage() {
       .map((cat) => ({
         ...cat,
         products: cat.products.filter(
-          (p) => String(p.name ?? "").toLowerCase().includes(lowerQuery) || String(p.description ?? "").toLowerCase().includes(lowerQuery),
+          (p) =>
+            String(p.name ?? "")
+              .toLowerCase()
+              .includes(lowerQuery) ||
+            String(p.description ?? "")
+              .toLowerCase()
+              .includes(lowerQuery),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
@@ -143,7 +149,10 @@ export function MenuPage() {
     [isCampaignActive, filteredCategories],
   );
   const resetKey = `${searchQuery}|${categories.length}`;
-  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(visibleCategories, resetKey);
+  const { slicedCategories, sentinelRef, hasMore, ensureCategoryRendered } = useInfiniteProducts(
+    visibleCategories,
+    resetKey,
+  );
 
   const scrollToCategory = useCallback(
     (categoryId: string) => {
@@ -201,10 +210,13 @@ export function MenuPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSelectProduct = useCallback((product: Product) => {
-    if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
-    setSelectedProduct(product);
-  }, [restaurant.onlineOrder, restaurant.inPersonOrder]);
+  const handleSelectProduct = useCallback(
+    (product: Product) => {
+      if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
+      setSelectedProduct(product);
+    },
+    [restaurant.onlineOrder, restaurant.inPersonOrder],
+  );
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);
@@ -321,29 +333,30 @@ export function MenuPage() {
         </div>
       )}
 
-      {!searchQuery && (() => {
-        const heroBg = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
-        return (
-          <div
-            className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
-            style={heroBg ? { backgroundImage: `url(${heroBg})` } : undefined}
-          >
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              {(restaurant.logoImageUrl || (restaurant as any).logoUrl) && (
-                <img
-                  src={restaurant.logoImageUrl || (restaurant as any).logoUrl}
-                  alt={restaurant.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
-                />
-              )}
-              <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
-                {restaurant.name}
-              </h2>
-              {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
+      {!searchQuery &&
+        (() => {
+          const heroBg = restaurant.imageAbsoluteUrl || restaurant.heroImageUrl;
+          return (
+            <div
+              className="relative w-full h-[50vh] min-h-[300px] bg-cover bg-center bg-gradient-to-br from-primary/40 to-primary/10"
+              style={heroBg ? { backgroundImage: `url(${heroBg})` } : undefined}
+            >
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                {(restaurant.logoImageUrl || (restaurant as any).logoUrl) && (
+                  <img
+                    src={restaurant.logoImageUrl || (restaurant as any).logoUrl}
+                    alt={restaurant.name}
+                    className="w-20 h-20 rounded-full object-cover border-2 border-white/30"
+                  />
+                )}
+                <h2 className="text-center text-5xl md:text-7xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
+                  {restaurant.name}
+                </h2>
+                {restaurant.slogan1 && <p className="text-white/70 text-lg">{restaurant.slogan1}</p>}
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       <div className="pb-8">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
@@ -379,12 +392,16 @@ export function MenuPage() {
               {!searchQuery && (
                 <div
                   className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden"
-                  style={category.image ? {
-                    backgroundImage: `url(${category.image})`,
-                    backgroundAttachment: 'fixed',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  } : undefined}
+                  style={
+                    category.image
+                      ? {
+                          backgroundImage: `url(${category.image})`,
+                          backgroundAttachment: "fixed",
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : undefined
+                  }
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -407,7 +424,9 @@ export function MenuPage() {
                       {group.subName && (
                         <h3 className="font-display text-lg font-semibold text-foreground/80 mb-3 mt-2 flex items-center uppercase tracking-wide">
                           {group.subName}
-                          <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">({group.products.length})</span>
+                          <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">
+                            ({group.products.length})
+                          </span>
                         </h3>
                       )}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -431,7 +450,9 @@ export function MenuPage() {
 
         {activeCategory !== CAMPAIGN_CATEGORY_ID && hasMore && (
           <div ref={sentinelRef} className="py-8 flex items-center justify-center" aria-hidden>
-            <span className="text-sm text-muted-foreground">{t("menu.loadingMore", { defaultValue: "Loading more…" })}</span>
+            <span className="text-sm text-muted-foreground">
+              {t("menu.loadingMore", { defaultValue: "Loading more…" })}
+            </span>
           </div>
         )}
 
@@ -443,19 +464,21 @@ export function MenuPage() {
       </div>
 
       {/* External Page Button - styled like a category banner */}
-      {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-        <button
-          onClick={() => setShowExternalPage(true)}
-          className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full group-hover:scale-105 transition-transform">
-              📄 {restaurant.externalPageButtonName}
-            </h2>
-          </div>
-        </button>
-      )}
+      {!searchQuery &&
+        restaurant.externalPageButtonName &&
+        (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+          <button
+            onClick={() => setShowExternalPage(true)}
+            className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full group-hover:scale-105 transition-transform">
+                {restaurant.externalPageButtonName}
+              </h2>
+            </div>
+          </button>
+        )}
 
       <Footer />
 
@@ -530,23 +553,28 @@ export function MenuPage() {
         />
       )}
 
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-        <div className="fixed top-[170px] right-4 z-50">
-          <button
-            onClick={handleOpenCallWaiterFloating}
-            disabled={waiterCooldown > 0}
-            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-              waiterCooldown > 0
-                ? "bg-muted text-muted-foreground cursor-not-allowed"
-                : "bg-accent text-accent-foreground hover:opacity-90"
-            }`}
-            aria-label={t("waiter.title")}
-          >
-            <Bell className="w-4 h-4" />
-            <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-          </button>
-        </div>
-      )}
+      {!isCartOpen &&
+        !selectedProduct &&
+        !showCallWaiter &&
+        !isCheckoutOpen &&
+        !showReservation &&
+        !showTableSelection && (
+          <div className="fixed top-[170px] right-4 z-50">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-accent text-accent-foreground hover:opacity-90"
+              }`}
+              aria-label={t("waiter.title")}
+            >
+              <Bell className="w-4 h-4" />
+              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
+          </div>
+        )}
 
       {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
         <div className="fixed bottom-16 right-4 z-50">

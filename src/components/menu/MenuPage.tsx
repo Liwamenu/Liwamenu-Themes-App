@@ -46,7 +46,16 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 export function MenuPage() {
   const { t } = useTranslation();
   const { isLoading, error } = useInitializeRestaurant();
-  const { categories, recommendedProducts, campaignProducts, isRestaurantActive, isCurrentlyOpen, restaurant, formatPrice, setTableNumber } = useRestaurant();
+  const {
+    categories,
+    recommendedProducts,
+    campaignProducts,
+    isRestaurantActive,
+    isCurrentlyOpen,
+    restaurant,
+    formatPrice,
+    setTableNumber,
+  } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
@@ -63,7 +72,7 @@ export function MenuPage() {
   const [showAnnouncement, setShowAnnouncement] = useState(false);
   const [showExternalPage, setShowExternalPage] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
-    const savedEndTime = localStorage.getItem('waiterCooldownEnd');
+    const savedEndTime = localStorage.getItem("waiterCooldownEnd");
     if (savedEndTime) {
       const remaining = Math.ceil((parseInt(savedEndTime) - Date.now()) / 1000);
       return remaining > 0 ? remaining : 0;
@@ -72,7 +81,15 @@ export function MenuPage() {
   });
 
   // Lock body scroll only while the menu view is active and an overlay is open
-  const isAnyOverlayOpen = !!selectedProduct || isCartOpen || isCheckoutOpen || showCallWaiter || showReservation || showTableSelection || showSoundPermission || showAnnouncement;
+  const isAnyOverlayOpen =
+    !!selectedProduct ||
+    isCartOpen ||
+    isCheckoutOpen ||
+    showCallWaiter ||
+    showReservation ||
+    showTableSelection ||
+    showSoundPermission ||
+    showAnnouncement;
   useBodyScrollLock(currentView === "menu" && isAnyOverlayOpen);
 
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -81,18 +98,18 @@ export function MenuPage() {
   useEffect(() => {
     const announcementSettings = restaurant.announcementSettings;
     if (!announcementSettings?.enabled) return;
-    
+
     const timer = setTimeout(() => {
       setShowAnnouncement(true);
     }, announcementSettings.delayMs * 1000);
-    
+
     return () => clearTimeout(timer);
   }, [restaurant.announcementSettings]);
 
   // Waiter cooldown timer with localStorage persistence
   useEffect(() => {
     if (waiterCooldown <= 0) {
-      localStorage.removeItem('waiterCooldownEnd');
+      localStorage.removeItem("waiterCooldownEnd");
       return;
     }
     const timer = setInterval(() => {
@@ -104,7 +121,7 @@ export function MenuPage() {
   // Save cooldown end time when it starts
   const handleWaiterSuccess = useCallback(() => {
     const endTime = Date.now() + 60 * 1000;
-    localStorage.setItem('waiterCooldownEnd', endTime.toString());
+    localStorage.setItem("waiterCooldownEnd", endTime.toString());
     setWaiterCooldown(60);
   }, []);
 
@@ -130,46 +147,53 @@ export function MenuPage() {
   }, [categories]);
 
   // Campaign category ID for special handling
-  const CAMPAIGN_CATEGORY_ID = '__campaign__';
+  const CAMPAIGN_CATEGORY_ID = "__campaign__";
 
-  const scrollToCategory = useCallback((categoryId: string) => {
-    if (categoryId === EXTERNAL_PAGE_ID) {
-      setShowExternalPage(true);
-      return;
-    }
-    // Handle campaign category scrolling
-    if (categoryId === CAMPAIGN_CATEGORY_ID) {
-      const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+  const scrollToCategory = useCallback(
+    (categoryId: string) => {
+      if (categoryId === EXTERNAL_PAGE_ID) {
+        setShowExternalPage(true);
+        return;
+      }
+      // Handle campaign category scrolling
+      if (categoryId === CAMPAIGN_CATEGORY_ID) {
+        const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
+        if (element) {
+          const offset = 140;
+          const elementPosition = element.offsetTop - offset;
+          window.scrollTo({ top: elementPosition, behavior: "smooth" });
+        }
+        setActiveCategory(CAMPAIGN_CATEGORY_ID);
+        return;
+      }
+
+      const element = categoryRefs.current[categoryId];
       if (element) {
-        const offset = 140;
+        const offset = 140; // Account for sticky header
         const elementPosition = element.offsetTop - offset;
         window.scrollTo({ top: elementPosition, behavior: "smooth" });
       }
-      setActiveCategory(CAMPAIGN_CATEGORY_ID);
-      return;
-    }
-    
-    const element = categoryRefs.current[categoryId];
-    if (element) {
-      const offset = 140; // Account for sticky header
-      const elementPosition = element.offsetTop - offset;
-      window.scrollTo({ top: elementPosition, behavior: "smooth" });
-    }
-    setActiveCategory(categoryId);
-  }, [CAMPAIGN_CATEGORY_ID]);
+      setActiveCategory(categoryId);
+    },
+    [CAMPAIGN_CATEGORY_ID],
+  );
 
   // Filter products by search - memoized
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return categories;
-    
+
     const lowerQuery = String(searchQuery ?? "").toLowerCase();
     return categories
       .map((cat) => ({
         ...cat,
         products: cat.products.filter(
           (p) =>
-            String(p.name ?? "").toLowerCase().includes(lowerQuery) ||
-            String(p.description ?? "").toLowerCase().includes(lowerQuery),
+            String(p.name ?? "")
+              .toLowerCase()
+              .includes(lowerQuery) ||
+            String(p.description ?? "")
+              .toLowerCase()
+              .includes(lowerQuery),
         ),
       }))
       .filter((cat) => cat.products.length > 0);
@@ -177,7 +201,7 @@ export function MenuPage() {
 
   const canOrder = isRestaurantActive && isCurrentlyOpen;
 
-  const handleOrderComplete = useCallback((order: Order, orderType: 'inPerson' | 'online') => {
+  const handleOrderComplete = useCallback((order: Order, orderType: "inPerson" | "online") => {
     setIsCheckoutOpen(false);
     setViewingOrder(order);
     setCurrentView("order");
@@ -203,10 +227,13 @@ export function MenuPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSelectProduct = useCallback((product: Product) => {
-    if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
-    setSelectedProduct(product);
-  }, [restaurant.onlineOrder, restaurant.inPersonOrder]);
+  const handleSelectProduct = useCallback(
+    (product: Product) => {
+      if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
+      setSelectedProduct(product);
+    },
+    [restaurant.onlineOrder, restaurant.inPersonOrder],
+  );
 
   const handleCloseProduct = useCallback(() => {
     setSelectedProduct(null);
@@ -232,7 +259,7 @@ export function MenuPage() {
   const handleOpenCallWaiter = useCallback(() => {
     // Çalışma saatleri dışında garson çağırma engelle
     if (!isCurrentlyOpen) {
-      toast.error(t('common.closedHours'));
+      toast.error(t("common.closedHours"));
       return;
     }
     setIsCartOpen(false);
@@ -246,7 +273,7 @@ export function MenuPage() {
   const handleOpenCallWaiterFloating = useCallback(() => {
     // Çalışma saatleri dışında garson çağırma engelle
     if (!isCurrentlyOpen) {
-      toast.error(t('common.closedHours'));
+      toast.error(t("common.closedHours"));
       return;
     }
     // Masa seçilmemişse QR tarama modalı göster
@@ -257,15 +284,18 @@ export function MenuPage() {
     setShowCallWaiter(true);
   }, [restaurant.tableNumber, isCurrentlyOpen, t]);
 
-  const handleTableSelected = useCallback((newTable: string) => {
-    setTableNumber(newTable);
-    toast.success(t('cart.tableChanged', { table: newTable }));
-    setShowTableSelection(false);
-    // Çalışma saatleri açıksa masa seçildikten sonra garson çağır modalını aç
-    if (isCurrentlyOpen) {
-      setShowCallWaiter(true);
-    }
-  }, [setTableNumber, t, isCurrentlyOpen]);
+  const handleTableSelected = useCallback(
+    (newTable: string) => {
+      setTableNumber(newTable);
+      toast.success(t("cart.tableChanged", { table: newTable }));
+      setShowTableSelection(false);
+      // Çalışma saatleri açıksa masa seçildikten sonra garson çağır modalını aç
+      if (isCurrentlyOpen) {
+        setShowCallWaiter(true);
+      }
+    },
+    [setTableNumber, t, isCurrentlyOpen],
+  );
 
   const handleShowSoundPermission = useCallback(() => {
     setShowSoundPermission(true);
@@ -329,10 +359,7 @@ export function MenuPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Restaurant Header */}
-      <RestaurantHeader 
-        orders={orders}
-        onViewOrder={handleViewOrder}
-      />
+      <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
 
       {/* Search Bar */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg">
@@ -363,15 +390,19 @@ export function MenuPage() {
 
         {/* Category Tabs */}
         {!searchQuery && (
-          <CategoryTabs 
-            categories={categories} 
-            activeCategory={activeCategory} 
+          <CategoryTabs
+            categories={categories}
+            activeCategory={activeCategory}
             onCategoryChange={scrollToCategory}
-            campaignTab={campaignProducts.length > 0 ? {
-              id: CAMPAIGN_CATEGORY_ID,
-              name: t('menu.campaignProducts'),
-              count: campaignProducts.length
-            } : null}
+            campaignTab={
+              campaignProducts.length > 0
+                ? {
+                    id: CAMPAIGN_CATEGORY_ID,
+                    name: t("menu.campaignProducts"),
+                    count: campaignProducts.length,
+                  }
+                : null
+            }
           />
         )}
       </div>
@@ -389,7 +420,16 @@ export function MenuPage() {
                 className="flex-shrink-0 w-40 cursor-pointer"
               >
                 <div className="relative aspect-square rounded-[4px] overflow-hidden mb-2">
-                  <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} width={160} height={160} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                  <img
+                    src={getProductImageSrc(product.imageURL)}
+                    onError={handleProductImageError}
+                    alt={product.name}
+                    width={160}
+                    height={160}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-transparent" />
                   <span className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm text-white text-sm font-light text-center line-clamp-2 px-2 py-1 rounded-[4px]">
                     {product.name}
@@ -405,12 +445,9 @@ export function MenuPage() {
       <div className="container px-4 pb-24">
         {/* Campaign Products Section - Only show when campaign tab is active */}
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
-          <section 
-            ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)} 
-            className="mb-8"
-          >
+          <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)} className="mb-8">
             <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
-              🔥 {t('menu.campaignProducts')}
+              🔥 {t("menu.campaignProducts")}
               <span className="text-sm font-normal text-muted-foreground">({campaignProducts.length})</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -429,36 +466,37 @@ export function MenuPage() {
         )}
 
         {/* Regular Categories - Hide when campaign tab is active */}
-        {activeCategory !== CAMPAIGN_CATEGORY_ID && filteredCategories.map((category) => (
-          <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)} className="mb-8">
-            <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
-              {category.name}
-              <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
-            </h2>
-            {groupBySubcategory(category.products).map((group) => (
-              <div key={group.subId ?? "__none__"} className="mb-6">
-                {group.subName && (
-                  <h3 className="text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center">
-                    {group.subName}
-                    <span className="text-xs font-normal text-muted-foreground ml-2">({group.products.length})</span>
-                  </h3>
-                )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {group.products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onSelect={handleSelectProduct}
-                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                      specialPriceName={restaurant.specialPriceName}
-                      formatPrice={formatPrice}
-                    />
-                  ))}
+        {activeCategory !== CAMPAIGN_CATEGORY_ID &&
+          filteredCategories.map((category) => (
+            <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)} className="mb-8">
+              <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+                {category.name}
+                <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
+              </h2>
+              {groupBySubcategory(category.products).map((group) => (
+                <div key={group.subId ?? "__none__"} className="mb-6">
+                  {group.subName && (
+                    <h3 className="text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center">
+                      {group.subName}
+                      <span className="text-xs font-normal text-muted-foreground ml-2">({group.products.length})</span>
+                    </h3>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {group.products.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </section>
-        ))}
+              ))}
+            </section>
+          ))}
 
         {filteredCategories.length === 0 && searchQuery && (
           <div className="text-center py-12">
@@ -467,16 +505,18 @@ export function MenuPage() {
         )}
 
         {/* External Page Button - at the very bottom */}
-        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-          <button
-            onClick={() => setShowExternalPage(true)}
-            className="w-full mb-8 py-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-          >
-            <h2 className="font-display text-xl font-bold text-primary flex items-center justify-center gap-2">
-              📄 {restaurant.externalPageButtonName}
-            </h2>
-          </button>
-        )}
+        {!searchQuery &&
+          restaurant.externalPageButtonName &&
+          (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+            <button
+              onClick={() => setShowExternalPage(true)}
+              className="w-full mb-8 py-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
+              <h2 className="font-display text-xl font-bold text-primary flex items-center justify-center gap-2">
+                {restaurant.externalPageButtonName}
+              </h2>
+            </button>
+          )}
       </div>
 
       {/* Footer */}
@@ -511,18 +551,10 @@ export function MenuPage() {
       </AnimatePresence>
 
       {/* Sound Permission Modal */}
-      <SoundPermissionModal
-        isOpen={showSoundPermission}
-        onAllow={handleAllowSound}
-        onDeny={handleDenySound}
-      />
+      <SoundPermissionModal isOpen={showSoundPermission} onAllow={handleAllowSound} onDeny={handleDenySound} />
 
       {/* Call Waiter Modal */}
-      <CallWaiterModal 
-        isOpen={showCallWaiter} 
-        onClose={handleCloseCallWaiter} 
-        onSuccess={handleWaiterSuccess}
-      />
+      <CallWaiterModal isOpen={showCallWaiter} onClose={handleCloseCallWaiter} onSuccess={handleWaiterSuccess} />
 
       {/* Reservation Modal */}
       <ReservationModal isOpen={showReservation} onClose={handleCloseReservation} />
@@ -536,11 +568,7 @@ export function MenuPage() {
       />
 
       {/* Flying Emoji Animation */}
-      <FlyingEmoji
-        isVisible={isFlyingEmojiVisible}
-        startPosition={flyingEmojiPosition}
-        onComplete={hideFlyingEmoji}
-      />
+      <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
 
       {/* Announcement Modal */}
       {restaurant.announcementSettings?.enabled && (
@@ -561,25 +589,28 @@ export function MenuPage() {
       )}
 
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
-      {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-        <div className="fixed top-[138px] right-4 z-50">
-          <button
-            onClick={handleOpenCallWaiterFloating}
-            disabled={waiterCooldown > 0}
-            className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-              waiterCooldown > 0
-                ? "bg-muted text-muted-foreground cursor-not-allowed"
-                : "bg-sky-400 text-white hover:bg-sky-500"
-            }`}
-            aria-label={t("waiter.title")}
-          >
-            <Bell className="w-4 h-4" />
-            <span>
-              {waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}
-            </span>
-          </button>
-        </div>
-      )}
+      {!isCartOpen &&
+        !selectedProduct &&
+        !showCallWaiter &&
+        !isCheckoutOpen &&
+        !showReservation &&
+        !showTableSelection && (
+          <div className="fixed top-[138px] right-4 z-50">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-sky-400 text-white hover:bg-sky-500"
+              }`}
+              aria-label={t("waiter.title")}
+            >
+              <Bell className="w-4 h-4" />
+              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
+          </div>
+        )}
     </div>
   );
 }

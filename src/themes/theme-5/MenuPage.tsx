@@ -509,7 +509,7 @@ export function MenuPage() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
             <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10 group-hover:scale-105 transition-transform">
-              📄 {restaurant.externalPageButtonName}
+              restaurant.externalPageButtonName}
             </h2>
           </button>
         )}
