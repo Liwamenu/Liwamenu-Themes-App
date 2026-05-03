@@ -543,6 +543,15 @@ export function MenuPage() {
         />
       )}
 
+      {/* External Page View */}
+      {showExternalPage && (
+        <ExternalPageView
+          html={restaurant.externalPageHTML}
+          image={restaurant.externalPageImage}
+          onClose={() => setShowExternalPage(false)}
+        />
+      )}
+
       {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
       {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
         <div className="fixed top-[138px] right-4 z-50">
