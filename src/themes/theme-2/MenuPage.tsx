@@ -235,10 +235,6 @@ export function MenuPage() {
             activeCategory={activeCategory}
             onCategoryChange={scrollToCategory}
             campaignTab={campaignProducts.length > 0 ? { id: CAMPAIGN_CATEGORY_ID, name: t('menu.campaignProducts'), count: campaignProducts.length } : null}
-            externalPageTab={restaurant.externalPageButtonName ? {
-              id: EXTERNAL_PAGE_ID,
-              name: restaurant.externalPageButtonName,
-            } : null}
           />
         )}
       </div>
@@ -316,6 +312,17 @@ export function MenuPage() {
             <div className="text-4xl mb-3">🔍</div>
             <p className="text-lg text-muted-foreground">{t("menu.noResults", { query: searchQuery })}</p>
           </div>
+        )}
+
+        {/* External Page Button */}
+        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+          <section className="mb-8">
+            <button onClick={() => setShowExternalPage(true)} className="w-full text-left">
+              <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2 hover:text-primary transition-colors">
+                📄 {restaurant.externalPageButtonName}
+              </h2>
+            </button>
+          </section>
         )}
       </div>
 
