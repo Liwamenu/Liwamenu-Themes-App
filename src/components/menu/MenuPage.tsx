@@ -61,6 +61,7 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [showExternalPage, setShowExternalPage] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem('waiterCooldownEnd');
     if (savedEndTime) {
@@ -132,6 +133,10 @@ export function MenuPage() {
   const CAMPAIGN_CATEGORY_ID = '__campaign__';
 
   const scrollToCategory = useCallback((categoryId: string) => {
+    if (categoryId === EXTERNAL_PAGE_ID) {
+      setShowExternalPage(true);
+      return;
+    }
     // Handle campaign category scrolling
     if (categoryId === CAMPAIGN_CATEGORY_ID) {
       const element = categoryRefs.current[CAMPAIGN_CATEGORY_ID];
