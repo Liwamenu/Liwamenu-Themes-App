@@ -18,6 +18,7 @@ import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { AnnouncementModal } from "@/components/menu/AnnouncementModal";
 import { FlyingEmoji } from "@/components/menu/FlyingEmoji";
+import { ExternalPageView } from "@/components/menu/ExternalPageView";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant, useInitializeRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -27,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
 
 type View = "menu" | "order";
+
+const EXTERNAL_PAGE_ID = "__external__";
 
 // Throttle helper function
 function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
@@ -363,6 +366,10 @@ export function MenuPage() {
               id: CAMPAIGN_CATEGORY_ID,
               name: t('menu.campaignProducts'),
               count: campaignProducts.length
+            } : null}
+            externalPageTab={restaurant.externalPageButtonName ? {
+              id: EXTERNAL_PAGE_ID,
+              name: restaurant.externalPageButtonName,
             } : null}
           />
         )}
