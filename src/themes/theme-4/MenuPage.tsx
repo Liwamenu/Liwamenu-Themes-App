@@ -458,10 +458,6 @@ export function MenuPage() {
                 }
               : null
           }
-          externalPageTab={restaurant.externalPageButtonName ? {
-            id: EXTERNAL_PAGE_ID,
-            name: restaurant.externalPageButtonName,
-          } : null}
         />
       )}
 
