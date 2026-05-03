@@ -158,6 +158,7 @@ export interface RestaurantData {
   checkTableOrderDistance: boolean;
   tableNumber?: string;
   moneySign?: string | null;
+  decimalPlaces?: number | null;
   heroImageUrl: string;
   logoImageUrl: string;
   externalPageHTML?: string | null;
