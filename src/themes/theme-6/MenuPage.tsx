@@ -85,8 +85,8 @@ export function MenuPage() {
     hideFlyingEmoji,
   } = useFlyingEmoji();
 
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [expandedSubcategory, setExpandedSubcategory] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [expandedSubcategories, setExpandedSubcategories] = useState<Set<string>>(new Set());
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -134,15 +134,21 @@ export function MenuPage() {
   }, []);
 
   const toggleCategory = useCallback((id: string) => {
-    setExpandedCategory((prev) => {
-      if (prev === id) return null;
-      setExpandedSubcategory(null);
-      return id;
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
     });
   }, []);
 
   const toggleSubcategory = useCallback((id: string) => {
-    setExpandedSubcategory((prev) => (prev === id ? null : id));
+    setExpandedSubcategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }, []);
 
   const filteredCategories = useMemo(() => {
@@ -298,11 +304,11 @@ export function MenuPage() {
           <section>
             <CategoryBanner
               name={`🔥 ${t("menu.campaignProducts")}`}
-              isOpen={expandedCategory === CAMPAIGN_CATEGORY_ID}
+              isOpen={expandedCategories.has(CAMPAIGN_CATEGORY_ID)}
               onToggle={() => toggleCategory(CAMPAIGN_CATEGORY_ID)}
             />
             <AnimatePresence initial={false}>
-              {expandedCategory === CAMPAIGN_CATEGORY_ID && (
+              {expandedCategories.has(CAMPAIGN_CATEGORY_ID) && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
@@ -330,7 +336,7 @@ export function MenuPage() {
 
         {/* Regular Categories — Accordion */}
         {filteredCategories.map((category) => {
-          const isOpen = expandedCategory === category.id || !!searchQuery;
+          const isOpen = expandedCategories.has(category.id) || !!searchQuery;
           return (
             <section key={category.id}>
               {!searchQuery && (
@@ -392,7 +398,7 @@ export function MenuPage() {
                                 </motion.button>
                               </div>
                               <AnimatePresence initial={false}>
-                                {expandedSubcategory === group.subId && (
+                                {expandedSubcategories.has(group.subId!) && (
                                   <motion.div
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}
