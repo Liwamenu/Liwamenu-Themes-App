@@ -369,17 +369,15 @@ export function MenuPage() {
           slicedCategories.map((category) => (
             <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)}>
               {!searchQuery && (
-                <div className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden">
-                  {category.image && (
-                    <img
-                      src={category.image}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  )}
+                <div
+                  className="relative w-full h-[40vh] min-h-[250px] bg-gradient-to-br from-primary/40 to-primary/10 overflow-hidden"
+                  style={category.image ? {
+                    backgroundImage: `url(${category.image})`,
+                    backgroundAttachment: 'fixed',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  } : undefined}
+                >
                   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-wider uppercase break-words px-4 max-w-full">
