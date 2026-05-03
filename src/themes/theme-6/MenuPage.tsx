@@ -17,6 +17,7 @@ import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
+import { ExternalPageView } from "@/components/menu/ExternalPageView";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -28,6 +29,7 @@ import { Input } from "@/components/ui/input";
 type View = "menu" | "order";
 
 const CAMPAIGN_CATEGORY_ID = "__campaign__";
+const EXTERNAL_PAGE_ID = "__external__";
 
 /** Accordion category banner — mimics the reference HTML large image cards */
 function CategoryBanner({
@@ -98,6 +100,7 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [showExternalPage, setShowExternalPage] = useState(false);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem("waiterCooldownEnd");
     if (savedEndTime) {
@@ -334,6 +337,17 @@ export function MenuPage() {
           </section>
         )}
 
+        {/* External Page Button */}
+        {!searchQuery && restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
+          <section>
+            <CategoryBanner
+              name={`📄 ${restaurant.externalPageButtonName}`}
+              isOpen={false}
+              onToggle={() => setShowExternalPage(true)}
+            />
+          </section>
+        )}
+
         {/* Regular Categories — Accordion */}
         {filteredCategories.map((category) => {
           const isOpen = expandedCategories.has(category.id) || !!searchQuery;
@@ -481,6 +495,14 @@ export function MenuPage() {
 
       {restaurant.announcementSettings?.enabled && restaurant.announcementSettings?.htmlContent && (
         <AnnouncementModal isOpen={showAnnouncement} onClose={() => setShowAnnouncement(false)} htmlContent={restaurant.announcementSettings.htmlContent} />
+      )}
+
+      {showExternalPage && (
+        <ExternalPageView
+          html={restaurant.externalPageHTML}
+          image={restaurant.externalPageImage}
+          onClose={() => setShowExternalPage(false)}
+        />
       )}
 
       {/* Floating Call Waiter Button */}
