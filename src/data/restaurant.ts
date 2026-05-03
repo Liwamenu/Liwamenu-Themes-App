@@ -41,6 +41,9 @@ export const restaurantData: FullRestaurantInfo = {
     moneySign: "₺",
     heroImageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop",
     logoImageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&h=200&fit=crop",
+    externalPageHTML: null,
+    externalPageImage: "https://liwamenu.pentegrasyon.net/images/restaurants/3ad80bb6-1645-42a6-82b1-afd578728c53.png",
+    externalPageButtonName: "Our best menus",
     announcementSettings: {
       restaurantId: "538ba1a1-bf0d-47eb-9b88-054856703452",
       enabled: true,
