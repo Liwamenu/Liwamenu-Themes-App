@@ -270,7 +270,8 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const formatPrice = (price: number): string => {
-    const formatted = price.toFixed(3);
+    const decimals = data.decimalPlaces ?? 2;
+    const formatted = price.toFixed(decimals);
     if (data.moneySign) {
       return `${data.moneySign}${formatted}`;
     }
