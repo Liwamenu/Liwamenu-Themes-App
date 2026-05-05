@@ -1,0 +1,33 @@
+/* ============================================================
+ * Theme 16 — Teal + Peach
+ * Modern, food-friendly: deep teal primary with warm peach
+ * secondary accents. Distinct from existing palettes.
+ * ============================================================ */
+
+.theme-16 {
+  /* ---- Light palette ---- */
+  --primary: 173 80% 36%;            /* teal-600 #0D9488 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 28 100% 86%;          /* peach #FED7AA */
+  --secondary-foreground: 24 70% 25%;
+
+  --accent: 173 60% 92%;
+  --accent-foreground: 173 80% 25%;
+
+  --ring: 173 80% 36%;
+}
+
+.dark .theme-16 {
+  /* ---- Dark palette ---- */
+  --primary: 173 70% 50%;            /* brighter teal for dark bg */
+  --primary-foreground: 173 90% 8%;
+
+  --secondary: 24 35% 22%;           /* deep warm brown-peach */
+  --secondary-foreground: 28 80% 80%;
+
+  --accent: 173 50% 22%;
+  --accent-foreground: 173 60% 75%;
+
+  --ring: 173 70% 50%;
+}

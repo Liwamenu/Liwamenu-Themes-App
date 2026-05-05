@@ -76,12 +76,12 @@ export const ProductCard = memo(function ProductCard({
       {/* Content */}
       <div className="flex-1 flex flex-col justify-between min-w-0">
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-[22px] font-semibold text-foreground leading-tight line-clamp-2">
+          <h3 className="font-display text-[15px] font-semibold text-foreground leading-tight line-clamp-2">
             {product.name}
           </h3>
           {product.description && (
             <p
-              className={`text-muted-foreground text-[13px] leading-snug mt-1 ${showFullDesc ? "" : "line-clamp-4"}`}
+              className={`text-muted-foreground text-[9px] leading-snug mt-1 ${showFullDesc ? "" : "line-clamp-4"}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowFullDesc((v) => !v);
@@ -93,15 +93,15 @@ export const ProductCard = memo(function ProductCard({
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-end gap-2 mt-1">
-          <span className="text-base font-medium text-foreground">
-            {formatPrice(displayPrice)}
-          </span>
+        <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-0 mt-1 min-w-0">
           {originalPrice && (
-            <span className="text-xs text-muted-foreground line-through ml-1">
+            <span className="text-[8px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
               {formatPrice(originalPrice)}
             </span>
           )}
+          <span className="text-[11px] font-medium text-foreground whitespace-nowrap truncate max-w-full">
+            {formatPrice(displayPrice)}
+          </span>
         </div>
       </div>
     </div>

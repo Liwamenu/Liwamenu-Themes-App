@@ -13,6 +13,8 @@ import { OrderReceipt } from "./OrderReceipt";
 import { Footer } from "./Footer";
 import { SoundPermissionModal } from "./SoundPermissionModal";
 import { CallWaiterModal } from "./CallWaiterModal";
+import { ScrollToTop } from "@/components/menu/ScrollToTop";
+import { LiwaMenuFooter } from "@/components/menu/LiwaMenuFooter";
 import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
@@ -403,14 +405,9 @@ export function MenuPage() {
                                     }}
                                   />
                                   <div className="relative z-10 flex items-center h-full px-4">
-                                    <div>
-                                      <h3 className="text-lg font-bold text-white uppercase tracking-wide drop-shadow">
-                                        {group.subName}
-                                      </h3>
-                                      <span className="text-white/70 text-xs">
-                                        {group.products.length} {t("menu.items", { defaultValue: "items" })}
-                                      </span>
-                                    </div>
+                                    <h3 className="text-lg font-bold text-white uppercase tracking-wide drop-shadow">
+                                      {group.subName}
+                                    </h3>
                                   </div>
                                 </motion.button>
                               </div>
@@ -541,7 +538,7 @@ export function MenuPage() {
         !isCheckoutOpen &&
         !showReservation &&
         !showTableSelection && (
-          <div className="fixed top-[110px] right-4 z-40">
+          <div className="fixed top-[120px] right-4 z-40">
             <button
               onClick={handleOpenCallWaiterFloating}
               disabled={waiterCooldown > 0}
@@ -564,6 +561,9 @@ export function MenuPage() {
           <CartButton onClick={handleOpenCart} />
         </div>
       )}
+
+      <ScrollToTop />
+      <LiwaMenuFooter />
     </div>
   );
 }

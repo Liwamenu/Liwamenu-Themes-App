@@ -13,6 +13,8 @@ import { OrderReceipt } from "@/components/menu/OrderReceipt";
 import { Footer } from "@/components/menu/Footer";
 import { SoundPermissionModal } from "@/components/menu/SoundPermissionModal";
 import { CallWaiterModal } from "@/components/menu/CallWaiterModal";
+import { ScrollToTop } from "@/components/menu/ScrollToTop";
+import { LiwaMenuFooter } from "@/components/menu/LiwaMenuFooter";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
@@ -26,6 +28,7 @@ import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
+import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 
 type View = "menu" | "order";
 
@@ -59,6 +62,7 @@ export function MenuPage() {
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
+  const subFilter = useSubcategoryFilter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -446,10 +450,13 @@ export function MenuPage() {
         {/* Campaign Products Section - Only show when campaign tab is active */}
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (
           <section ref={(el) => (categoryRefs.current[CAMPAIGN_CATEGORY_ID] = el)} className="mb-8">
-            <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
-              🔥 {t("menu.campaignProducts")}
-              <span className="text-sm font-normal text-muted-foreground">({campaignProducts.length})</span>
-            </h2>
+            <div className="-mx-4 mb-4 py-1.5 px-4 bg-campaign text-campaign-foreground text-center rounded-[5px] shadow-[0_4px_0_0_rgba(0,0,0,0.18),_0_10px_24px_-4px_rgba(0,0,0,0.45)]">
+              <h2 className="font-display text-lg font-bold flex items-center justify-center gap-2">
+                <span>🔥</span>
+                {t("menu.campaignProducts")}
+                <span className="text-sm font-normal opacity-80">({campaignProducts.length})</span>
+              </h2>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {campaignProducts.map((product) => (
                 <ProductCard
@@ -469,32 +476,30 @@ export function MenuPage() {
         {activeCategory !== CAMPAIGN_CATEGORY_ID &&
           filteredCategories.map((category) => (
             <section key={category.id} ref={(el) => (categoryRefs.current[category.id] = el)} className="mb-8">
-              <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
-                {category.name}
-                <span className="text-sm font-normal text-muted-foreground">({category.products.length})</span>
-              </h2>
-              {groupBySubcategory(category.products).map((group) => (
-                <div key={group.subId ?? "__none__"} className="mb-6">
-                  {group.subName && (
-                    <h3 className="text-base font-semibold text-foreground/80 mb-3 mt-2 flex items-center">
-                      {group.subName}
-                      <span className="text-xs font-normal text-muted-foreground ml-2">({group.products.length})</span>
-                    </h3>
-                  )}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {group.products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onSelect={handleSelectProduct}
-                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                        specialPriceName={restaurant.specialPriceName}
-                        formatPrice={formatPrice}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <div className="-mx-4 mb-4 py-1.5 px-4 bg-primary text-primary-foreground text-center rounded-[5px] shadow-[0_4px_0_0_rgba(0,0,0,0.18),_0_10px_24px_-4px_rgba(0,0,0,0.45)]">
+                <h2 className="font-display text-lg font-bold flex items-center justify-center gap-2">
+                  {category.name}
+                  <span className="text-sm font-normal opacity-80">({category.products.length})</span>
+                </h2>
+              </div>
+              <SubcategoryButtons
+                categoryId={category.id}
+                products={category.products}
+                activeSub={subFilter.getActive(category.id)}
+                onToggle={(subId) => subFilter.toggle(category.id, subId)}
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {subFilter.filter(category.id, category.products).map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onSelect={handleSelectProduct}
+                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                    specialPriceName={restaurant.specialPriceName}
+                    formatPrice={formatPrice}
+                  />
+                ))}
+              </div>
             </section>
           ))}
 
@@ -595,7 +600,7 @@ export function MenuPage() {
         !isCheckoutOpen &&
         !showReservation &&
         !showTableSelection && (
-          <div className="fixed top-[138px] right-4 z-50">
+          <div className="fixed top-[120px] right-4 z-50">
             <button
               onClick={handleOpenCallWaiterFloating}
               disabled={waiterCooldown > 0}
@@ -611,6 +616,9 @@ export function MenuPage() {
             </button>
           </div>
         )}
+
+      <ScrollToTop />
+      <LiwaMenuFooter />
     </div>
   );
 }

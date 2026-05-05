@@ -1,0 +1,160 @@
+/* ============================================================
+ * Theme 8 — Indigo Organic, Right-Image Variant
+ * ------------------------------------------------------------
+ * Cream light background, blue-purple dark background
+ * (R60 G67 B104). Indigo dominant accent. Image sits on the
+ * right side of the product card. Headings are non-bold.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.theme-8 {
+  /* ---- Light palette — indigo dominant ---- */
+  --background: 45 28% 95%;
+  --foreground: 244 30% 18%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 244 30% 18%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 244 30% 18%;
+
+  --primary: 244 55% 42%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 244 18% 92%;
+  --secondary-foreground: 244 30% 22%;
+
+  --muted: 244 14% 90%;
+  --muted-foreground: 244 8% 42%;
+
+  --accent: 244 30% 90%;
+  --accent-foreground: 244 55% 38%;
+
+  --destructive: 0 70% 48%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 38%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 50%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 244 55% 42%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 244 18% 88%;
+  --input: 244 18% 90%;
+  --ring: 244 55% 42%;
+
+  --shadow-sm: 0 1px 3px hsla(244, 30%, 20%, 0.06);
+  --shadow-md: 0 4px 12px hsla(244, 30%, 20%, 0.08);
+  --shadow-lg: 0 8px 24px hsla(244, 30%, 20%, 0.12);
+  --shadow-xl: 0 16px 40px hsla(244, 30%, 20%, 0.16);
+  --shadow-glow: 0 0 20px hsla(244, 55%, 42%, 0.25);
+}
+
+.dark .theme-8 {
+  /* ---- Dark palette — bg 30% darker than original R60 G67 B104; indigo accent ---- */
+  --background: 230 27% 22%;
+  --foreground: 0 0% 95%;
+
+  --card: 230 22% 42%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 230 22% 42%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 244 70% 70%;
+  --primary-foreground: 244 40% 12%;
+
+  --secondary: 230 18% 26%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 230 15% 28%;
+  --muted-foreground: 230 12% 70%;
+
+  --accent: 244 35% 38%;
+  --accent-foreground: 244 70% 80%;
+
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 75% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 58%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 244 70% 70%;
+  --cart-foreground: 244 40% 12%;
+
+  --border: 230 18% 38%;
+  --input: 230 18% 38%;
+  --ring: 244 70% 70%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 40px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(244, 70%, 70%, 0.35);
+}
+
+/* ---- Fonts (non-bold headings — Inter Medium) ---- */
+.theme-8,
+.theme-8 * {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-8 .font-display,
+.theme-8 h1,
+.theme-8 h2,
+.theme-8 h3,
+.theme-8 h4,
+.theme-8 h5,
+.theme-8 h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Glass surface ---- */
+.theme-8 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(45, 28%, 95%, 0.92);
+}
+
+.dark .theme-8 .glass {
+  background: hsla(230, 27%, 22%, 0.92);
+}
+
+/* ---- Brand text gradient ---- */
+.theme-8 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(244, 55%, 42%) 0%, hsl(258, 60%, 55%) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-8 .shadow-card        { box-shadow: var(--shadow-sm); }
+.theme-8 .shadow-card-hover  { box-shadow: var(--shadow-md); }
+.theme-8 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-8 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations ---- */
+@keyframes theme8-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-8 .animate-float {
+  animation: theme8-float 3s ease-in-out infinite;
+}

@@ -194,7 +194,9 @@
     "scanAgain": "重新扫描",
     "tableChanged": "已更换到{{table}}号桌！",
     "sameTable": "您已经在这张桌子了。",
-    "scanInfo": "扫描新桌的二维码以更换桌位。"
+    "scanInfo": "扫描新桌的二维码以更换桌位。",
+    "noTableTitle": "未选择餐桌",
+    "noTableDesc": "请先扫描您餐桌上的二维码以呼叫服务员。"
   },
   "reservation": {
     "title": "预订",

@@ -46,7 +46,6 @@ export const ProductCard = memo(function ProductCard({
   const firstPortion = product.portions?.[0];
   if (!firstPortion) return null;
   const { displayPrice, originalPrice, priceType } = getPriceDisplay(firstPortion, isSpecialPriceActive, !!product.isCampaign);
-  const hasMultiplePortions = product.portions.length > 1;
 
   const handleClick = useCallback(() => {
     onSelect(product);
@@ -99,24 +98,14 @@ export const ProductCard = memo(function ProductCard({
         <h3 className="font-semibold text-foreground text-lg mb-1 line-clamp-1">{product.name}</h3>
         <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{product.description}</p>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-primary">{formatPrice(displayPrice)}</span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
             {originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+              <span className="text-xs text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
             )}
+            <span className="text-xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            {hasMultiplePortions && (
-              <span className="text-xs text-muted-foreground">
-                {product.portions.length} {t("productCard.portion")}
-              </span>
-            )}
-            <button className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:shadow-glow transition-all">
-              <Plus className="w-5 h-5" />
-            </button>
-          </div>
         </div>
       </div>
     </motion.div>

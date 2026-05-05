@@ -49,7 +49,7 @@ const AlertDialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDiv
 AlertDialogHeader.displayName = "AlertDialogHeader";
 
 const AlertDialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-row justify-end gap-2", className)} {...props} />
+  <div className={cn("grid grid-cols-2 gap-2", className)} {...props} />
 );
 AlertDialogFooter.displayName = "AlertDialogFooter";
 
@@ -83,7 +83,7 @@ const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    className={cn(buttonVariants({ variant: "outline" }), "mt-2 sm:mt-0", className)}
+    className={cn(buttonVariants({ variant: "outline" }), "bg-card border-border", className)}
     {...props}
   />
 ));

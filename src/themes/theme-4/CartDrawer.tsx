@@ -98,7 +98,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                   {items.length > 0 && (
                     <button
                       onClick={() => setShowClearConfirm(true)}
-                      className="text-sm text-secondary hover:text-secondary/80 bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                      className="text-sm text-secondary hover:text-secondary/80 dark:text-white dark:hover:text-white/80 bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
                     >
                       {t('cart.clearCart')}
                     </button>
@@ -137,7 +137,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                             <div className="flex items-start justify-between gap-2">
                               <div>
                                 <h4 className="font-semibold text-sm line-clamp-1">{item.product.name}</h4>
-                                <p className="text-xs text-muted-foreground">{item.portion.name}</p>
+                                {item.portion.name?.trim().toLowerCase() !== "normal" && <p className="text-xs text-muted-foreground">{item.portion.name}</p>}
                               </div>
                               <button onClick={() => handleRemoveItem(item.id, item.product.name)} className="p-1.5 text-muted-foreground hover:text-secondary transition-colors">
                                 <Trash2 className="w-4 h-4" />
@@ -153,8 +153,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                               </div>
                             )}
                             {item.note && <p className="text-xs text-muted-foreground mt-1 italic">📝 {item.note}</p>}
-                            <div className="flex items-center justify-between mt-2">
-                              <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-2 mt-2">
+                              <div className="flex items-center gap-2 shrink-0">
                                 <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center">
                                   <Minus className="w-4 h-4" />
                                 </button>
@@ -163,7 +163,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              <span className="font-bold text-primary">{formatPrice(itemTotal)}</span>
+                              <span className="font-bold text-primary whitespace-nowrap truncate min-w-0">{formatPrice(itemTotal)}</span>
                             </div>
                           </div>
                         </motion.div>
@@ -175,11 +175,11 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
 
               {items.length > 0 && (
                 <div className="p-5 border-t border-border bg-card space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-medium">{t('common.total')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">:</span>
-                      <span className="text-2xl font-bold text-primary">{formatPrice(total)}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-lg font-medium shrink-0">{t('common.total')}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-lg shrink-0">:</span>
+                      <span className="text-2xl font-bold text-primary whitespace-nowrap truncate min-w-0">{formatPrice(total)}</span>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -245,7 +245,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmClearCart} className="bg-secondary hover:bg-secondary/90">{t('cart.clearCart')}</AlertDialogAction>
+            <AlertDialogAction onClick={confirmClearCart} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('cart.clearCart')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

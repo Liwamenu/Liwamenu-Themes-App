@@ -135,6 +135,11 @@ export function useInitializeRestaurant() {
 
           // Priority: URL param > persisted localStorage > backend value
           const urlParams = new URLSearchParams(window.location.search);
+          const themeParam = urlParams.get('theme');
+          if (themeParam !== null) {
+            const parsed = Number.parseInt(themeParam, 10);
+            if (Number.isInteger(parsed)) restaurantData.themeId = parsed;
+          }
           const tableParam = urlParams.get('tableNumber');
           if (tableParam && tableParam.trim()) {
             restaurantData.tableNumber = tableParam.trim();

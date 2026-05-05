@@ -1,0 +1,162 @@
+/* ============================================================
+ * Theme __N__ — <THEME NAME>
+ * ------------------------------------------------------------
+ * Generated from src/themes/_template via scripts/new-theme.mjs.
+ * All selectors are scoped under .theme-__N__ so multiple themes
+ * can coexist on the same page without bleeding into each other.
+ *
+ * CUSTOMIZE the palette below — leave the structure intact.
+ * Fonts: replace the @import URL and the family names in the
+ * three font rules near the bottom of this file.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+.theme-__N__ {
+  /* ---- Light palette (CUSTOMIZE) ---- */
+  --background: 190 40% 96%;
+  --foreground: 250 30% 25%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 250 30% 25%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 250 30% 25%;
+
+  --primary: 270 60% 58%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 190 30% 92%;
+  --secondary-foreground: 250 30% 30%;
+
+  --muted: 190 25% 90%;
+  --muted-foreground: 250 15% 45%;
+
+  --accent: 320 60% 94%;
+  --accent-foreground: 320 60% 45%;
+
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 160 55% 45%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 340 75% 58%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 90% 50%;
+  --special-foreground: 45 90% 15%;
+
+  --cart: 270 65% 55%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 190 25% 88%;
+  --input: 190 25% 88%;
+  --ring: 270 60% 58%;
+
+  --shadow-sm: 0 2px 8px hsla(270, 50%, 50%, 0.08);
+  --shadow-md: 0 4px 16px hsla(270, 50%, 50%, 0.1);
+  --shadow-lg: 0 8px 32px hsla(270, 50%, 50%, 0.12);
+  --shadow-xl: 0 16px 48px hsla(270, 50%, 50%, 0.15);
+  --shadow-glow: 0 0 20px hsla(270, 60%, 58%, 0.35);
+}
+
+.dark .theme-__N__ {
+  /* ---- Dark palette (CUSTOMIZE) ---- */
+  --background: 250 25% 12%;
+  --foreground: 190 40% 95%;
+
+  --card: 250 20% 16%;
+  --card-foreground: 190 40% 95%;
+
+  --popover: 250 20% 16%;
+  --popover-foreground: 190 40% 95%;
+
+  --primary: 270 65% 65%;
+  --primary-foreground: 250 25% 10%;
+
+  --secondary: 250 18% 22%;
+  --secondary-foreground: 190 35% 85%;
+
+  --muted: 250 15% 20%;
+  --muted-foreground: 190 25% 55%;
+
+  --accent: 320 40% 25%;
+  --accent-foreground: 320 60% 75%;
+
+  --destructive: 0 62% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 160 50% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 340 70% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 85% 55%;
+  --special-foreground: 45 90% 10%;
+
+  --cart: 270 60% 60%;
+  --cart-foreground: 250 25% 10%;
+
+  --border: 250 15% 25%;
+  --input: 250 15% 25%;
+  --ring: 270 65% 65%;
+
+  --shadow-sm: 0 2px 8px hsla(0, 0%, 0%, 0.25);
+  --shadow-md: 0 4px 16px hsla(0, 0%, 0%, 0.3);
+  --shadow-lg: 0 8px 32px hsla(0, 0%, 0%, 0.35);
+  --shadow-xl: 0 16px 48px hsla(0, 0%, 0%, 0.4);
+  --shadow-glow: 0 0 25px hsla(270, 65%, 65%, 0.4);
+}
+
+/* ---- Fonts (CUSTOMIZE family names + the @import above) ---- */
+.theme-__N__,
+.theme-__N__ * {
+  font-family: 'Quicksand', system-ui, sans-serif;
+}
+
+.theme-__N__ .font-display,
+.theme-__N__ h1,
+.theme-__N__ h2,
+.theme-__N__ h3,
+.theme-__N__ h4,
+.theme-__N__ h5,
+.theme-__N__ h6 {
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* ---- Glass surface (matches --background alpha) ---- */
+.theme-__N__ .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(190, 40%, 96%, 0.9);
+}
+
+.dark .theme-__N__ .glass {
+  background: hsla(250, 20%, 16%, 0.9);
+}
+
+/* ---- Brand text gradient (CUSTOMIZE stops) ---- */
+.theme-__N__ .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(270, 60%, 58%) 0%, hsl(340, 75%, 58%) 100%);
+}
+
+/* ---- Shadow utilities (don't change names — components depend on them) ---- */
+.theme-__N__ .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-__N__ .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-__N__ .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-__N__ .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations (keyframe names must stay unique per theme) ---- */
+@keyframes theme__N__-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-__N__ .animate-float {
+  animation: theme__N__-float 3s ease-in-out infinite;
+}

@@ -92,15 +92,19 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     notes: "",
   });
 
-  // Lock body scroll when modal is open
+  // Lock body + html scroll when modal is open (html-level lock is needed because
+  // body{overflow:hidden} alone doesn't prevent the viewport from scrolling on modern browsers)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -422,7 +426,6 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  placeholder="2"
                   value={formData.guests === 0 ? "" : formData.guests.toString()}
                   onChange={(e) => {
                     const val = e.target.value;
