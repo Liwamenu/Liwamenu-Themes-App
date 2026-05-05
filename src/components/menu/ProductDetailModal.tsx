@@ -213,10 +213,10 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[80vh] bg-card rounded-3xl flex flex-col"
+        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100vh-6px)] bg-card rounded-3xl flex flex-col"
       >
         {/* Header Image */}
-        <div className="relative h-56">
+        <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden">
           <img
             src={getProductImageSrc(product.imageURL)}
             onError={handleProductImageError}
@@ -250,12 +250,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </p>
             
             {/* Price */}
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-primary">
+            <div className="flex items-baseline gap-2 flex-wrap min-w-0">
+              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
                 {formatPrice(displayPrice)}
               </span>
               {originalPrice && (
-                <span className="text-lg text-muted-foreground line-through">
+                <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
                   {formatPrice(originalPrice)}
                 </span>
               )}
@@ -266,7 +266,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           {product.portions.length > 1 && (
             <div className="mb-4">
               <h3 className="font-semibold text-foreground mb-3">{t('product.portionSelect')}</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {product.portions.map((portion) => (
                   <button
                     key={portion.id}
@@ -275,7 +275,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                       setSelectedTags({});
                     }}
                     className={cn(
-                      'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+                      'px-3 py-2 rounded-xl text-[12px] font-medium transition-all min-w-0 truncate',
                       selectedPortion.id === portion.id
                         ? 'bg-primary text-primary-foreground shadow-glow'
                         : 'bg-secondary text-secondary-foreground'
@@ -388,7 +388,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                             </div>
                           )}
                           {item.price > 0 && (
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm text-muted-foreground dark:text-white whitespace-nowrap truncate min-w-0">
                               +{formatPrice(item.price * (qty || 1))}
                             </span>
                           )}
@@ -418,38 +418,59 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </div>
           )}
 
-          {/* Quantity */}
-          <div className="flex items-center justify-between py-4 border-t border-border">
-            <span className="font-semibold">{t('product.quantity')}</span>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
-              >
-                <Minus className="w-5 h-5" />
-              </button>
-              <span className="text-xl font-bold w-8 text-center">{quantity}</span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
         </div>
 
-        {/* Sticky Add to Cart Button */}
-        <div className="sticky bottom-0 left-0 right-0 px-4 py-3 bg-card border-t border-border">
-          <Button
-            ref={addButtonRef}
-            onClick={handleAddToCart}
-            size="default"
-            className="w-full h-11 text-base font-semibold rounded-xl shadow-glow"
-          >
-            {t('product.addToCart')} - {formatPrice(totalPrice)}
-          </Button>
+        {/* Sticky bottom bar — quantity controls + Add to Cart */}
+        <div className="sticky bottom-0 left-0 right-0 px-4 py-3 bg-card border-t border-border flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+              aria-label="decrease quantity"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+            <span className="text-base font-bold w-6 text-center">{quantity}</span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
+              aria-label="increase quantity"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+          {(() => {
+            const priceStr = formatPrice(totalPrice);
+            const veryLong = priceStr.length > 12;
+            const long = priceStr.length > 9;
+            const labelSize = veryLong ? 'text-[9px]' : long ? 'text-[10px]' : 'text-[11px]';
+            const priceSize = veryLong ? 'text-[11px]' : long ? 'text-[13px]' : 'text-[15px]';
+            return (
+              <Button
+                ref={addButtonRef}
+                onClick={handleAddToCart}
+                size="default"
+                className="flex-1 min-w-0 h-11 rounded-xl shadow-glow"
+              >
+                <span className="flex items-center justify-between gap-2 w-full">
+                  <span className={`flex flex-col leading-tight ${labelSize} font-medium opacity-90 text-left shrink-0`}>
+                    {(() => {
+                      const [first, ...rest] = t('product.addToCart').split(' ');
+                      return (
+                        <>
+                          <span className="whitespace-nowrap">{first}</span>
+                          {rest.length > 0 && <span className="whitespace-nowrap">{rest.join(' ')}</span>}
+                        </>
+                      );
+                    })()}
+                  </span>
+                  <span className={`${priceSize} font-bold whitespace-nowrap truncate min-w-0`}>
+                    {priceStr}
+                  </span>
+                </span>
+              </Button>
+            );
+          })()}
         </div>
       </motion.div>
     </AnimatePresence>

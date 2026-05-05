@@ -13,6 +13,8 @@ import { OrderReceipt } from "./OrderReceipt";
 import { Footer } from "./Footer";
 import { SoundPermissionModal } from "./SoundPermissionModal";
 import { CallWaiterModal } from "./CallWaiterModal";
+import { ScrollToTop } from "@/components/menu/ScrollToTop";
+import { LiwaMenuFooter } from "@/components/menu/LiwaMenuFooter";
 import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
@@ -24,6 +26,7 @@ import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
 import { Product, Order } from "@/types/restaurant";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
+import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 import { Input } from "@/components/ui/input";
 
 type View = "menu" | "order";
@@ -56,6 +59,7 @@ export function MenuPage() {
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
+  const subFilter = useSubcategoryFilter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -418,31 +422,25 @@ export function MenuPage() {
                     <span className="text-sm font-normal text-muted-foreground ml-2">({category.products.length})</span>
                   </h2>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[50px] mb-8">
-                  {groupBySubcategory(category.products).map((group) => (
-                    <div key={group.subId ?? "__none__"} className="md:col-span-2">
-                      {group.subName && (
-                        <h3 className="font-display text-lg font-semibold text-foreground/80 mb-3 mt-2 flex items-center uppercase tracking-wide">
-                          {group.subName}
-                          <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">
-                            ({group.products.length})
-                          </span>
-                        </h3>
-                      )}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {group.products.map((product) => (
-                          <ProductCard
-                            key={product.id}
-                            product={product}
-                            onSelect={handleSelectProduct}
-                            isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                            specialPriceName={restaurant.specialPriceName}
-                            formatPrice={formatPrice}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                <div className="mt-[50px] mb-8">
+                  <SubcategoryButtons
+                    categoryId={category.id}
+                    products={category.products}
+                    activeSub={subFilter.getActive(category.id)}
+                    onToggle={(subId) => subFilter.toggle(category.id, subId)}
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {subFilter.filter(category.id, category.products).map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </section>
@@ -559,7 +557,7 @@ export function MenuPage() {
         !isCheckoutOpen &&
         !showReservation &&
         !showTableSelection && (
-          <div className="fixed top-[170px] right-4 z-50">
+          <div className="fixed top-[120px] right-4 z-50">
             <button
               onClick={handleOpenCallWaiterFloating}
               disabled={waiterCooldown > 0}
@@ -581,6 +579,9 @@ export function MenuPage() {
           <CartButton onClick={handleOpenCart} />
         </div>
       )}
+
+      <ScrollToTop />
+      <LiwaMenuFooter />
     </div>
   );
 }

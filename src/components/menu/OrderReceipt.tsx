@@ -299,25 +299,27 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
             <div className="border-t border-border pt-3 space-y-3">
               {order.items.map((item, index) => (
                 <div key={index} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <div className="flex-1">
+                  <div className="flex justify-between gap-2 text-sm">
+                    <div className="flex-1 min-w-0">
                       <span className="font-medium">
                         {item.quantity}x {item.productName}
                       </span>
-                      <span className="text-muted-foreground ml-1">({item.portionName})</span>
+                      {item.portionName?.trim().toLowerCase() !== "normal" && (
+                        <span className="text-muted-foreground ml-1">({item.portionName})</span>
+                      )}
                     </div>
-                    <span className="font-medium">{formatPrice(item.itemTotal)}</span>
+                    <span className="font-medium whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(item.itemTotal)}</span>
                   </div>
 
                   {/* Order Tags */}
                   {item.selectedTags.length > 0 && (
                     <div className="ml-4 space-y-0.5">
                       {item.selectedTags.map((tag, idx) => (
-                        <div key={idx} className="flex justify-between text-xs text-muted-foreground">
-                          <span>
+                        <div key={idx} className="flex justify-between gap-2 text-xs text-muted-foreground">
+                          <span className="min-w-0 break-words">
                             + {tag.itemName} {tag.quantity > 1 ? `x${tag.quantity}` : ""}
                           </span>
-                          {tag.price > 0 && <span>{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
+                          {tag.price > 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
                         </div>
                       ))}
                     </div>
@@ -355,11 +357,11 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
           {/* Service Fee - Delivery or Cover Charge */}
           {serviceFee > 0 && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground shrink-0">
                   {order.orderType === "online" ? t("order.deliveryFee") : t("order.coverCharge")}
                 </span>
-                <span className="font-medium">{formatPrice(serviceFee)}</span>
+                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(serviceFee)}</span>
               </div>
             </div>
           )}
@@ -367,31 +369,31 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
           {/* Subtotal (with service fee included) */}
           {(discountRate > 0 || serviceFee > 0) && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">{t("common.subtotal")}</span>
-                <span className="font-medium">{formatPrice(subtotal + serviceFee)}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground shrink-0">{t("common.subtotal")}</span>
+                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(subtotal + serviceFee)}</span>
               </div>
             </div>
           )}
 
           {/* Discount */}
           {discountRate > 0 && (
-            <div className="px-6 py-2 text-base border-b border-dashed border-border">
-              <div className="flex items-center justify-between">
-                <span className="font-bold">
+            <div className="px-6 py-2 text-base border-b border-dashed border-border text-success dark:text-green-400">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold min-w-0 break-words">
                   {order.orderType === "inPerson" ? t("order.tableDiscount") : t("order.onlineDiscount")} (
                   {discountRate}%)
                 </span>
-                <span className="font-bold text-success">-{formatPrice(discountAmount)}</span>
+                <span className="font-bold whitespace-nowrap truncate min-w-0 shrink-0">-{formatPrice(discountAmount)}</span>
               </div>
             </div>
           )}
 
           {/* Total */}
           <div className="p-6 py-3 bg-primary/5">
-            <div className="flex items-center justify-between">
-              <span className="text-xl font-bold">{t("common.total")}</span>
-              <span className="text-2xl font-bold text-primary">{formatPrice(order.totalAmount)}</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xl font-bold shrink-0">{t("common.total")}</span>
+              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate min-w-0">{formatPrice(order.totalAmount)}</span>
             </div>
           </div>
 

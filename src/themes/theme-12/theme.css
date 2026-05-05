@@ -1,0 +1,147 @@
+/* ============================================================
+ * Theme 12 — Vintage Cream & Green
+ * ------------------------------------------------------------
+ * Soft cream background, brown-tinted text, fresh green accent
+ * stripe. Portrait product cards with circular image on top
+ * (overflowing the card's top edge), handwritten "Caveat" title.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+
+.theme-12 {
+  --background: 40 45% 88%;
+  --foreground: 20 50% 15%;
+
+  --card: 45 60% 97%;
+  --card-foreground: 20 50% 15%;
+
+  --popover: 45 60% 96%;
+  --popover-foreground: 20 50% 15%;
+
+  --primary: 20 60% 30%;
+  --primary-foreground: 45 60% 96%;
+
+  --secondary: 100 35% 50%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 45 35% 88%;
+  --muted-foreground: 20 15% 45%;
+
+  --accent: 100 35% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 70% 48%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 100 35% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 50%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 100 35% 50%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 45 25% 84%;
+  --input: 45 30% 90%;
+  --ring: 100 35% 50%;
+
+  --shadow-sm: 0 1px 3px hsla(20, 30%, 25%, 0.06);
+  --shadow-md: 0 4px 12px hsla(20, 30%, 25%, 0.08);
+  --shadow-lg: 0 8px 24px hsla(20, 30%, 25%, 0.12);
+  --shadow-xl: 0 16px 40px hsla(20, 30%, 25%, 0.16);
+  --shadow-glow: 0 0 20px hsla(100, 35%, 50%, 0.25);
+}
+
+.dark .theme-12 {
+  --background: 20 25% 10%;
+  --foreground: 45 35% 90%;
+
+  --card: 20 22% 14%;
+  --card-foreground: 45 35% 90%;
+
+  --popover: 20 22% 14%;
+  --popover-foreground: 45 35% 90%;
+
+  --primary: 45 50% 65%;
+  --primary-foreground: 20 30% 12%;
+
+  --secondary: 28 45% 65%;
+  --secondary-foreground: 20 50% 15%;
+
+  --muted: 20 18% 18%;
+  --muted-foreground: 45 12% 60%;
+
+  --accent: 100 35% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 100 35% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 75% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 58%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 100 35% 50%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 20 18% 22%;
+  --input: 20 18% 22%;
+  --ring: 100 35% 50%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 40px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(100, 35%, 50%, 0.35);
+}
+
+.theme-12,
+.theme-12 * {
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.theme-12 .font-script,
+.theme-12 .font-display {
+  font-family: 'Caveat', 'Brush Script MT', cursive;
+  letter-spacing: 0.01em;
+}
+
+.theme-12 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(45, 50%, 94%, 0.92);
+}
+
+.dark .theme-12 .glass {
+  background: hsla(20, 25%, 12%, 0.92);
+}
+
+/* Dark mode: muted descriptions inside light caramel (bg-secondary) buttons need
+ * dark text for contrast, since the secondary color is light in dark mode for this theme. */
+.dark .theme-12 .bg-secondary .text-muted-foreground,
+.dark .theme-12 button.bg-secondary .text-muted-foreground {
+  color: hsl(20, 50%, 15%);
+}
+
+.theme-12 .shadow-card        { box-shadow: var(--shadow-sm); }
+.theme-12 .shadow-card-hover  { box-shadow: var(--shadow-md); }
+.theme-12 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-12 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+@keyframes theme12-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-12 .animate-float {
+  animation: theme12-float 3s ease-in-out infinite;
+}

@@ -194,7 +194,9 @@
     "scanAgain": "Scansiona di nuovo",
     "tableChanged": "Cambiato al tavolo {{table}}!",
     "sameTable": "Sei già a questo tavolo.",
-    "scanInfo": "Scansiona il codice QR del nuovo tavolo per cambiare."
+    "scanInfo": "Scansiona il codice QR del nuovo tavolo per cambiare.",
+    "noTableTitle": "Nessun tavolo selezionato",
+    "noTableDesc": "Per chiamare un cameriere, devi prima scansionare il codice QR del tuo tavolo."
   },
   "reservation": {
     "title": "Prenotazione",

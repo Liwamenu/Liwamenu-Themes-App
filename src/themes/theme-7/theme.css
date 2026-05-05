@@ -1,0 +1,160 @@
+/* ============================================================
+ * Theme 7 — Forest Green Organic
+ * ------------------------------------------------------------
+ * Cream background, deep forest-green primary, white cards,
+ * Fraunces (serif) headings + Inter body. Pill tabs, badge-free
+ * horizontal product cards.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.theme-7 {
+  /* ---- Light palette ---- */
+  --background: 45 28% 95%;
+  --foreground: 138 30% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 138 30% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 138 30% 15%;
+
+  --primary: 138 38% 24%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 45 22% 92%;
+  --secondary-foreground: 138 30% 20%;
+
+  --muted: 45 18% 90%;
+  --muted-foreground: 138 8% 42%;
+
+  --accent: 138 30% 90%;
+  --accent-foreground: 138 38% 22%;
+
+  --destructive: 0 70% 48%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 38%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 50%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 138 38% 24%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 45 18% 88%;
+  --input: 45 18% 90%;
+  --ring: 138 38% 24%;
+
+  --shadow-sm: 0 1px 3px hsla(135, 25%, 20%, 0.06);
+  --shadow-md: 0 4px 12px hsla(135, 25%, 20%, 0.08);
+  --shadow-lg: 0 8px 24px hsla(135, 25%, 20%, 0.12);
+  --shadow-xl: 0 16px 40px hsla(135, 25%, 20%, 0.16);
+  --shadow-glow: 0 0 20px hsla(138, 38%, 24%, 0.25);
+}
+
+.dark .theme-7 {
+  /* ---- Dark palette ---- */
+  --background: 138 18% 8%;
+  --foreground: 45 25% 92%;
+
+  --card: 138 16% 12%;
+  --card-foreground: 45 25% 92%;
+
+  --popover: 138 16% 12%;
+  --popover-foreground: 45 25% 92%;
+
+  --primary: 138 45% 50%;
+  --primary-foreground: 138 30% 8%;
+
+  --secondary: 138 14% 18%;
+  --secondary-foreground: 45 22% 88%;
+
+  --muted: 138 12% 16%;
+  --muted-foreground: 45 12% 60%;
+
+  --accent: 138 30% 22%;
+  --accent-foreground: 138 50% 75%;
+
+  --destructive: 0 65% 52%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 45%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 70% 58%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 80% 55%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 138 45% 50%;
+  --cart-foreground: 138 30% 8%;
+
+  --border: 138 12% 20%;
+  --input: 138 12% 20%;
+  --ring: 138 45% 50%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 40px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(138, 45%, 50%, 0.35);
+}
+
+/* ---- Fonts ---- */
+.theme-7,
+.theme-7 * {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-7 .font-display,
+.theme-7 h1,
+.theme-7 h2,
+.theme-7 h3,
+.theme-7 h4,
+.theme-7 h5,
+.theme-7 h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Glass surface (matches --background alpha) ---- */
+.theme-7 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(45, 28%, 95%, 0.92);
+}
+
+.dark .theme-7 .glass {
+  background: hsla(138, 18%, 10%, 0.92);
+}
+
+/* ---- Brand text gradient ---- */
+.theme-7 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(138, 38%, 24%) 0%, hsl(142, 55%, 38%) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-7 .shadow-card        { box-shadow: var(--shadow-sm); }
+.theme-7 .shadow-card-hover  { box-shadow: var(--shadow-md); }
+.theme-7 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-7 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations ---- */
+@keyframes theme7-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-7 .animate-float {
+  animation: theme7-float 3s ease-in-out infinite;
+}

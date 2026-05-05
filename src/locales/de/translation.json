@@ -194,7 +194,9 @@
     "scanAgain": "Erneut scannen",
     "tableChanged": "Zu Tisch {{table}} gewechselt!",
     "sameTable": "Sie sind bereits an diesem Tisch.",
-    "scanInfo": "Scannen Sie den QR-Code am neuen Tisch, um zu wechseln."
+    "scanInfo": "Scannen Sie den QR-Code am neuen Tisch, um zu wechseln.",
+    "noTableTitle": "Kein Tisch ausgewählt",
+    "noTableDesc": "Bitte scannen Sie zuerst den QR-Code Ihres Tisches, um einen Kellner zu rufen."
   },
   "reservation": {
     "title": "Reservierung",

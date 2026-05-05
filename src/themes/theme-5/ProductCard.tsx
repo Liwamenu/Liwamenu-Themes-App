@@ -102,21 +102,12 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      {/* Price & Add Button Column */}
-      <div className="flex flex-col h-[100px] flex-shrink-0 justify-between items-end mr-3">
-        <button
-          className="text-primary px-3 border border-primary/30 rounded-xl h-[32px] text-[16px] cursor-pointer flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-        >
-          <ShoppingCart className="w-4 h-4" />
-        </button>
-        <div className="text-right pb-1">
-          <span className="text-lg font-bold text-foreground">{formatPrice(displayPrice)}</span>
+      {/* Price Column */}
+      <div className="flex flex-col h-[100px] flex-shrink-0 justify-end items-end mr-3 max-w-[45%] min-w-0">
+        <div className="text-right pb-1 min-w-0 max-w-full">
+          <span className="text-lg font-bold text-foreground whitespace-nowrap truncate block max-w-full">{formatPrice(displayPrice)}</span>
           {originalPrice && (
-            <span className="block text-xs text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+            <span className="block text-xs text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
           )}
         </div>
       </div>

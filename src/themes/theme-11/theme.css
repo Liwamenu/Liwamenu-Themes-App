@@ -1,0 +1,158 @@
+/* ============================================================
+ * Theme 11 — Midnight & Yellow
+ * ------------------------------------------------------------
+ * Yellow / dark-navy duo. Light mode: cream bg + white cards +
+ * golden mustard primary + navy embossed price pill. Dark mode:
+ * dark navy bg + bright yellow primary + darker pill.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+.theme-11 {
+  /* ---- LIGHT (default) ---- */
+  --background: 48 50% 96%;
+  --foreground: 220 30% 14%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 30% 14%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 30% 14%;
+
+  --primary: 45 95% 45%;
+  --primary-foreground: 220 30% 12%;
+
+  --secondary: 200 80% 85%;
+  --secondary-foreground: 220 50% 20%;
+
+  --muted: 48 30% 90%;
+  --muted-foreground: 220 10% 42%;
+
+  --accent: 45 95% 45%;
+  --accent-foreground: 220 30% 12%;
+
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 58% 38%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 80% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 45%;
+  --special-foreground: 220 30% 12%;
+
+  --cart: 45 95% 45%;
+  --cart-foreground: 220 30% 12%;
+
+  --border: 48 25% 86%;
+  --input: 48 25% 88%;
+  --ring: 45 95% 45%;
+
+  --shadow-sm: 0 1px 3px hsla(220, 30%, 18%, 0.06);
+  --shadow-md: 0 4px 12px hsla(220, 30%, 18%, 0.10);
+  --shadow-lg: 0 8px 24px hsla(220, 30%, 18%, 0.14);
+  --shadow-xl: 0 16px 40px hsla(220, 30%, 18%, 0.18);
+  --shadow-glow: 0 0 24px hsla(45, 95%, 45%, 0.35);
+}
+
+/* ---- DARK ---- */
+.dark .theme-11 {
+  --background: 220 30% 11%;
+  --foreground: 0 0% 96%;
+
+  --card: 220 25% 17%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 220 25% 17%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 49 92% 56%;
+  --primary-foreground: 220 30% 12%;
+
+  --secondary: 220 25% 13%;
+  --secondary-foreground: 49 92% 56%;
+
+  --muted: 220 20% 22%;
+  --muted-foreground: 220 10% 65%;
+
+  --accent: 49 92% 56%;
+  --accent-foreground: 220 30% 12%;
+
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 14 80% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 49 92% 56%;
+  --special-foreground: 220 30% 12%;
+
+  --cart: 49 92% 56%;
+  --cart-foreground: 220 30% 12%;
+
+  --border: 220 20% 22%;
+  --input: 220 20% 22%;
+  --ring: 49 92% 56%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.4);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.5);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.6);
+  --shadow-xl: 0 16px 40px hsla(0, 0%, 0%, 0.7);
+  --shadow-glow: 0 0 24px hsla(49, 92%, 56%, 0.35);
+}
+
+/* Fonts */
+.theme-11,
+.theme-11 * {
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.theme-11 .font-display,
+.theme-11 h1,
+.theme-11 h2,
+.theme-11 h3 {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.theme-11 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 95%, 0.92);
+}
+
+.dark .theme-11 .glass {
+  background: hsla(220, 30%, 11%, 0.92);
+}
+
+/* Product card always uses dark-mode tokens, even in light theme */
+.theme-11 .pc-dark {
+  --card: 220 25% 17%;
+  --card-foreground: 0 0% 96%;
+  --primary: 49 92% 56%;
+  --primary-foreground: 220 30% 12%;
+  --secondary: 220 25% 13%;
+  --secondary-foreground: 49 92% 56%;
+  --muted-foreground: 220 10% 65%;
+  --border: 220 20% 22%;
+}
+
+.theme-11 .shadow-card        { box-shadow: var(--shadow-sm); }
+.theme-11 .shadow-card-hover  { box-shadow: var(--shadow-md); }
+.theme-11 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-11 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+@keyframes theme11-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-11 .animate-float {
+  animation: theme11-float 3s ease-in-out infinite;
+}

@@ -390,15 +390,15 @@ export function CheckoutModal({
 
               {canOrderOnline && <div className="space-y-2">
                   {/* Minimum Order Warning for Online Orders */}
-                  {subtotal < restaurant.minOrderAmount && <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-xl text-sm">
-                      <span className="text-destructive font-medium">
+                  {subtotal < restaurant.minOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
+                      <span className="text-destructive font-medium min-w-0 break-words">
                         {t('order.minOrderProgress', {
                   remaining: formatPrice(restaurant.minOrderAmount - subtotal)
                 })}
                       </span>
-                      <div className="text-right">
-                        <span className="text-xs text-muted-foreground block">{t('order.minOrderLabel')}</span>
-                        <span className="text-muted-foreground">{formatPrice(restaurant.minOrderAmount)}</span>
+                      <div className="text-right shrink-0 min-w-0">
+                        <span className="text-xs text-muted-foreground dark:text-gray-500 block">{t('order.minOrderLabel')}</span>
+                        <span className="text-muted-foreground dark:text-gray-700 whitespace-nowrap truncate block">{formatPrice(restaurant.minOrderAmount)}</span>
                       </div>
                     </div>}
                   <button onClick={() => handleSelectOrderType("online")} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
@@ -539,8 +539,8 @@ export function CheckoutModal({
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">{t("order.orderSummary")}</h3>
 
-              {/* Order Summary */}
-              <div className="bg-secondary rounded-2xl p-4 space-y-3">
+              {/* Order Summary — off-white bg with dark text in both modes for maximum readability */}
+              <div className="bg-stone-100 rounded-2xl p-4 space-y-3 text-stone-800 [&_.text-muted-foreground]:text-stone-600 [&_.text-primary]:text-stone-900">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   {orderType === "inPerson" ? <>
                       <Bell className="w-4 h-4" />
@@ -559,23 +559,25 @@ export function CheckoutModal({
                 const tagTotal = item.selectedTags.reduce((sum, tag) => sum + tag.price * tag.quantity, 0);
                 const itemTotal = (unitPrice + tagTotal) * item.quantity;
                 return <div key={item.id} className="space-y-1">
-                        <div className="flex justify-between text-sm">
-                          <div className="flex-1">
+                        <div className="flex justify-between gap-2 text-sm">
+                          <div className="flex-1 min-w-0">
                             <span className="font-medium">
                               {item.quantity}x {item.product.name}
                             </span>
-                            <span className="text-muted-foreground ml-1">({item.portion.name})</span>
+                            {item.portion.name?.trim().toLowerCase() !== "normal" && (
+                              <span className="text-muted-foreground ml-1">({item.portion.name})</span>
+                            )}
                           </div>
-                          <span className="font-medium">{formatPrice(unitPrice * item.quantity)}</span>
+                          <span className="font-medium whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(unitPrice * item.quantity)}</span>
                         </div>
 
                         {/* Order Tags */}
                         {item.selectedTags.length > 0 && <div className="ml-4 space-y-0.5">
-                            {item.selectedTags.map((tag, idx) => <div key={idx} className="flex justify-between text-xs text-muted-foreground">
-                                <span>
+                            {item.selectedTags.map((tag, idx) => <div key={idx} className="flex justify-between gap-2 text-xs text-muted-foreground">
+                                <span className="min-w-0 break-words">
                                   + {tag.itemName} {tag.quantity > 1 ? `x${tag.quantity}` : ""}
                                 </span>
-                                {tag.price > 0 && <span>{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
+                                {tag.price > 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
                               </div>)}
                           </div>}
 
@@ -596,36 +598,36 @@ export function CheckoutModal({
                 {/* Price Breakdown */}
                 <div className="border-t border-border pt-3 space-y-2">
                   {/* Subtotal */}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{t("order.subtotal")}</span>
-                    <span>{formatPrice(subtotal)}</span>
+                  <div className="flex justify-between gap-2 text-sm">
+                    <span className="text-muted-foreground shrink-0">{t("order.subtotal")}</span>
+                    <span className="whitespace-nowrap truncate min-w-0">{formatPrice(subtotal)}</span>
                   </div>
 
                   {/* Discount */}
-                  {discountRate > 0 && <div className="flex justify-between text-sm text-success">
-                      <span>
+                  {discountRate > 0 && <div className="flex justify-between gap-2 text-sm text-success dark:text-green-400">
+                      <span className="min-w-0 break-words">
                         {orderType === "inPerson" ? t("order.tableDiscount") : t("order.onlineDiscount")} (
                         {discountRate}%)
                       </span>
-                      <span>-{formatPrice(discountAmount)}</span>
+                      <span className="whitespace-nowrap truncate min-w-0 shrink-0">-{formatPrice(discountAmount)}</span>
                     </div>}
 
                   {/* Delivery Fee */}
-                  {orderType === "online" && deliveryFee > 0 && <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{t("order.deliveryFee")}</span>
-                      <span>{formatPrice(deliveryFee)}</span>
+                  {orderType === "online" && deliveryFee > 0 && <div className="flex justify-between gap-2 text-sm">
+                      <span className="text-muted-foreground shrink-0">{t("order.deliveryFee")}</span>
+                      <span className="whitespace-nowrap truncate min-w-0">{formatPrice(deliveryFee)}</span>
                     </div>}
 
                   {/* Cover Charge */}
-                  {orderType === "inPerson" && coverCharge > 0 && <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{t("order.coverCharge")}</span>
-                      <span>{formatPrice(coverCharge)}</span>
+                  {orderType === "inPerson" && coverCharge > 0 && <div className="flex justify-between gap-2 text-sm">
+                      <span className="text-muted-foreground shrink-0">{t("order.coverCharge")}</span>
+                      <span className="whitespace-nowrap truncate min-w-0">{formatPrice(coverCharge)}</span>
                     </div>}
 
                   {/* Total */}
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
-                    <span>{t("common.total")}</span>
-                    <span className="text-primary">{formatPrice(total)}</span>
+                  <div className="flex justify-between gap-2 font-bold text-lg pt-2 border-t border-border">
+                    <span className="shrink-0">{t("common.total")}</span>
+                    <span className="text-primary whitespace-nowrap truncate min-w-0">{formatPrice(total)}</span>
                   </div>
                 </div>
               </div>

@@ -1,0 +1,119 @@
+/* ============================================================
+ * Theme 14 — Anthracite Orange (Prem1)
+ * DARK-ONLY theme: light mode is intentionally disabled —
+ * the same dark anthracite palette applies in both modes.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+
+.theme-14,
+.dark .theme-14 {
+  background-color: hsl(213 11% 12%);
+  color: hsl(0 0% 100%);
+
+  /* ---- Anthracite palette (Prem1: #1a1d21 / #22262b / #2c3036 / orange-500) ---- */
+  --background: 213 11% 12%;       /* #1a1d21 */
+  --foreground: 0 0% 100%;
+
+  --card: 213 12% 16%;             /* #22262b */
+  --card-foreground: 0 0% 100%;
+
+  --popover: 213 12% 16%;
+  --popover-foreground: 0 0% 100%;
+
+  --primary: 21 90% 53%;           /* orange-500 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 215 11% 20%;        /* #2c3036 */
+  --secondary-foreground: 0 0% 95%;
+
+  --muted: 215 11% 20%;
+  --muted-foreground: 218 11% 65%;
+
+  --accent: 21 60% 22%;
+  --accent-foreground: 21 90% 70%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 152 55% 48%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 21 90% 53%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 90% 55%;
+  --special-foreground: 45 95% 10%;
+
+  --cart: 21 90% 53%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 215 10% 24%;
+  --input: 215 10% 24%;
+  --ring: 21 90% 53%;
+
+  --shadow-sm: 0 2px 8px hsla(0, 0%, 0%, 0.4);
+  --shadow-md: 0 4px 16px hsla(0, 0%, 0%, 0.5);
+  --shadow-lg: 0 12px 32px hsla(0, 0%, 0%, 0.55);
+  --shadow-xl: 0 20px 48px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 26px hsla(21, 90%, 53%, 0.45);
+
+  color-scheme: dark;
+}
+
+/* ---- Fonts: Roboto everywhere ---- */
+.theme-14,
+.theme-14 *,
+.theme-14 .font-display,
+.theme-14 h1,
+.theme-14 h2,
+.theme-14 h3,
+.theme-14 h4,
+.theme-14 h5,
+.theme-14 h6 {
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+/* ---- Glass surface (always dark) ---- */
+.theme-14 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(213, 12%, 16%, 0.92);
+}
+
+/* ---- Brand text gradient ---- */
+.theme-14 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(21, 90%, 53%) 0%, hsl(35, 95%, 60%) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-14 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-14 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-14 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-14 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations ---- */
+@keyframes theme14-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.theme-14 .animate-float {
+  animation: theme14-float 3s ease-in-out infinite;
+}
+
+/* Subtle inset highlight on cards (Prem1 look) */
+.theme-14 .prem-card {
+  background: hsl(var(--card));
+  box-shadow: var(--shadow-md), inset 0 1px 0 hsla(0, 0%, 100%, 0.04);
+}
+
+/* Tag-option labels in ProductDetailModal: 20% smaller + off-white tone */
+.theme-14 button.flex.items-center.gap-3.flex-1.min-w-0 > span.font-medium.truncate {
+  font-size: 0.8em;
+  color: #ECE6D6;
+}
+

@@ -194,7 +194,9 @@
     "scanAgain": "Scanner à nouveau",
     "tableChanged": "Changé pour la table {{table}} !",
     "sameTable": "Vous êtes déjà à cette table.",
-    "scanInfo": "Scannez le code QR de la nouvelle table pour changer."
+    "scanInfo": "Scannez le code QR de la nouvelle table pour changer.",
+    "noTableTitle": "Aucune table sélectionnée",
+    "noTableDesc": "Veuillez d'abord scanner le code QR de votre table pour appeler un serveur."
   },
   "reservation": {
     "title": "Réservation",

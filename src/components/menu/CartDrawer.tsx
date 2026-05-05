@@ -112,7 +112,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                   {items.length > 0 && (
                     <button
                       onClick={handleClearCart}
-                      className="text-sm text-destructive hover:text-destructive dark:text-red-400 dark:hover:text-red-300 bg-destructive/10 hover:bg-destructive/20 px-3 py-1.5 rounded-lg transition-colors"
+                      className="text-sm text-destructive hover:text-destructive/80 dark:text-white dark:hover:text-white/80 bg-destructive/10 hover:bg-destructive/20 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       {t('cart.clearCart')}
                     </button>
@@ -165,7 +165,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                                   {item.product.name}
                                 </h4>
                                 <p className="text-xs text-muted-foreground">
-                                  {item.portion.name}
+                                  {item.portion.name?.trim().toLowerCase() !== "normal" && item.portion.name}
                                 </p>
                               </div>
                               <button
@@ -198,8 +198,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                               </p>
                             )}
 
-                            <div className="flex items-center justify-between mt-2">
-                              <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-2 mt-2">
+                              <div className="flex items-center gap-2 shrink-0">
                                 <button
                                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                   className="w-7 h-7 rounded-full bg-card flex items-center justify-center"
@@ -216,7 +216,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              <span className="font-bold text-primary">
+                              <span className="font-bold text-primary whitespace-nowrap truncate min-w-0">
                                 {formatPrice(itemTotal)}
                               </span>
                             </div>
@@ -232,11 +232,11 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
               {items.length > 0 && (
                 <div className="p-5 border-t border-border space-y-4">
                   
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-medium">{t('common.total')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">:</span>
-                      <span className="text-2xl font-bold text-primary">{formatPrice(total)}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-lg font-medium shrink-0">{t('common.total')}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-lg shrink-0">:</span>
+                      <span className="text-2xl font-bold text-primary whitespace-nowrap truncate min-w-0">{formatPrice(total)}</span>
                     </div>
                   </div>
 

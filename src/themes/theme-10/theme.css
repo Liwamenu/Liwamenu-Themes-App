@@ -1,0 +1,147 @@
+/* ============================================================
+ * Theme 10 — Cream & Coral (Portrait Cards)
+ * ------------------------------------------------------------
+ * Warm cream background, coral/salmon primary accent, dark
+ * navy text. Portrait product cards with circular images,
+ * no add-button, 2-column grid (inherited from theme-9).
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+.theme-10 {
+  /* ---- Light palette ---- */
+  --background: 38 35% 92%;
+  --foreground: 222 30% 18%;
+
+  --card: 36 40% 96%;
+  --card-foreground: 222 30% 18%;
+
+  --popover: 36 40% 96%;
+  --popover-foreground: 222 30% 18%;
+
+  --primary: 13 65% 64%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 38 25% 88%;
+  --secondary-foreground: 222 30% 22%;
+
+  --muted: 38 20% 86%;
+  --muted-foreground: 222 10% 45%;
+
+  --accent: 13 60% 92%;
+  --accent-foreground: 13 65% 40%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 38%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 13 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 50%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 13 65% 64%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 38 20% 84%;
+  --input: 38 20% 88%;
+  --ring: 13 65% 64%;
+
+  --shadow-sm: 0 1px 3px hsla(222, 30%, 20%, 0.06);
+  --shadow-md: 0 4px 12px hsla(222, 30%, 20%, 0.08);
+  --shadow-lg: 0 8px 24px hsla(222, 30%, 20%, 0.12);
+  --shadow-xl: 0 16px 40px hsla(222, 30%, 20%, 0.16);
+  --shadow-glow: 0 0 20px hsla(13, 65%, 64%, 0.25);
+}
+
+.dark .theme-10 {
+  /* ---- Dark palette ---- */
+  --background: 222 25% 10%;
+  --foreground: 38 30% 92%;
+
+  --card: 222 22% 14%;
+  --card-foreground: 38 30% 92%;
+
+  --popover: 222 22% 14%;
+  --popover-foreground: 38 30% 92%;
+
+  --primary: 13 70% 65%;
+  --primary-foreground: 222 30% 12%;
+
+  --secondary: 222 18% 22%;
+  --secondary-foreground: 38 25% 88%;
+
+  --muted: 222 15% 18%;
+  --muted-foreground: 38 12% 60%;
+
+  --accent: 13 40% 30%;
+  --accent-foreground: 13 70% 75%;
+
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 13 75% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 85% 58%;
+  --special-foreground: 0 0% 100%;
+
+  --cart: 13 70% 65%;
+  --cart-foreground: 222 30% 12%;
+
+  --border: 222 15% 22%;
+  --input: 222 15% 22%;
+  --ring: 13 70% 65%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 24px hsla(0, 0%, 0%, 0.5);
+  --shadow-xl: 0 16px 40px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(13, 70%, 65%, 0.35);
+}
+
+/* ---- Fonts ---- */
+.theme-10,
+.theme-10 * {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-10 .font-display,
+.theme-10 h1,
+.theme-10 h2,
+.theme-10 h3,
+.theme-10 h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Glass / shadow utilities ---- */
+.theme-10 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(38, 35%, 92%, 0.92);
+}
+
+.dark .theme-10 .glass {
+  background: hsla(222, 25%, 12%, 0.92);
+}
+
+.theme-10 .shadow-card        { box-shadow: var(--shadow-sm); }
+.theme-10 .shadow-card-hover  { box-shadow: var(--shadow-md); }
+.theme-10 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-10 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+@keyframes theme10-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.theme-10 .animate-float {
+  animation: theme10-float 3s ease-in-out infinite;
+}

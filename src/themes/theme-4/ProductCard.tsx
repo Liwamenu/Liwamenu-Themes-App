@@ -94,17 +94,14 @@ export const ProductCard = memo(function ProductCard({
           </p>
         </div>
 
-        <div className="flex items-end justify-between mt-auto">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-bold text-card-foreground">{formatPrice(displayPrice)}</span>
+        <div className="flex items-end justify-between gap-2 mt-auto">
+          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
             {originalPrice && (
-              <span className="text-xs text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+              <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
             )}
+            <span className="text-lg font-bold text-card-foreground whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
           </div>
 
-          <button className="flex items-center justify-center w-9 h-9 bg-primary text-primary-foreground rounded-full transition-all hover:opacity-90" aria-label="Add to cart">
-            <ShoppingCart className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </motion.div>

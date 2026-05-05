@@ -13,6 +13,8 @@ import { OrderReceipt } from "./OrderReceipt";
 import { Footer } from "./Footer";
 import { SoundPermissionModal } from "./SoundPermissionModal";
 import { CallWaiterModal } from "./CallWaiterModal";
+import { ScrollToTop } from "@/components/menu/ScrollToTop";
+import { LiwaMenuFooter } from "@/components/menu/LiwaMenuFooter";
 import { ReservationModal } from "./ReservationModal";
 import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
@@ -23,6 +25,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
+import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 import { Input } from "@/components/ui/input";
 
 type View = "menu" | "order";
@@ -55,6 +58,7 @@ export function MenuPage() {
   const { currentOrder, orders, setCurrentOrder } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "");
+  const subFilter = useSubcategoryFilter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -456,11 +460,11 @@ export function MenuPage() {
               <div className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden mt-[30px] first:mt-0">
                 {category.image && (
                   <div
-                    className="absolute inset-0 bg-cover bg-center opacity-30"
+                    className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${category.image})` }}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/30 to-primary/70" />
                 <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10">
                   {category.name}
                 </h2>
@@ -473,33 +477,27 @@ export function MenuPage() {
                   <span className="text-sm font-normal text-muted-foreground ml-2">({category.products.length})</span>
                 </h2>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-[30px] sm:mt-[50px] mb-8">
-                {groupBySubcategory(category.products).map((group) => (
-                  <div key={group.subId ?? "__none__"} className="md:col-span-2">
-                    {group.subName && (
-                      <h3 className="font-display text-lg font-semibold text-foreground/80 mb-3 mt-2 flex items-center uppercase tracking-wide">
-                        {group.subName}
-                        <span className="text-xs font-normal text-muted-foreground ml-2 normal-case tracking-normal">
-                          ({group.products.length})
-                        </span>
-                      </h3>
-                    )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <AnimatePresence mode="popLayout">
-                        {group.products.map((product) => (
-                          <ProductCard
-                            key={product.id}
-                            product={product}
-                            onSelect={handleSelectProduct}
-                            isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                            specialPriceName={restaurant.specialPriceName}
-                            formatPrice={formatPrice}
-                          />
-                        ))}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                ))}
+              <div className="mt-[30px] sm:mt-[50px] mb-8">
+                <SubcategoryButtons
+                  categoryId={category.id}
+                  products={category.products}
+                  activeSub={subFilter.getActive(category.id)}
+                  onToggle={(subId) => subFilter.toggle(category.id, subId)}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <AnimatePresence mode="popLayout">
+                    {subFilter.filter(category.id, category.products).map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           </section>
@@ -600,7 +598,7 @@ export function MenuPage() {
         !isCheckoutOpen &&
         !showReservation &&
         !showTableSelection && (
-          <div className="fixed top-[170px] right-4 z-40">
+          <div className="fixed top-[120px] right-4 z-40">
             <button
               onClick={handleOpenCallWaiterFloating}
               disabled={waiterCooldown > 0}
@@ -623,6 +621,9 @@ export function MenuPage() {
           <CartButton onClick={handleOpenCart} />
         </div>
       )}
+
+      <ScrollToTop />
+      <LiwaMenuFooter />
     </div>
   );
 }

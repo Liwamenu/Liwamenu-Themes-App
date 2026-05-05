@@ -1,0 +1,186 @@
+/* ============================================================
+ * Theme 17 — Cafe PRO
+ * Sophisticated cafe aesthetic: dark photography hero with
+ * white menu surface below. Warm earth tones + gold accents.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+.theme-17 {
+  /* ---- Light palette ---- */
+  --background: 30 25% 96%;          /* warm cream */
+  --foreground: 24 30% 14%;          /* dark warm */
+
+  --card: 0 0% 100%;
+  --card-foreground: 24 30% 14%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 24 30% 14%;
+
+  --primary: 24 60% 18%;             /* deep coffee brown */
+  --primary-foreground: 36 100% 96%;
+
+  --secondary: 36 35% 92%;           /* warm beige */
+  --secondary-foreground: 24 35% 22%;
+
+  --muted: 36 25% 90%;
+  --muted-foreground: 25 12% 45%;
+
+  --accent: 36 60% 85%;
+  --accent-foreground: 24 50% 25%;
+
+  --destructive: 0 75% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 152 55% 42%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 350 75% 48%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 36 75% 50%;
+  --special-foreground: 24 60% 12%;
+
+  --cart: 24 60% 18%;
+  --cart-foreground: 36 100% 96%;
+
+  --border: 30 20% 88%;
+  --input: 30 20% 88%;
+  --ring: 36 60% 50%;
+
+  /* Brand accent — used for hero pills, gold lines, etc. */
+  --gold: 36 50% 52%;
+  --gold-light: 38 70% 70%;
+
+  --shadow-sm: 0 2px 8px hsla(24, 30%, 14%, 0.06);
+  --shadow-md: 0 6px 18px hsla(24, 30%, 14%, 0.08);
+  --shadow-lg: 0 12px 36px hsla(24, 30%, 14%, 0.12);
+  --shadow-xl: 0 20px 48px hsla(24, 30%, 14%, 0.18);
+  --shadow-glow: 0 0 24px hsla(36, 50%, 52%, 0.45);
+}
+
+.dark .theme-17 {
+  /* ---- Dark palette ---- */
+  --background: 24 25% 8%;
+  --foreground: 36 30% 92%;
+
+  --card: 24 22% 12%;
+  --card-foreground: 36 30% 92%;
+
+  --popover: 24 22% 12%;
+  --popover-foreground: 36 30% 92%;
+
+  --primary: 38 65% 60%;
+  --primary-foreground: 24 40% 10%;
+
+  --secondary: 24 18% 18%;
+  --secondary-foreground: 36 30% 88%;
+
+  --muted: 24 18% 16%;
+  --muted-foreground: 36 12% 60%;
+
+  --accent: 36 30% 22%;
+  --accent-foreground: 36 60% 75%;
+
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 152 50% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 350 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 36 75% 55%;
+  --special-foreground: 24 60% 10%;
+
+  --cart: 38 65% 60%;
+  --cart-foreground: 24 40% 10%;
+
+  --border: 24 18% 22%;
+  --input: 24 18% 22%;
+  --ring: 38 65% 60%;
+
+  --gold: 38 65% 60%;
+  --gold-light: 40 80% 75%;
+
+  --shadow-sm: 0 2px 8px hsla(0, 0%, 0%, 0.4);
+  --shadow-md: 0 6px 18px hsla(0, 0%, 0%, 0.5);
+  --shadow-lg: 0 14px 36px hsla(0, 0%, 0%, 0.55);
+  --shadow-xl: 0 22px 48px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow: 0 0 24px hsla(38, 65%, 60%, 0.4);
+}
+
+/* ---- Fonts ---- */
+.theme-17,
+.theme-17 * {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-17 .font-display,
+.theme-17 .font-serif,
+.theme-17 h1,
+.theme-17 h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* ---- Glass surface ---- */
+.theme-17 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(30, 25%, 96%, 0.92);
+}
+.dark .theme-17 .glass {
+  background: hsla(24, 22%, 12%, 0.92);
+}
+
+/* ---- Brand text gradient ---- */
+.theme-17 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(36, 60%, 55%) 0%, hsl(38, 80%, 70%) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-17 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-17 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-17 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-17 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations ---- */
+@keyframes theme17-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.theme-17 .animate-float {
+  animation: theme17-float 3.5s ease-in-out infinite;
+}
+
+/* Cafe PRO translucent hero pill */
+.theme-17 .cafe-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: hsla(0, 0%, 100%, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid hsla(0, 0%, 100%, 0.12);
+  white-space: nowrap;
+}
+.theme-17 .cafe-pill-icon {
+  padding: 0.5rem;
+}
+
+/* Gold horizontal divider */
+.theme-17 .gold-divider {
+  display: inline-block;
+  width: 4rem;
+  height: 1px;
+  background: hsl(var(--gold) / 0.6);
+}
