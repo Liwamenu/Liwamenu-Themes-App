@@ -55,7 +55,10 @@
     "myOrder": "Mi Pedido",
     "recommended": "Recomendados",
     "campaignProducts": "Ofertas",
-    "noResults": "Sin resultados para \"{{query}}\""
+    "noResults": "Sin resultados para \"{{query}}\"",
+    "backToCategories": "Volver a categorías",
+    "productCount": "{{count}} productos",
+    "menuTitle": "Nuestro Menú"
   },
   "cart": {
     "title": "Mi Carrito",
@@ -88,7 +91,9 @@
     "minQuantityError": "\"{{name}}\" requiere una cantidad mínima de {{min}}",
     "maxQuantityError": "\"{{name}}\" permite una cantidad máxima de {{max}}",
     "note": "Nota del producto",
-    "notePlaceholder": "Añade solicitudes especiales para este artículo..."
+    "notePlaceholder": "Añade solicitudes especiales para este artículo...",
+    "mandatoryTagItem": "\"{{name}}\" es obligatorio y no se puede deseleccionar",
+    "freeTagPlaceholder": "Añade una nota personalizada..."
   },
   "order": {
     "placeOrder": "Pedir",
@@ -130,7 +135,7 @@
     "onlineDiscount": "Descuento online",
     "deliveryFee": "Gastos de envío",
     "coverCharge": "Cubierto",
-    "minOrderError": "Pedido mínimo para entrega: {{min}}.",
+    "minOrderError": "El pedido mínimo para entrega es<br/><b>{{min}}</b>",
     "cannotAddOutsideHours": "No se pueden añadir artículos fuera del horario.",
     "minOrderProgress": "Tu carrito está por debajo del mínimo. Añade {{remaining}} más.",
     "minOrderLabel": "Importe mínimo",
@@ -298,5 +303,26 @@
     "successMessage": "Muchas gracias por tus comentarios. Tu opinión es muy valiosa para nosotros.",
     "yourRatings": "Tus valoraciones",
     "noOrderError": "Debes realizar un pedido antes de enviar una reseña."
+  },
+  "allergens": {
+    "title": "Alérgenos",
+    "contains": "Contiene",
+    "mayContain": "Puede contener",
+    "none": "No se declaran alérgenos para este producto.",
+    "disclaimer": "Basado en los 14 alérgenos principales definidos en el Reglamento UE 1169/2011, Anexo II.",
+    "gluten": "Cereales con gluten",
+    "crustaceans": "Crustáceos",
+    "eggs": "Huevos",
+    "fish": "Pescado",
+    "peanuts": "Cacahuetes",
+    "soybeans": "Soja",
+    "milk": "Leche (incl. lactosa)",
+    "treeNuts": "Frutos de cáscara",
+    "celery": "Apio",
+    "mustard": "Mostaza",
+    "sesame": "Sésamo",
+    "sulphites": "Sulfitos",
+    "lupin": "Altramuces",
+    "molluscs": "Moluscos"
   }
 }

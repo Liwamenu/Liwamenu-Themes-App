@@ -89,7 +89,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
               </div>
 
               {/* Items */}
-              <div className="flex-1 overflow-y-auto py-5 px-[1px] space-y-3">
+              <div className="flex-1 overflow-y-auto py-5 px-[5px] space-y-3">
                 {items.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-12">
                     <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-4">
@@ -106,7 +106,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                       const itemTotal = (price + tagTotal) * item.quantity;
 
                       return (
-                        <motion.div key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex gap-4 bg-secondary rounded-2xl p-3 border border-border">
+                        <motion.div key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex gap-4 bg-secondary rounded-[6px] p-3 border border-border">
                           <img src={getProductImageSrc(item.product.imageURL)} onError={handleProductImageError} alt={item.product.name} className="w-20 h-20 rounded-xl object-cover" loading="lazy" decoding="async" width={80} height={80} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">

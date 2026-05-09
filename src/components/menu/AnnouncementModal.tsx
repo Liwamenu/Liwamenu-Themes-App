@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import DOMPurify from "dompurify";
@@ -133,7 +134,47 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       };
     }, [isOpen]);
 
-    return (
+    // Mount a persistent dedicated portal container in body so Radix Dialog
+    // (used by SurveyModal) cannot mark our portal `inert` / `aria-hidden`
+    // when it opens. We strip those attrs on every mutation.
+    const portalContainerRef = useRef<HTMLDivElement | null>(null);
+    if (typeof document !== "undefined" && !portalContainerRef.current) {
+      const div = document.createElement("div");
+      div.setAttribute("data-announcement-portal", "");
+      // Always interactive — cannot be suppressed by ancestor inert.
+      div.style.pointerEvents = "auto";
+      portalContainerRef.current = div;
+    }
+
+    useEffect(() => {
+      const el = portalContainerRef.current;
+      if (!el) return;
+      document.body.appendChild(el);
+
+      // Some libs (Radix Dialog's aria-hidden manager) automatically apply
+      // `inert` / `aria-hidden` to body siblings when their dialog opens.
+      // Strip those attributes so this portal stays interactive.
+      const strip = () => {
+        if (el.hasAttribute("inert")) el.removeAttribute("inert");
+        if (el.hasAttribute("aria-hidden")) el.removeAttribute("aria-hidden");
+        if (el.hasAttribute("data-aria-hidden")) el.removeAttribute("data-aria-hidden");
+      };
+      strip();
+      const observer = new MutationObserver(strip);
+      observer.observe(el, {
+        attributes: true,
+        attributeFilter: ["inert", "aria-hidden", "data-aria-hidden"],
+      });
+
+      return () => {
+        observer.disconnect();
+        if (el.parentElement) el.parentElement.removeChild(el);
+      };
+    }, []);
+
+    if (typeof document === "undefined" || !portalContainerRef.current) return null;
+
+    return createPortal(
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -141,7 +182,10 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            // Rendered into document.body via portal so it always sits above
+            // any in-tree modal regardless of stacking contexts. z-[2000] keeps
+            // it above Radix Dialog (z-50) and ReservationModal (z-[100]).
+            className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
             onClick={onClose}
           >
             <motion.div
@@ -185,7 +229,8 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      portalContainerRef.current
     );
   }
 );

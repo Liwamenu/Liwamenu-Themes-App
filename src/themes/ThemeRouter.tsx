@@ -31,6 +31,8 @@ const themeComponents: Record<number, React.LazyExoticComponent<React.ComponentT
   15: lazy(() => import("./theme-16")),
   16: lazy(() => import("./theme-17")),
   17: lazy(() => import("./theme-18")),
+  18: lazy(() => import("./theme-19")),
+  19: lazy(() => import("./theme-20")),
 };
 
 const DEFAULT_THEME_ID = 0;

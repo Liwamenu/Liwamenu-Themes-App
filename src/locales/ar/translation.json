@@ -55,7 +55,10 @@
     "myOrder": "طلبي",
     "recommended": "الأطباق الموصى بها",
     "campaignProducts": "العروض",
-    "noResults": "لا توجد نتائج لـ \"{{query}}\""
+    "noResults": "لا توجد نتائج لـ \"{{query}}\"",
+    "backToCategories": "العودة إلى الفئات",
+    "productCount": "{{count}} منتج",
+    "menuTitle": "قائمتنا"
   },
   "cart": {
     "title": "سلتي",
@@ -88,7 +91,9 @@
     "minQuantityError": "\"{{name}}\" يتطلب حد أدنى {{min}}",
     "maxQuantityError": "\"{{name}}\" يسمح بحد أقصى {{max}}",
     "note": "ملاحظة المنتج",
-    "notePlaceholder": "أضف طلبات خاصة لهذا العنصر..."
+    "notePlaceholder": "أضف طلبات خاصة لهذا العنصر...",
+    "mandatoryTagItem": "\"{{name}}\" مطلوب ولا يمكن إلغاء تحديده",
+    "freeTagPlaceholder": "أضف ملاحظة مخصصة..."
   },
   "order": {
     "placeOrder": "تقديم الطلب",
@@ -130,7 +135,7 @@
     "onlineDiscount": "خصم أونلاين",
     "deliveryFee": "رسوم التوصيل",
     "coverCharge": "رسوم الخدمة",
-    "minOrderError": "الحد الأدنى للطلب للتوصيل: {{min}}.",
+    "minOrderError": "الحد الأدنى للطلب للتوصيل هو<br/><b>{{min}}</b>",
     "cannotAddOutsideHours": "لا يمكن إضافة عناصر خارج ساعات العمل.",
     "minOrderProgress": "سلتك أقل من الحد الأدنى. أضف {{remaining}} أخرى.",
     "minOrderLabel": "الحد الأدنى",
@@ -298,5 +303,26 @@
     "successMessage": "شكراً جزيلاً على ملاحظاتك. رأيك مهم جداً لنا.",
     "yourRatings": "تقييماتك",
     "noOrderError": "يجب عليك تقديم طلب قبل إرسال تقييم."
+  },
+  "allergens": {
+    "title": "مسببات الحساسية",
+    "contains": "يحتوي على",
+    "mayContain": "قد يحتوي على",
+    "none": "لا توجد مسببات حساسية معلنة لهذا المنتج.",
+    "disclaimer": "بناءً على 14 من المواد المسببة للحساسية الرئيسية المحددة في لائحة الاتحاد الأوروبي 1169/2011 الملحق الثاني.",
+    "gluten": "الحبوب التي تحتوي على الغلوتين",
+    "crustaceans": "القشريات",
+    "eggs": "البيض",
+    "fish": "الأسماك",
+    "peanuts": "الفول السوداني",
+    "soybeans": "فول الصويا",
+    "milk": "الحليب (بما في ذلك اللاكتوز)",
+    "treeNuts": "المكسرات الشجرية",
+    "celery": "الكرفس",
+    "mustard": "الخردل",
+    "sesame": "السمسم",
+    "sulphites": "الكبريتات",
+    "lupin": "الترمس",
+    "molluscs": "الرخويات"
   }
 }

@@ -1,3 +1,32 @@
+/**
+ * EU 14 major allergens (Türk Gıda Kodeksi & EU Annex II of Reg. 1169/2011).
+ * Backend should send a `code` matching one of these standardized strings,
+ * plus a `presence` flag indicating if the product contains it directly
+ * or may contain it via cross-contamination.
+ */
+export type AllergenCode =
+  | "gluten"      // 1) Cereals containing gluten
+  | "crustaceans" // 2) Crustaceans
+  | "eggs"        // 3) Eggs
+  | "fish"        // 4) Fish
+  | "peanuts"     // 5) Peanuts
+  | "soybeans"    // 6) Soybeans
+  | "milk"        // 7) Milk (incl. lactose)
+  | "treeNuts"    // 8) Tree nuts
+  | "celery"      // 9) Celery
+  | "mustard"     // 10) Mustard
+  | "sesame"      // 11) Sesame seeds
+  | "sulphites"   // 12) Sulphur dioxide & sulphites (>10mg/kg)
+  | "lupin"       // 13) Lupin
+  | "molluscs";   // 14) Molluscs
+
+export type AllergenPresence = "contains" | "mayContain";
+
+export interface ProductAllergen {
+  code: AllergenCode;
+  presence: AllergenPresence;
+}
+
 export interface OrderTagItem {
   id: string;
   name: string;
@@ -49,6 +78,8 @@ export interface Product {
   subCategorySortOrder: number;
   isNoteAllowed?: boolean;
   isCampaign?: boolean;
+  /** EU 14 major allergens declared for this product (Annex II / Türk Gıda Kodeksi). */
+  allergens?: ProductAllergen[];
   portions: Portion[];
 }
 

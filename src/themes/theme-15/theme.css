@@ -112,9 +112,8 @@
   box-shadow: var(--shadow-md), inset 0 1px 0 hsla(0, 0%, 100%, 0.04);
 }
 
-/* Tag-option labels in ProductDetailModal: 20% smaller + off-white tone */
-.theme-15 button.flex.items-center.gap-3.flex-1.min-w-0 > span.font-medium.truncate {
-  font-size: 0.8em;
+/* Tag-option labels in ProductDetailModal: off-white warm tone (size + weight handled by global span classes) */
+.theme-15 button.flex.items-center.gap-3.flex-1.min-w-0 > span {
   color: #ECE6D6;
 }
 

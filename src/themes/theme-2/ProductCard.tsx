@@ -102,7 +102,7 @@ export const ProductCard = memo(function ProductCard({
       {/* Content - Right side */}
       <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
         <div>
-          <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-1 mb-0.5">
+          <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-2 break-words mb-0.5">
             {product.name}
           </h3>
           <p className="text-muted-foreground text-xs line-clamp-2 leading-relaxed">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
 import { useLocation } from "@/hooks/useLocation";
@@ -107,9 +107,13 @@ export function CheckoutModal({
     if (type === "online") {
       // Check minimum order amount
       if (subtotal < restaurant.minOrderAmount) {
-        toast.error(t("order.minOrderError", {
-          min: formatPrice(restaurant.minOrderAmount)
-        }));
+        toast.error(
+          <Trans
+            i18nKey="order.minOrderError"
+            values={{ min: formatPrice(restaurant.minOrderAmount) }}
+            components={{ br: <br />, b: <b /> }}
+          />
+        );
         return;
       }
       try {
@@ -391,7 +395,7 @@ export function CheckoutModal({
               {canOrderOnline && <div className="space-y-2">
                   {/* Minimum Order Warning for Online Orders */}
                   {subtotal < restaurant.minOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
-                      <span className="text-destructive font-medium min-w-0 break-words">
+                      <span className="text-destructive font-medium min-w-0 break-words text-xs leading-snug">
                         {t('order.minOrderProgress', {
                   remaining: formatPrice(restaurant.minOrderAmount - subtotal)
                 })}

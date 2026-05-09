@@ -55,7 +55,10 @@
     "myOrder": "我的订单",
     "recommended": "推荐菜品",
     "campaignProducts": "优惠活动",
-    "noResults": "未找到 {{query}} 的结果"
+    "noResults": "未找到 {{query}} 的结果",
+    "backToCategories": "返回分类",
+    "productCount": "{{count}} 商品",
+    "menuTitle": "我们的菜单"
   },
   "cart": {
     "title": "我的购物车",
@@ -88,7 +91,9 @@
     "minQuantityError": "\"{{name}}\" 最少需要 {{min}} 个",
     "maxQuantityError": "\"{{name}}\" 最多允许 {{max}} 个",
     "note": "商品备注",
-    "notePlaceholder": "添加此商品的特殊要求..."
+    "notePlaceholder": "添加此商品的特殊要求...",
+    "mandatoryTagItem": "\"{{name}}\" 是必选项,无法取消选择",
+    "freeTagPlaceholder": "添加自定义备注..."
   },
   "order": {
     "placeOrder": "下单",
@@ -130,7 +135,7 @@
     "onlineDiscount": "在线折扣",
     "deliveryFee": "配送费",
     "coverCharge": "餐位费",
-    "minOrderError": "外卖最低订单金额：{{min}}。",
+    "minOrderError": "外卖最低订单金额：<br/><b>{{min}}</b>",
     "cannotAddOutsideHours": "非营业时间不能添加商品。",
     "minOrderProgress": "您的购物车低于最低金额。请再添加{{remaining}}。",
     "minOrderLabel": "最低金额",
@@ -298,5 +303,26 @@
     "successMessage": "非常感谢您的反馈。您的意见对我们非常重要。",
     "yourRatings": "您的评分",
     "noOrderError": "您必须先下单才能提交评价。"
+  },
+  "allergens": {
+    "title": "过敏原",
+    "contains": "含有",
+    "mayContain": "可能含有",
+    "none": "本产品未声明任何过敏原。",
+    "disclaimer": "基于欧盟法规 1169/2011 附件 II 和土耳其食品法典定义的14种主要过敏原。",
+    "gluten": "含麸质谷物",
+    "crustaceans": "甲壳类",
+    "eggs": "蛋类",
+    "fish": "鱼类",
+    "peanuts": "花生",
+    "soybeans": "大豆",
+    "milk": "牛奶（含乳糖）",
+    "treeNuts": "坚果",
+    "celery": "芹菜",
+    "mustard": "芥末",
+    "sesame": "芝麻",
+    "sulphites": "亚硫酸盐",
+    "lupin": "羽扇豆",
+    "molluscs": "软体动物"
   }
 }

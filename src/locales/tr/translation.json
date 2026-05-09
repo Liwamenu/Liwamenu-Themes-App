@@ -56,7 +56,10 @@
     "myOrder": "Siparişim",
     "recommended": "Önerilen Lezzetler",
     "campaignProducts": "Kampanyalı Ürünler",
-    "noResults": "\"{{query}}\" için sonuç bulunamadı"
+    "noResults": "\"{{query}}\" için sonuç bulunamadı",
+    "backToCategories": "Kategorilere Dön",
+    "productCount": "{{count}} ürün",
+    "menuTitle": "Menümüz"
   },
   "cart": {
     "title": "Sepetim",
@@ -89,7 +92,9 @@
     "minQuantityError": "\"{{name}}\" için minimum {{min}} adet gereklidir",
     "maxQuantityError": "\"{{name}}\" için maksimum {{max}} adet seçilebilir",
     "note": "Ürün Notu",
-    "notePlaceholder": "Bu ürün için özel isteklerinizi yazın..."
+    "notePlaceholder": "Bu ürün için özel isteklerinizi yazın...",
+    "mandatoryTagItem": "\"{{name}}\" zorunlu seçenektir, kaldırılamaz",
+    "freeTagPlaceholder": "Özel notunuzu yazabilirsiniz..."
   },
   "order": {
     "placeOrder": "Sipariş Ver",
@@ -131,7 +136,7 @@
     "onlineDiscount": "Paket Servis İndirimi",
     "deliveryFee": "Teslimat Ücreti",
     "coverCharge": "Kuver",
-    "minOrderError": "Paket Servisler için minimum sipariş tutarı {{min}}.",
+    "minOrderError": "Paket Servis için minimum sipariş tutarı<br/><b>{{min}}</b>",
     "cannotAddOutsideHours": "Çalışma saatleri dışında veya restoran aktif değilken ürün ekleyemezsiniz.",
     "minOrderProgress": "Paket Servis için sepet tutarı minimum tutarın altındadır. Lütfen {{remaining}} daha ürün ekleyin.",
     "minOrderLabel": "Minimum Tutar",
@@ -300,5 +305,26 @@
     "successMessage": "Değerlendirmeniz için çok teşekkür ederiz. Görüşleriniz bizim için çok değerli.",
     "yourRatings": "Verdiğiniz Puanlar",
     "noOrderError": "Değerlendirme yapabilmek için önce sipariş vermeniz gerekmektedir."
+  },
+  "allergens": {
+    "title": "Alerjenler",
+    "contains": "İçerir",
+    "mayContain": "İçerebilir",
+    "none": "Bu üründe bildirilen alerjen bulunmamaktadır.",
+    "disclaimer": "Türk Gıda Kodeksi kapsamında bildirimi zorunlu 14 ana alerjen (1/1/2020 tarihinden itibaren yürürlükte). Kaynak: AB 1169/2011 Ek-2 ve Tarım ve Orman Bakanlığı Toplu Tüketim Yerlerinde Alerjen Bildirimi.",
+    "gluten": "Gluten içeren tahıllar",
+    "crustaceans": "Kabuklular",
+    "eggs": "Yumurta",
+    "fish": "Balık",
+    "peanuts": "Yerfıstığı",
+    "soybeans": "Soya fasulyesi",
+    "milk": "Süt (laktoz dahil)",
+    "treeNuts": "Sert kabuklu meyveler",
+    "celery": "Kereviz",
+    "mustard": "Hardal",
+    "sesame": "Susam tohumu",
+    "sulphites": "Kükürt dioksit / Sülfitler",
+    "lupin": "Acı bakla",
+    "molluscs": "Yumuşakçalar"
   }
 }

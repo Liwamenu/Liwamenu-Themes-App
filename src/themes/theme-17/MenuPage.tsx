@@ -39,6 +39,7 @@ import { useCart } from "@/hooks/useCart";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { SurveyModal } from "./SurveyModal";
 import { cn } from "@/lib/utils";
 
@@ -159,7 +160,6 @@ export function MenuPage() {
 
   const handleSelectProduct = useCallback(
     (product: Product) => {
-      if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
       setSelectedProduct(product);
     },
     [restaurant.onlineOrder, restaurant.inPersonOrder],
@@ -255,7 +255,8 @@ export function MenuPage() {
         <div className="relative px-5 pt-6 pb-10">
           {/* Top pill row */}
           <div className="flex items-center justify-between gap-2">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              <ThemeSwitcher />
               <LanguageSwitcher />
             </div>
             <div className="flex gap-2 items-center">

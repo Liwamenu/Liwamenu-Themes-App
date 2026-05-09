@@ -109,7 +109,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              <div className="flex-1 overflow-y-auto py-5 px-[5px] space-y-3">
                 {items.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-12">
                     <ShoppingBasket className="w-16 h-16 text-muted-foreground/30 mb-4" />
@@ -130,7 +130,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
-                          className="flex gap-4 bg-card rounded-2xl p-3 shadow-sm"
+                          className="flex gap-4 bg-card rounded-[6px] p-3 shadow-sm"
                         >
                           <img src={getProductImageSrc(item.product.imageURL)} onError={handleProductImageError} alt={item.product.name} className="w-20 h-20 rounded-xl object-cover" loading="lazy" decoding="async" width={80} height={80} />
                           <div className="flex-1 min-w-0">
