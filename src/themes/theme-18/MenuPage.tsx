@@ -225,7 +225,6 @@ export function MenuPage() {
   }, []);
   const handleSelectProduct = useCallback(
     (product: Product) => {
-      if (!restaurant.onlineOrder && !restaurant.inPersonOrder) return;
       setSelectedProduct(product);
     },
     [restaurant.onlineOrder, restaurant.inPersonOrder],

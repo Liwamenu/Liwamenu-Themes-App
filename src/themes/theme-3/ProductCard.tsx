@@ -92,7 +92,7 @@ export const ProductCard = memo(function ProductCard({
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-semibold text-foreground text-lg mb-1 line-clamp-1">{product.name}</h3>
+        <h3 className="font-semibold text-foreground text-lg mb-1 line-clamp-2 break-words">{product.name}</h3>
         <p className="text-muted-foreground text-sm line-clamp-2 mb-3 min-h-[40px]">{product.description}</p>
 
         <div className="flex items-center justify-between gap-2">

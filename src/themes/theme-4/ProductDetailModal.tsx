@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
+import { AllergensSection } from '@/components/menu/AllergensSection';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -26,6 +27,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const [selectedPortion, setSelectedPortion] = useState<Portion>(product.portions[0]);
   const [quantity, setQuantity] = useState(1);
   const [selectedTags, setSelectedTags] = useState<Record<string, SelectedTagItem[]>>({});
+  const [freeTagNotes, setFreeTagNotes] = useState<Record<string, string>>({});
   const [productNote, setProductNote] = useState('');
   const [shakingTagId, setShakingTagId] = useState<string | null>(null);
   const tagRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -35,7 +37,30 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  // Auto-select default tag items whenever the active portion changes.
+  useEffect(() => {
+    const defaults: Record<string, SelectedTagItem[]> = {};
+    selectedPortion.orderTags.forEach((tag) => {
+      const defaultItems = tag.orderTagItems
+        .filter((it) => it.isDefault)
+        .map<SelectedTagItem>((it) => ({
+          tagId: tag.id,
+          tagName: tag.name,
+          itemId: it.id,
+          itemName: it.name,
+          price: it.price,
+          quantity: Math.max(1, it.minQuantity || 1),
+        }));
+      if (defaultItems.length === 0) return;
+      const cap = tag.maxSelected > 0 ? tag.maxSelected : defaultItems.length;
+      defaults[tag.id] = defaultItems.slice(0, cap);
+    });
+    setSelectedTags(defaults);
+    setFreeTagNotes({});
+  }, [selectedPortion]);
+
   const canAddToCart = isRestaurantActive && isCurrentlyOpen;
+  const canOrderAtAll = !!(restaurant.onlineOrder || restaurant.inPersonOrder);
 
   const getDisplayPrice = (portion: Portion) => {
     if (restaurant.isSpecialPriceActive && portion.specialPrice != null) return portion.specialPrice;
@@ -53,6 +78,10 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       const currentTagItems = prev[tag.id] || [];
       const existingIndex = currentTagItems.findIndex(t => t.itemId === item.id);
       if (existingIndex >= 0) {
+        if (item.isMandatory) {
+          toast.error(t('product.mandatoryTagItem', { name: item.name }));
+          return prev;
+        }
         if (tag.maxSelected === 1) return { ...prev, [tag.id]: [] };
         return { ...prev, [tag.id]: currentTagItems.filter(t => t.itemId !== item.id) };
       }
@@ -126,7 +155,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       triggerFlyingEmoji(rect.left + rect.width / 2, rect.top);
     }
     const allSelectedTags = Object.values(selectedTags).flat();
-    addItem(product, selectedPortion, allSelectedTags, quantity, productNote.trim() || undefined);
+    const freeLines = Object.entries(freeTagNotes)
+      .map(([tagId, text]) => {
+        const trimmed = text.trim();
+        if (!trimmed) return '';
+        const tag = selectedPortion.orderTags.find((t) => t.id === tagId);
+        return tag ? `${tag.name}: ${trimmed}` : trimmed;
+      })
+      .filter(Boolean);
+    const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
+    addItem(product, selectedPortion, allSelectedTags, quantity, finalNote || undefined);
     onClose();
   };
 
@@ -138,7 +176,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100vh-6px)] bg-background rounded-3xl flex flex-col"
+        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-background rounded-3xl flex flex-col"
       >
         <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden">
           <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
@@ -167,20 +205,20 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                     key={portion.id}
                     onClick={() => { setSelectedPortion(portion); setSelectedTags({}); }}
                     className={cn(
-                      'px-3 py-2 rounded-xl text-[12px] font-medium transition-all border-2 min-w-0 truncate',
+                      'px-3 py-2 rounded-xl text-[12px] font-medium transition-all border-2 min-w-0 flex flex-col items-center justify-center leading-tight text-center',
                       selectedPortion.id === portion.id
                         ? 'bg-primary text-primary-foreground border-primary shadow-glow'
                         : 'bg-card text-foreground border-border'
                     )}
                   >
-                    {portion.name} - {formatPrice(getDisplayPrice(portion))}
+                    <span className="whitespace-nowrap">{portion.name}</span><span className="whitespace-nowrap">{formatPrice(getDisplayPrice(portion))}</span>
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {selectedPortion.orderTags.map((tag) => {
+          {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
             const isRequired = tag.minSelected > 0;
             const selectedCount = (selectedTags[tag.id] || []).length;
             const isShaking = shakingTagId === tag.id;
@@ -196,7 +234,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   {tag.maxSelected > 1 && <span className="text-xs text-muted-foreground">({t('product.maxSelection', { max: tag.maxSelected })})</span>}
                 </div>
                 <div className="space-y-2">
-                  {tag.orderTagItems.map((item) => {
+                  {tag.freeTagging && (
+                    <Textarea
+                      value={freeTagNotes[tag.id] || ''}
+                      onChange={(e) => setFreeTagNotes((prev) => ({ ...prev, [tag.id]: e.target.value }))}
+                      placeholder={t('product.freeTagPlaceholder')}
+                      className="rounded-xl resize-none text-sm"
+                      rows={2}
+                    />
+                  )}
+                  {!tag.freeTagging && tag.orderTagItems.map((item) => {
                     const selected = isTagItemSelected(tag.id, item.id);
                     const qty = getTagItemQuantity(tag.id, item.id);
                     const showQtyControls = selected && item.maxQuantity > 1;
@@ -207,7 +254,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                           <div className={cn('w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all', selected ? 'bg-primary border-primary' : isShaking && isRequired && selectedCount < tag.minSelected ? 'border-secondary' : 'border-muted-foreground/30')}>
                             {selected && <Check className="w-3 h-3 text-primary-foreground" />}
                           </div>
-                          <span className="font-medium">{item.name}</span>
+                          <span className="font-light text-[11px] tracking-wide leading-snug">{item.name}</span>
                         </button>
                         <div className="flex items-center gap-2">
                           {showQtyControls && (
@@ -236,6 +283,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               <Textarea placeholder={t('product.notePlaceholder')} value={productNote} onChange={(e) => setProductNote(e.target.value)} className="rounded-xl resize-none" rows={2} />
             </div>
           )}
+          <AllergensSection product={product} />
 
         </div>
 
@@ -251,6 +299,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             const long = priceStr.length > 9;
             const labelSize = veryLong ? 'text-[9px]' : long ? 'text-[10px]' : 'text-[11px]';
             const priceSize = veryLong ? 'text-[11px]' : long ? 'text-[13px]' : 'text-[15px]';
+            if (!canOrderAtAll) {
+              return (
+                <div className="flex-1 min-w-0 h-12 rounded-xl bg-secondary text-secondary-foreground flex items-center justify-between gap-2 px-4">
+                  <span className={`flex flex-col leading-tight ${labelSize} font-medium opacity-80 text-left shrink-0`}>
+                    <span className="whitespace-nowrap">{t("common.total", "Toplam")}</span>
+                  </span>
+                  <span className={`${priceSize} font-bold whitespace-nowrap truncate min-w-0`}>{priceStr}</span>
+                </div>
+              );
+            }
             return (
               <Button ref={addButtonRef} onClick={handleAddToCart} size="lg" className="flex-1 min-w-0 h-12 rounded-xl shadow-glow">
                 <span className="flex items-center justify-between gap-2 w-full">

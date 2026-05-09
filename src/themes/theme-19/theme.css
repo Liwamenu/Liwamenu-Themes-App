@@ -1,0 +1,174 @@
+/* ============================================================
+ * Theme 19 — Midnight Plum / Amber / Pearl
+ * Three-zone palette: deep plum page background, vibrant amber
+ * category tiles, and a soft cream "product zone" surface that
+ * appears when the user drills into a category.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* DARK-ONLY theme — light mode is intentionally disabled.
+   Both selectors apply the same dark plum palette, and we set
+   background-color/color directly so a `.light` root cannot
+   leak unstyled defaults into modals/cart/etc. */
+.theme-19,
+.dark .theme-19 {
+  background-color: hsl(252 45% 18%);
+  color: hsl(30 60% 95%);
+
+  /* ZONE 1 — Page background (deep plum / midnight) */
+  --background: 252 45% 18%;          /* #241B47 */
+  --foreground: 30 60% 95%;           /* #F8EFE0 cream text */
+
+  /* Card surface (cart drawer, modals) — slightly lighter plum */
+  --card: 252 38% 24%;                /* #2F2554 */
+  --card-foreground: 30 60% 95%;
+
+  --popover: 252 38% 24%;
+  --popover-foreground: 30 60% 95%;
+
+  /* ZONE 2 — Category tiles (vibrant amber) → primary token */
+  --primary: 35 80% 60%;              /* #E8AA51 amber */
+  --primary-foreground: 252 45% 14%;
+
+  /* Secondary — muted lavender plum for chips */
+  --secondary: 252 30% 32%;
+  --secondary-foreground: 30 60% 92%;
+
+  --muted: 252 25% 28%;
+  --muted-foreground: 30 25% 70%;
+
+  --accent: 35 80% 60%;
+  --accent-foreground: 252 45% 14%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 152 55% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 350 85% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 35 90% 55%;
+  --special-foreground: 252 45% 14%;
+
+  --cart: 35 80% 60%;
+  --cart-foreground: 252 45% 14%;
+
+  --border: 252 30% 35%;
+  --input: 252 30% 32%;
+  --ring: 35 80% 60%;
+
+  /* ZONE 3 — Product zone (cream pearl panel that lifts above page) */
+  --surface-light: 30 50% 94%;        /* #F5EDE0 cream */
+  --surface-light-foreground: 252 45% 18%;
+  --surface-light-muted: 252 20% 45%;
+  --surface-light-border: 35 35% 80%;
+
+  /* Helper accents */
+  --amber: 35 80% 60%;                /* same as --primary */
+  --amber-soft: 35 60% 80%;
+  --plum-deep: 252 50% 14%;
+  --plum-mid: 252 38% 24%;
+
+  --shadow-sm: 0 2px 8px hsla(252, 50%, 5%, 0.4);
+  --shadow-md: 0 6px 18px hsla(252, 50%, 5%, 0.5);
+  --shadow-lg: 0 14px 32px hsla(252, 50%, 5%, 0.6);
+  --shadow-xl: 0 22px 48px hsla(252, 50%, 5%, 0.65);
+  --shadow-glow: 0 0 28px hsla(35, 80%, 60%, 0.45);
+
+  color-scheme: dark;
+}
+
+/* ---- Fonts ---- */
+.theme-19,
+.theme-19 * {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-19 .font-display,
+.theme-19 .font-serif,
+.theme-19 h1,
+.theme-19 h2,
+.theme-19 h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* ---- Glass surface ---- */
+.theme-19 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(252, 38%, 24%, 0.92);
+}
+
+/* ---- Brand text gradient ---- */
+.theme-19 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(35, 80%, 60%) 0%, hsl(28, 95%, 70%) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-19 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-19 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-19 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-19 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Theme-scoped animations ---- */
+@keyframes theme19-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes theme19-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.theme-19 .animate-fade-in    { animation: theme19-fadeIn 0.3s ease-out; }
+.theme-19 .animate-slide-up   { animation: theme19-slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ---- Category tile (Zone 2) ---- */
+.theme-19 .cat-tile {
+  background: hsl(252, 38%, 20%);
+  box-shadow: var(--shadow-md);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.theme-19 .cat-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bottom band on category tiles — deep burnt-orange */
+.theme-19 .cat-band {
+  background: linear-gradient(180deg, hsl(15, 80%, 38%) 0%, hsl(15, 85%, 30%) 100%);
+  color: white;
+  border-top: 1px solid hsl(15, 70%, 50%);
+}
+
+/* ---- Pearl product zone (Zone 3) ---- */
+.theme-19 .product-zone {
+  background: hsl(var(--surface-light));
+  color: hsl(var(--surface-light-foreground));
+  border: 1px solid hsl(var(--surface-light-border));
+  box-shadow: var(--shadow-lg);
+}
+.theme-19 .product-zone .product-card {
+  background: white;
+  border: 1px solid hsl(var(--surface-light-border));
+  color: hsl(var(--surface-light-foreground));
+}
+.theme-19 .product-zone .product-card-muted {
+  color: hsl(var(--surface-light-muted));
+}
+.theme-19 .product-zone .product-card-price {
+  color: hsl(252, 50%, 25%);
+}
+
+/* Product card name + price use Nunito for a friendlier read on the cream zone. */
+.theme-19 .product-zone .product-card h3,
+.theme-19 .product-zone .product-card .product-card-price {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-style: normal;
+}

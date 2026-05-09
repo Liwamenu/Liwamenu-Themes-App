@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Check, MessageSquare } from 'lucide-react';
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from '@/types/restaurant';
+import { AllergensSection } from '@/components/menu/AllergensSection';
 import { useCart } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { useFlyingEmoji } from '@/hooks/useFlyingEmoji';
@@ -26,9 +27,33 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const [selectedPortion, setSelectedPortion] = useState<Portion>(product.portions[0]);
   const [quantity, setQuantity] = useState(1);
   const [selectedTags, setSelectedTags] = useState<Record<string, SelectedTagItem[]>>({});
+  const [freeTagNotes, setFreeTagNotes] = useState<Record<string, string>>({});
   const [productNote, setProductNote] = useState('');
   const [shakingTagId, setShakingTagId] = useState<string | null>(null);
   const tagRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Auto-select default (isDefault) tag items whenever the active portion changes.
+  useEffect(() => {
+    const defaults: Record<string, SelectedTagItem[]> = {};
+    selectedPortion.orderTags.forEach((tag) => {
+      const defaultItems = tag.orderTagItems
+        .filter((it) => it.isDefault)
+        .map<SelectedTagItem>((it) => ({
+          tagId: tag.id,
+          tagName: tag.name,
+          itemId: it.id,
+          itemName: it.name,
+          price: it.price,
+          quantity: Math.max(1, it.minQuantity || 1),
+        }));
+      if (defaultItems.length === 0) return;
+      // Respect group max — keep at most maxSelected (1 for single-select).
+      const cap = tag.maxSelected > 0 ? tag.maxSelected : defaultItems.length;
+      defaults[tag.id] = defaultItems.slice(0, cap);
+    });
+    setSelectedTags(defaults);
+    setFreeTagNotes({});
+  }, [selectedPortion]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -39,6 +64,10 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   }, []);
 
   const canAddToCart = isRestaurantActive && isCurrentlyOpen;
+  // Whether ordering is enabled at all for this restaurant. When both order
+  // types are disabled, the modal renders in a view-only mode (no tags/note,
+  // no add-to-cart button) — customer can still see how price scales by qty.
+  const canOrderAtAll = !!(restaurant.onlineOrder || restaurant.inPersonOrder);
 
   // Get display price
   const getDisplayPrice = (portion: Portion) => {
@@ -65,6 +94,11 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       const existingIndex = currentTagItems.findIndex(t => t.itemId === item.id);
 
       if (existingIndex >= 0) {
+        // Mandatory items cannot be deselected.
+        if (item.isMandatory) {
+          toast.error(t('product.mandatoryTagItem', { name: item.name }));
+          return prev;
+        }
         // Remove if already selected (for single select) or toggle off
         if (tag.maxSelected === 1) {
           return { ...prev, [tag.id]: [] };
@@ -195,7 +229,20 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     }
 
     const allSelectedTags = Object.values(selectedTags).flat();
-    addItem(product, selectedPortion, allSelectedTags, quantity, productNote.trim() || undefined);
+
+    // Merge per-tag-group free-tagging notes into the product note so the
+    // backend sees them via the existing `note` field.
+    const freeLines = Object.entries(freeTagNotes)
+      .map(([tagId, text]) => {
+        const trimmed = text.trim();
+        if (!trimmed) return '';
+        const tag = selectedPortion.orderTags.find((t) => t.id === tagId);
+        return tag ? `${tag.name}: ${trimmed}` : trimmed;
+      })
+      .filter(Boolean);
+    const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
+
+    addItem(product, selectedPortion, allSelectedTags, quantity, finalNote || undefined);
     onClose();
   };
 
@@ -213,7 +260,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100vh-6px)] bg-card rounded-3xl flex flex-col"
+        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-card rounded-3xl flex flex-col"
       >
         {/* Header Image */}
         <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden">
@@ -275,13 +322,15 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                       setSelectedTags({});
                     }}
                     className={cn(
-                      'px-3 py-2 rounded-xl text-[12px] font-medium transition-all min-w-0 truncate',
+                      'px-3 py-2 rounded-xl text-[12px] font-medium transition-all min-w-0',
+                      'flex flex-col items-center justify-center leading-tight text-center',
                       selectedPortion.id === portion.id
                         ? 'bg-primary text-primary-foreground shadow-glow'
                         : 'bg-secondary text-secondary-foreground'
                     )}
                   >
-                    {portion.name} - {formatPrice(getDisplayPrice(portion))}
+                    <span className="whitespace-nowrap">{portion.name}</span>
+                    <span className="whitespace-nowrap">{formatPrice(getDisplayPrice(portion))}</span>
                   </button>
                 ))}
               </div>
@@ -289,7 +338,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           )}
 
           {/* Order Tags */}
-          {selectedPortion.orderTags.map((tag) => {
+          {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
             const isRequired = tag.minSelected > 0;
             const selectedCount = (selectedTags[tag.id] || []).length;
             const isUnfulfilled = isRequired && selectedCount < tag.minSelected;
@@ -326,7 +375,20 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   )}
                 </div>
                 <div className="space-y-2">
-                {tag.orderTagItems.map((item) => {
+                  {tag.freeTagging && (
+                    <div className="mb-1">
+                      <Textarea
+                        value={freeTagNotes[tag.id] || ''}
+                        onChange={(e) =>
+                          setFreeTagNotes((prev) => ({ ...prev, [tag.id]: e.target.value }))
+                        }
+                        placeholder={t('product.freeTagPlaceholder')}
+                        className="rounded-xl resize-none text-sm"
+                        rows={2}
+                      />
+                    </div>
+                  )}
+                {!tag.freeTagging && tag.orderTagItems.map((item) => {
                     const selected = isTagItemSelected(tag.id, item.id);
                     const qty = getTagItemQuantity(tag.id, item.id);
                     const hasQuantityControl = item.maxQuantity > 1;
@@ -359,7 +421,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                               <Check className="w-3 h-3 text-primary-foreground" />
                             )}
                           </div>
-                          <span className="font-medium truncate">{item.name}</span>
+                          <span className="font-light text-[11px] tracking-wide leading-snug truncate">{item.name}</span>
                         </button>
                         
                         <div className="flex items-center gap-2 shrink-0">
@@ -418,6 +480,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </div>
           )}
 
+          {/* Allergens (EU 14 + Türk Gıda Kodeksi) */}
+          <AllergensSection product={product} />
+
         </div>
 
         {/* Sticky bottom bar — quantity controls + Add to Cart */}
@@ -445,6 +510,19 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             const long = priceStr.length > 9;
             const labelSize = veryLong ? 'text-[9px]' : long ? 'text-[10px]' : 'text-[11px]';
             const priceSize = veryLong ? 'text-[11px]' : long ? 'text-[13px]' : 'text-[15px]';
+            // View-only price tile when ordering is disabled
+            if (!canOrderAtAll) {
+              return (
+                <div className="flex-1 min-w-0 h-11 rounded-xl bg-secondary text-secondary-foreground flex items-center justify-between gap-2 px-4">
+                  <span className={`flex flex-col leading-tight ${labelSize} font-medium opacity-80 text-left shrink-0`}>
+                    <span className="whitespace-nowrap">{t('common.total', 'Toplam')}</span>
+                  </span>
+                  <span className={`${priceSize} font-bold whitespace-nowrap truncate min-w-0`}>
+                    {priceStr}
+                  </span>
+                </div>
+              );
+            }
             return (
               <Button
                 ref={addButtonRef}

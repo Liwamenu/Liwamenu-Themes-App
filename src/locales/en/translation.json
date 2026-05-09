@@ -57,7 +57,10 @@
     "recommended": "Recommended",
     "campaignProducts": "Campaign Products",
     "noResults": "No results for \"{{query}}\"",
-    "loadingMore": "Loading more…"
+    "loadingMore": "Loading more…",
+    "backToCategories": "Back to Categories",
+    "productCount": "{{count}} products",
+    "menuTitle": "Our Menu"
   },
   "cart": {
     "title": "My Cart",
@@ -90,7 +93,9 @@
     "minQuantityError": "\"{{name}}\" requires a minimum quantity of {{min}}",
     "maxQuantityError": "\"{{name}}\" allows a maximum quantity of {{max}}",
     "note": "Product Note",
-    "notePlaceholder": "Add any special requests for this item..."
+    "notePlaceholder": "Add any special requests for this item...",
+    "mandatoryTagItem": "\"{{name}}\" is required and cannot be deselected",
+    "freeTagPlaceholder": "Add a custom note..."
   },
   "order": {
     "placeOrder": "Place Order",
@@ -132,7 +137,7 @@
     "onlineDiscount": "Online Discount",
     "deliveryFee": "Delivery Fee",
     "coverCharge": "Cover Charge",
-    "minOrderError": "Minimum order amount is {{min}} for online orders.",
+    "minOrderError": "Minimum order amount for takeaway is<br/><b>{{min}}</b>",
     "cannotAddOutsideHours": "Cannot add items outside working hours or when restaurant is not active.",
     "minOrderProgress": "Your cart is below the minimum for delivery. Please add {{remaining}} more.",
     "minOrderLabel": "Minimum Amount",
@@ -301,5 +306,26 @@
     "successMessage": "Thank you so much for your feedback. Your opinion is very valuable to us.",
     "yourRatings": "Your Ratings",
     "noOrderError": "You must place an order before submitting a review."
+  },
+  "allergens": {
+    "title": "Allergens",
+    "contains": "Contains",
+    "mayContain": "May contain",
+    "none": "No allergens declared for this product.",
+    "disclaimer": "Based on the 14 major allergens defined in EU Regulation 1169/2011 Annex II and Türk Gıda Kodeksi.",
+    "gluten": "Cereals containing gluten",
+    "crustaceans": "Crustaceans",
+    "eggs": "Eggs",
+    "fish": "Fish",
+    "peanuts": "Peanuts",
+    "soybeans": "Soybeans",
+    "milk": "Milk (incl. lactose)",
+    "treeNuts": "Tree nuts",
+    "celery": "Celery",
+    "mustard": "Mustard",
+    "sesame": "Sesame",
+    "sulphites": "Sulphites",
+    "lupin": "Lupin",
+    "molluscs": "Molluscs"
   }
 }
