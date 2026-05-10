@@ -3,6 +3,7 @@ import { Product } from "@/types/restaurant";
 export interface SubcategoryGroup {
   subId: string | null;
   subName: string | null;
+  subImage: string | null;
   subSortOrder: number;
   products: Product[];
 }
@@ -26,9 +27,11 @@ export function groupBySubcategory(products: Product[]): SubcategoryGroup[] {
     }
     let group = map.get(id);
     if (!group) {
+      const img = String(p.subCategoryImage ?? "").trim();
       group = {
         subId: id,
         subName: rawName,
+        subImage: img.length > 0 ? img : null,
         subSortOrder: typeof p.subCategorySortOrder === "number" ? p.subCategorySortOrder : 0,
         products: [],
       };
@@ -44,7 +47,7 @@ export function groupBySubcategory(products: Product[]): SubcategoryGroup[] {
 
   const result: SubcategoryGroup[] = [];
   if (noSub.length > 0) {
-    result.push({ subId: null, subName: null, subSortOrder: -1, products: noSub });
+    result.push({ subId: null, subName: null, subImage: null, subSortOrder: -1, products: noSub });
   }
   return result.concat(subGroups);
 }

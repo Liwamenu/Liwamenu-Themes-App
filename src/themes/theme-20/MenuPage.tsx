@@ -25,6 +25,7 @@ import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { Product, Order } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
+import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 
 type View = "menu" | "order";
 const CAMPAIGN_CATEGORY_ID = "__campaign__";
@@ -42,6 +43,7 @@ export function MenuPage() {
   } = useRestaurant();
   const { orders } = useOrder();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
+  const subFilter = useSubcategoryFilter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -270,27 +272,43 @@ export function MenuPage() {
           </div>
         )}
 
-        {sections.map((section) => (
-          <section key={section.id} className="cat-section">
-            <div className="cat-header-band py-3 mb-4 px-4">
-              <h2 className="cat-title text-center text-xl">{section.name}</h2>
-            </div>
-            <div className="scroll-row overflow-x-auto pb-4">
-              <div className="flex gap-3 px-4 min-w-min">
-                {section.products.map((product) => (
-                  <ProductCard
-                    key={`${section.id}-${product.id}`}
-                    product={product}
-                    onSelect={handleSelectProduct}
-                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
-                    specialPriceName={restaurant.specialPriceName}
-                    formatPrice={formatPrice}
-                  />
-                ))}
+        {sections.map((section) => {
+          const isCampaign = section.id === CAMPAIGN_CATEGORY_ID;
+          const visible = isCampaign
+            ? section.products
+            : subFilter.filter(section.id, section.products);
+          return (
+            <section key={section.id} className="cat-section">
+              <div className="cat-header-band py-3 mb-4 px-4">
+                <h2 className="cat-title text-center text-xl">{section.name}</h2>
               </div>
-            </div>
-          </section>
-        ))}
+              {!isCampaign && (
+                <div className="px-4">
+                  <SubcategoryButtons
+                    categoryId={section.id}
+                    products={section.products}
+                    activeSub={subFilter.getActive(section.id)}
+                    onToggle={(subId) => subFilter.toggle(section.id, subId)}
+                  />
+                </div>
+              )}
+              <div className="scroll-row overflow-x-auto pb-4">
+                <div className="flex gap-3 px-4 min-w-min">
+                  {visible.map((product) => (
+                    <ProductCard
+                      key={`${section.id}-${product.id}`}
+                      product={product}
+                      onSelect={handleSelectProduct}
+                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                      specialPriceName={restaurant.specialPriceName}
+                      formatPrice={formatPrice}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })}
 
         {!searchQuery &&
           restaurant.externalPageButtonName &&

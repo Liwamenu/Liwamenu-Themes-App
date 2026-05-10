@@ -285,7 +285,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           </button>
         </div>
 
-        <div className="px-4 pb-20 -mt-8 relative flex-1 overflow-y-auto">
+        <div className="px-4 pb-20 -mt-8 relative flex-1 overflow-y-auto overscroll-contain">
           {/* Product Info */}
           <div className="bg-card rounded-2xl p-4 shadow-card mb-4">
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">

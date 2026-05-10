@@ -170,6 +170,86 @@ export function useInitializeRestaurant() {
     return () => { cancelled = true; };
   }, []);
 
+  /**
+   * Silent background refetch:
+   * Re-fetches restaurant data when the tab becomes visible or window
+   * regains focus, then writes to the store ONLY if something the user
+   * cares about (theme, hide flag, active state) has changed. The fetch
+   * runs without toggling `setLoading`, so there is no UI flicker. When
+   * `themeId` differs the ThemeRouter swaps to the new lazy bundle
+   * automatically — no hard reload needed. If nothing meaningful
+   * changed, we don't call `setRestaurantData` at all, so no React
+   * re-render is triggered.
+   */
+  useEffect(() => {
+    if (USE_DUMMY_DATA) return;
+
+    let inFlight = false;
+
+    async function refetchSilent() {
+      if (inFlight || !useRestaurantStore.getState().isInitialized) return;
+      // URL ?theme= override always wins, never poll over it
+      const urlTheme = new URLSearchParams(window.location.search).get("theme");
+      if (urlTheme !== null) return;
+
+      inFlight = true;
+      try {
+        const tenant = getTenant();
+        const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        const fresh = json.data?.restaurantData ?? json.restaurantData ?? json;
+        if (!fresh || !fresh.restaurantId) return;
+
+        const current = useRestaurantStore.getState().restaurantData;
+
+        // Equality check on the fields that actually drive UI:
+        // - themeId (theme switch)
+        // - hide / isActive / licenseIsActive / userIsActive (block screen)
+        // - menuLang (language switch)
+        // - product count (rough "menu changed" proxy)
+        const themeChanged = fresh.themeId !== current.themeId;
+        const visibilityChanged =
+          fresh.hide !== current.hide ||
+          fresh.isActive !== current.isActive ||
+          fresh.licenseIsActive !== current.licenseIsActive ||
+          fresh.userIsActive !== current.userIsActive;
+        const menuLangChanged = fresh.menuLang !== current.menuLang;
+        const productCountChanged =
+          (fresh.products?.length ?? 0) !== (current.products?.length ?? 0);
+
+        if (!themeChanged && !visibilityChanged && !menuLangChanged && !productCountChanged) {
+          // Nothing the user cares about changed — skip the setState entirely
+          // so no subscribed component re-renders.
+          return;
+        }
+
+        // Preserve the user's table selection across refetches
+        fresh.tableNumber = current.tableNumber;
+        useRestaurantStore.getState().setRestaurantData(fresh);
+
+        if (menuLangChanged && fresh.menuLang) {
+          changeLanguage(fresh.menuLang.toLowerCase());
+        }
+      } catch {
+        /* swallow — silent refetch must not surface errors */
+      } finally {
+        inFlight = false;
+      }
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refetchSilent();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", refetchSilent);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", refetchSilent);
+    };
+  }, []);
+
   return { isLoading, error, isInitialized };
 }
 
