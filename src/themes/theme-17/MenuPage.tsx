@@ -31,6 +31,7 @@ import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
 import { ExternalPageView } from "@/components/menu/ExternalPageView";
+import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -62,6 +63,7 @@ export function MenuPage() {
   const { items: cartItems } = useCart();
   const { isVisible: isFlyingEmojiVisible, startPosition: flyingEmojiPosition, hideFlyingEmoji } = useFlyingEmoji();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const subFilter = useSubcategoryFilter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -518,9 +520,20 @@ export function MenuPage() {
               <span className="gold-divider" />
               <span className="text-xs text-muted-foreground">{activeCategory.products.length} ürün</span>
             </div>
+            {selectedCategoryId !== CAMPAIGN_CATEGORY_ID && (
+              <SubcategoryButtons
+                categoryId={activeCategory.id}
+                products={activeCategory.products}
+                activeSub={subFilter.getActive(activeCategory.id)}
+                onToggle={(subId) => subFilter.toggle(activeCategory.id, subId)}
+              />
+            )}
             <div className="grid grid-cols-2 gap-3">
               <AnimatePresence mode="popLayout">
-                {activeCategory.products.map((product) => (
+                {(selectedCategoryId === CAMPAIGN_CATEGORY_ID
+                  ? activeCategory.products
+                  : subFilter.filter(activeCategory.id, activeCategory.products)
+                ).map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
