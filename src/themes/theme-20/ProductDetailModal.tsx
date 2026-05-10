@@ -156,8 +156,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       .map(([tagId, text]) => {
         const trimmed = text.trim();
         if (!trimmed) return '';
-        const tag = selectedPortion.orderTags.find((t) => t.id === tagId);
-        return tag ? `${tag.name}: ${trimmed}` : trimmed;
+        return trimmed;
       })
       .filter(Boolean);
     const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
@@ -206,7 +205,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </div>
           )}
 
-          {selectedPortion.orderTags.map((tag) => {
+          {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
             const isRequired = tag.minSelected > 0;
             const selectedCount = (selectedTags[tag.id] || []).length;
             const isShaking = shakingTagId === tag.id;
@@ -232,7 +231,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                       rows={2}
                     />
                   )}
-                  {tag.orderTagItems.map((item) => {
+                  {!tag.freeTagging && tag.orderTagItems.map((item) => {
                     const selected = isTagItemSelected(tag.id, item.id);
                     const qty = getTagItemQuantity(tag.id, item.id);
                     const showQtyControls = selected && item.maxQuantity > 1;

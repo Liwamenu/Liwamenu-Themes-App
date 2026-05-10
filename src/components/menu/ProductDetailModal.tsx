@@ -236,8 +236,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       .map(([tagId, text]) => {
         const trimmed = text.trim();
         if (!trimmed) return '';
-        const tag = selectedPortion.orderTags.find((t) => t.id === tagId);
-        return tag ? `${tag.name}: ${trimmed}` : trimmed;
+        return trimmed;
       })
       .filter(Boolean);
     const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
