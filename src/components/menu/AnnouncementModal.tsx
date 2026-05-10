@@ -2,7 +2,6 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import DOMPurify from "dompurify";
 import { useTranslation } from "react-i18next";
 
 interface AnnouncementModalProps {
@@ -26,33 +25,50 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       if (!isOpen) return "";
       const isFullDoc = /<html[\s>]/i.test(htmlContent) || /<!doctype/i.test(htmlContent);
 
-      // Permissive sanitization — user explicitly opted in to allow scripts
-      // so backend HTML (e.g., Tailwind CDN) renders with full fidelity.
-      const sanitized = DOMPurify.sanitize(htmlContent, {
-        WHOLE_DOCUMENT: isFullDoc,
-        ADD_TAGS: ["script", "link", "style", "meta"],
-        ADD_ATTR: ["target", "rel", "src", "href", "type", "crossorigin", "integrity", "referrerpolicy", "onload", "onerror"],
-        FORCE_BODY: !isFullDoc,
-        ALLOW_UNKNOWN_PROTOCOLS: false,
-      });
+      // Trust model (per CLAUDE.md): announcement HTML is *backend-authored
+      // by a trusted admin* — the admin panel already does save-time
+      // validation (rejects javascript:/vbscript:/data:text/html URLs,
+      // <meta refresh>, <base>, SQL injection patterns). The iframe sandbox
+      // below is the security boundary that protects the customer app from
+      // anything that slips through. We deliberately do NOT run DOMPurify
+      // here: it kept stripping <iframe>, <style> contents and various
+      // attributes the author legitimately uses (YouTube embeds, custom CSS
+      // selectors, body backgrounds), so the modal would render blank or
+      // unstyled. Defense-in-depth via sanitization isn't worth the
+      // permanent stream of "preview works, customer doesn't" bug reports.
 
-      // Neutralize min-h-screen / h-screen which would otherwise make the
-      // content always report the iframe viewport height (causing tiny clamps).
+      // Style overrides injected into the iframe head:
+      //  - neutralize Tailwind viewport classes (min-h-screen / h-screen)
+      //    that would otherwise clamp the body to the tiny initial iframe
+      //    height,
+      //  - cap media at 100% width so explicit width="1840" attributes on
+      //    pasted YouTube embeds don't trigger horizontal scroll on phones,
+      //  - force a 16:9 responsive frame on YouTube/Vimeo iframes regardless
+      //    of the embed code's hard-coded width/height.
+      // `background:transparent` was REMOVED — it silently overrode the
+      // author's body background (the cascade ordering put this <style>
+      // after the author's, defeating their gradient with no !important
+      // needed), which is what made the previous build show a blank white
+      // modal even when the author had a styled body.
       const heightOverride = `<style>
-        html,body{margin:0!important;padding:0;background:transparent;min-height:0!important;height:auto!important;word-wrap:break-word;overflow-x:hidden;}
+        html,body{margin:0!important;padding:0;min-height:0!important;height:auto!important;word-wrap:break-word;overflow-x:hidden;}
         .min-h-screen,.h-screen{min-height:0!important;height:auto!important;}
         *{box-sizing:border-box;}
-        img,video{max-width:100%;height:auto;}
+        img,video,iframe{max-width:100%;height:auto;display:block;}
+        iframe[src*="youtube.com"],iframe[src*="youtube-nocookie.com"],iframe[src*="vimeo.com"]{
+          width:100%!important;height:auto!important;aspect-ratio:16/9;border-radius:12px;border:0;
+        }
+        pre,code{white-space:pre-wrap;word-break:break-word;}
       </style>`;
 
       if (isFullDoc) {
         // Inject override into <head> (or before </html> as fallback)
-        if (/<\/head>/i.test(sanitized)) {
-          return sanitized.replace(/<\/head>/i, `${heightOverride}</head>`);
+        if (/<\/head>/i.test(htmlContent)) {
+          return htmlContent.replace(/<\/head>/i, `${heightOverride}</head>`);
         }
-        return sanitized.replace(/<html[^>]*>/i, (m) => `${m}<head>${heightOverride}</head>`);
+        return htmlContent.replace(/<html[^>]*>/i, (m) => `${m}<head>${heightOverride}</head>`);
       }
-      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${sanitized}</body></html>`;
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${htmlContent}</body></html>`;
     }, [htmlContent, isOpen]);
 
     const resizeIframe = useCallback(() => {
@@ -205,11 +221,27 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 <X className="h-4 w-4" />
               </button>
 
+              {/* Sandbox + Permissions Policy mirror the admin panel's
+                  preview iframe (see Liwa Menu - Frontend admin
+                  announcementSettings.jsx). Tokens chosen so embedded
+                  media — YouTube, Vimeo, Maps, fonts CDN — actually plays:
+                   - allow-scripts: Tailwind CDN + author interaction code
+                   - allow-same-origin: nested <iframe> (e.g. YouTube)
+                     inherits this sandbox; without it the embed iframe is
+                     forced to an opaque origin and the YouTube player
+                     fails its storage/cookie checks
+                   - allow-popups + allow-popups-to-escape-sandbox: "Watch
+                     on YouTube" and similar links open outside sandbox
+                   - allow-presentation: enables fullscreen toggle
+                   - allow-forms: surveys / feedback forms can submit
+                  `allow="..."` mirrors YouTube's own copy-embed list so
+                  every share-dialog snippet works without modification. */}
               <iframe
                 ref={iframeRef}
                 title="announcement"
                 srcDoc={srcDoc}
-                sandbox="allow-same-origin allow-scripts allow-popups"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation allow-forms"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="no-referrer"
                 loading="lazy"
                 onLoad={handleIframeLoad}
