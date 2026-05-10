@@ -242,9 +242,18 @@ export function useRestaurant() {
   }, [activeMenu]);
 
   const categories = useMemo((): Category[] => {
-    const allVisible = data.products.filter(p => !p.hide);
+    // Visibility predicate: drop the product if either the product is
+    // hidden (`hide: true`) OR its parent category was switched off in
+    // the admin (`categoryIsActive: false`). The category flag is
+    // optional — `undefined` is treated as visible so older API
+    // responses that don't include the field still render the menu.
+    // The whole category disappears naturally because `categoryMap`
+    // below only registers categories it sees a visible product for.
+    const allVisible = data.products.filter(
+      p => !p.hide && p.categoryIsActive !== false,
+    );
     let visibleProducts = allVisible;
-    
+
     if (allowedCategoryIds) {
       const filtered = allVisible.filter(p => allowedCategoryIds.has(p.categoryId));
       if (filtered.length > 0) {
@@ -284,7 +293,12 @@ export function useRestaurant() {
   };
 
   const recommendedProducts = useMemo(() => {
-    const all = data.products.filter(p => p.recommendation && !p.hide);
+    // Same `categoryIsActive !== false` guard as `categories` above —
+    // we don't want a product appearing in the "recommended" carousel
+    // while its category is disabled everywhere else.
+    const all = data.products.filter(
+      p => p.recommendation && !p.hide && p.categoryIsActive !== false,
+    );
     if (allowedCategoryIds) {
       const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
       return filtered.length > 0 ? filtered : all;
@@ -294,7 +308,11 @@ export function useRestaurant() {
 
   const campaignProducts = useMemo(() => {
     const all = data.products.filter(
-      p => !p.hide && p.isCampaign && p.portions.some(portion => portion.campaignPrice != null),
+      p =>
+        !p.hide &&
+        p.categoryIsActive !== false &&
+        p.isCampaign &&
+        p.portions.some(portion => portion.campaignPrice != null),
     );
     if (allowedCategoryIds) {
       const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
