@@ -37,7 +37,7 @@ import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
 import { useCart } from "@/hooks/useCart";
-import { Product, Order } from "@/types/restaurant";
+import { Product, Order, ExternalPage } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -77,7 +77,11 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
-  const [showExternalPage, setShowExternalPage] = useState(false);
+  // Holds the currently-open external page (or null). Replaces the
+  // old boolean — the API now returns an array of pages, so we need
+  // to remember which one the user tapped.
+  const [selectedExternalPage, setSelectedExternalPage] = useState<ExternalPage | null>(null);
+  const showExternalPage = selectedExternalPage !== null;
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem("waiterCooldownEnd");
     if (savedEndTime) {
@@ -494,13 +498,22 @@ export function MenuPage() {
               })}
             </div>
 
-            {restaurant.externalPageButtonName && (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-              <button
-                onClick={() => setShowExternalPage(true)}
-                className="mt-4 w-full px-4 py-3 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-center hover:bg-accent transition-colors"
-              >
-                {restaurant.externalPageButtonName}
-              </button>
+            {/* External Page Buttons — one per admin-published page,
+                rendered in sortOrder ascending. */}
+            {restaurant.externalPages && restaurant.externalPages.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {[...restaurant.externalPages]
+                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .map((page) => (
+                    <button
+                      key={page.id}
+                      onClick={() => setSelectedExternalPage(page)}
+                      className="w-full px-4 py-3 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-center hover:bg-accent transition-colors"
+                    >
+                      {page.buttonName}
+                    </button>
+                  ))}
+              </div>
             )}
           </>
         ) : (
@@ -590,11 +603,11 @@ export function MenuPage() {
         htmlContent={restaurant.announcementSettings?.htmlContent || ""}
       />
 
-      {showExternalPage && (
+      {selectedExternalPage && (
         <ExternalPageView
-          html={restaurant.externalPageHTML}
-          image={restaurant.externalPageImage}
-          onClose={() => setShowExternalPage(false)}
+          html={selectedExternalPage.htmlBody}
+          image={selectedExternalPage.imageURL}
+          onClose={() => setSelectedExternalPage(null)}
         />
       )}
 

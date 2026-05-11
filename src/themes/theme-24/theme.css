@@ -1,0 +1,421 @@
+/* ============================================================
+ * Theme 24 — Pink Bubblegum (Comic Neue, indigo accents)
+ *
+ * Light pink canvas with leaf-green primary and indigo accents.
+ * Comic Neue typeface across the board for a playful, casual feel.
+ * Cards live in a 2-col grid with a circular indigo-tinted product
+ * photo on top (10px ring) — bold name + indigo price underneath.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+
+/* ---- Light palette (soft pink canvas, leaf-green primary, indigo accent) ---- */
+.theme-24 {
+  --background: 340 75% 95%;            /* light bubblegum pink */
+  --foreground: 340 30% 14%;
+
+  --card: 340 70% 98%;                  /* whisper-pink cards */
+  --card-foreground: 340 30% 14%;
+
+  --popover: 340 70% 98%;
+  --popover-foreground: 340 30% 14%;
+
+  --primary: 110 60% 42%;               /* leaf green */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 340 60% 92%;
+  --secondary-foreground: 340 30% 18%;
+
+  --muted: 340 55% 93%;
+  --muted-foreground: 340 15% 40%;
+
+  --accent: 243 75% 50%;                /* indigo */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 75% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 110 60% 42%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 25 95% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 50%;
+  --special-foreground: 0 0% 14%;
+
+  --cart: 243 75% 50%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 340 40% 86%;
+  --input: 340 50% 92%;
+  --ring: 243 75% 50%;
+
+  --brand-green: 110 60% 42%;
+  --brand-green-bright: 110 65% 52%;
+  --brand-green-soft: 340 60% 92%;      /* (legacy token kept for compat) */
+  --brand-green-deep: 135 50% 30%;
+  --brand-indigo: 243 75% 50%;          /* indigo for ring + price */
+  --brand-pink: 340 75% 80%;            /* mid-tone pink for accents */
+
+  --shadow-sm: 0 2px 6px hsla(340, 40%, 30%, 0.06);
+  --shadow-md: 0 6px 16px hsla(340, 40%, 30%, 0.08);
+  --shadow-lg: 0 14px 28px hsla(340, 40%, 30%, 0.12);
+  --shadow-xl: 0 22px 44px hsla(340, 40%, 30%, 0.18);
+  --shadow-glow: 0 0 24px hsla(243, 75%, 50%, 0.3);
+}
+
+/* ---- Dark palette (oxblood — black with a deep red undertone) ---- */
+.dark .theme-24 {
+  --background: 0 30% 7%;               /* near-black with red undertone */
+  --foreground: 0 0% 96%;
+
+  --card: 0 25% 12%;                    /* slightly lighter oxblood */
+  --card-foreground: 0 0% 96%;
+
+  --popover: 0 25% 12%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 110 65% 55%;               /* leaf green stays brand */
+  --primary-foreground: 0 0% 8%;
+
+  --secondary: 0 22% 16%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 0 22% 14%;
+  --muted-foreground: 0 0% 65%;
+
+  --accent: 110 65% 55%;
+  --accent-foreground: 0 0% 8%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 110 65% 55%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 25 95% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 55%;
+  --special-foreground: 0 0% 14%;
+
+  --cart: 110 65% 55%;
+  --cart-foreground: 0 0% 8%;
+
+  --border: 0 18% 22%;
+  --input: 0 22% 16%;
+  --ring: 110 65% 55%;
+
+  --brand-green: 110 65% 55%;
+  --brand-green-bright: 110 70% 65%;
+  --brand-green-soft: 0 25% 18%;        /* red-tinted soft for halos */
+  --brand-green-deep: 135 55% 38%;
+  --brand-indigo: 243 80% 65%;
+  --brand-pink: 340 75% 80%;
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.6);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.7);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.75);
+  --shadow-glow: 0 0 24px hsla(0, 75%, 35%, 0.4);
+}
+
+/* ---- Fonts: Michroma everywhere + global 80% base scale ---- */
+.theme-24 {
+  /* Establish a smaller base font-size on the wrapper. em-based
+   *  declarations inside the theme inherit from this; rem-based ones
+   *  still reference the html root, so we also shrunk those values
+   *  in the rules below. */
+  font-size: 80%;
+}
+.theme-24,
+.theme-24 * {
+  font-family: 'Michroma', 'Inter', system-ui, sans-serif;
+}
+
+.theme-24 .font-display,
+.theme-24 .font-script,
+.theme-24 .font-body {
+  font-family: 'Michroma', 'Inter', system-ui, sans-serif;
+}
+
+/* ---- Brand text gradient ---- */
+.theme-24 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    hsl(var(--brand-green)) 0%,
+    hsl(var(--brand-green-bright)) 100%
+  );
+}
+
+/* ---- Shadow utilities ---- */
+.theme-24 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-24 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-24 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-24 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Glass surface ---- */
+.theme-24 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 100%, 0.92);
+}
+.dark .theme-24 .glass {
+  background: hsla(110, 8%, 14%, 0.92);
+}
+
+/* ---- Category section title — Nunito heavy, bold dark text, centered ---- */
+.theme-24 .menu-section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0 1rem;
+}
+.theme-24 .menu-section-title h2 {
+  font-family: 'Michroma', system-ui, sans-serif;
+  font-weight: 900;
+  color: hsl(var(--foreground));
+  font-size: 1.4rem;                    /* was 1.75rem — 20% smaller */
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+/* In dark mode the section title flips to indigo so it stays distinct
+   from white menu copy and the green active accents. */
+.dark .theme-24 .menu-section-title h2 {
+  color: hsl(var(--brand-indigo));
+}
+
+/* ---- Category banner (image background optional) ----
+ *  Image extends 25% past each side (50% total wider than the card) so
+ *  the photo dominates the banner. No transparent overlay — the photo
+ *  shows at full clarity; the section title above gets its own
+ *  text-shadow to stay readable. */
+.theme-24 .cat-banner {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+  background-color: transparent;
+}
+/* Category banner is now a single-row solid button — photos hidden,
+ *  height roughly halved, indigo-tinted background, title sits flush
+ *  in the middle with no text-shadow since there's nothing to compete
+ *  with. The button reads as a heading-tab rather than a hero block. */
+.theme-24 .cat-banner {
+  background: hsl(var(--brand-indigo) / 0.15);
+  border: 1px solid hsl(var(--brand-indigo) / 0.4);
+}
+.theme-24 .cat-banner .cat-banner-image {
+  display: none;
+}
+.theme-24 .cat-banner::after {
+  display: none;
+}
+.theme-24 .cat-banner .cat-banner-inner {
+  position: relative;
+  /* Reduced ~50% — was 1.75rem top/bottom; now 0.75rem each side keeps
+     the title centered without a tall hero block. */
+  padding: 0.75rem 1rem;
+}
+.theme-24 .cat-banner .menu-section-title {
+  margin: 0;
+}
+.theme-24 .cat-banner .menu-section-title h2 {
+  /* No text-shadow needed — solid tinted bg renders the title clearly */
+  text-shadow: none;
+  font-size: 1.1rem;
+}
+
+/* ---- Product card — grid tile with circular photo on top ----
+ *  Vertical stack: round green-tinted image + bold name + description +
+ *  thin divider + green price. Reference design lives in a 2-column
+ *  grid; the parent in MenuPage handles the grid layout, .menu-row only
+ *  styles the individual card. */
+.theme-24 .menu-row {
+  display: flex;
+  flex-direction: column;
+  /* Product cards override --card so they show as dark-gray slabs on
+   *  the pink canvas — sharp contrast against the bubblegum background.
+   *  Other surfaces (modal, drawer, footer) keep their pink card tone. */
+  background: hsl(0 0% 18%);
+  color: hsl(0 0% 96%);
+  border-radius: 6px;
+  padding: 1rem 0.875rem 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  /* No overflow:hidden — the image halo's outer shadow needs room. */
+  /* Container query context: child font-sizes can scale with card width
+     using `cqi` so long prices like ₺ 3.595.000 stay readable in narrow
+     2-column layouts without wrapping or being clipped. */
+  container-type: inline-size;
+}
+.dark .theme-24 .menu-row {
+  /* Slightly lighter than dark-mode background — also red-tinted so the
+   *  card harmonizes with the oxblood canvas instead of going neutral. */
+  background: hsl(0 18% 20%);
+}
+.theme-24 .menu-row:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.theme-24 .menu-row:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Product image — 3D disc: the wrap is a 10px indigo halo with a deep
+ *  drop shadow, and the actual photo sits 10px inside it. The inner
+ *  image gets its own soft shadow so it looks like a coin lifted off
+ *  the plate. */
+.theme-24 .menu-row .product-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: hsl(var(--brand-indigo) / 0.18);
+  margin: 0 auto 0.75rem;
+  box-shadow:
+    0 14px 28px hsla(243, 75%, 40%, 0.25),
+    0 6px 12px hsla(243, 75%, 40%, 0.16),
+    inset 0 -6px 14px hsla(243, 75%, 35%, 0.18),
+    inset 0 6px 14px hsla(0, 0%, 100%, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-24 .menu-row .product-image-wrap img {
+  /* 10px halo per side → image fills (100% - 20px) of the wrap */
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  object-fit: cover;
+  border-radius: 9999px;
+  box-shadow: 0 6px 14px hsla(0, 0%, 0%, 0.18);
+}
+
+.theme-24 .menu-row .product-name {
+  font-family: 'Michroma', system-ui, sans-serif;
+  font-weight: 700;
+  /* Light text against the dark-gray card body */
+  color: hsl(0 0% 96%);
+  font-size: 12px;                      /* was 15px — 20% smaller */
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-align: center;
+  /* clamp to 2 lines so 2-col rows stay aligned, but no min-height
+   *  reserve — cards with shorter content collapse naturally. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theme-24 .menu-row .product-desc {
+  font-family: 'Michroma', system-ui, sans-serif;
+  font-size: 0.65rem;                   /* was 0.8125rem — 20% smaller */
+  /* Lighter mid-gray for description against dark card */
+  color: hsl(0 0% 72%);
+  line-height: 1.45;
+  margin-top: 0.5rem;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theme-24 .menu-row .product-divider {
+  height: 1px;
+  /* Soft divider on dark card */
+  background: hsl(0 0% 32%);
+  margin: 0.875rem 0 0.625rem;
+}
+.theme-24 .menu-row .product-price {
+  font-family: 'Michroma', system-ui, sans-serif;
+  font-weight: 700;
+  /* Light mode: warm yellow against the dark-gray card (high contrast). */
+  color: hsl(48 95% 55%);
+  /* Responsive: shrinks on narrow cards (so a 10-digit price stays on
+     one line) and caps on wider screens. Uses cqi (container query
+     inline) so it scales with card width. Sizes reduced 20%. */
+  font-size: clamp(0.7rem, 8cqi, 1.1rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  /* Tabular figures keep prices vertically aligned across cards. */
+  font-variant-numeric: tabular-nums;
+}
+/* Dark mode: revert price to indigo (yellow vs near-black canvas
+   would be visually noisy; indigo reads cleanly there). */
+.dark .theme-24 .menu-row .product-price {
+  color: hsl(var(--brand-indigo));
+}
+
+/* ---- Subcategory pill buttons — white cards with green underline ----
+ *  Override the shared SubcategoryButtons (compact pill-row fallback)
+ *  styling so it matches the reference: bigger white tiles with a
+ *  shadow, and the active one gets a thick green underline at the
+ *  bottom. We target the original Tailwind classes (`rounded-full`,
+ *  `bg-primary`, `bg-secondary`) so we don't have to fork the shared
+ *  component. */
+.theme-24 .grid > button.rounded-full {
+  border-radius: 5px !important;
+  padding: 0.625rem 0.75rem !important;
+  font-size: 0.65rem !important;        /* was 0.8125rem — 20% smaller */
+  font-weight: 500 !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: var(--shadow-sm) !important;
+  position: relative;
+  margin-bottom: 4px;
+}
+/* Active subcategory — same look as the main category tabs:
+   60%-opacity indigo fill, white text, solid indigo border + underline.
+   Works in both light and dark mode without an explicit dark override
+   because brand-indigo is defined in both palettes. */
+.theme-24 .grid > button.rounded-full.bg-primary {
+  background: hsl(var(--brand-indigo) / 0.6) !important;
+  color: #fff !important;
+  border-color: hsl(var(--brand-indigo)) !important;
+}
+.theme-24 .grid > button.rounded-full.bg-primary::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -4px;
+  height: 3px;
+  border-radius: 9999px;
+  background: hsl(var(--brand-indigo));
+}
+
+/* ---- Hamburger drawer panel ---- */
+.theme-24 .menu-drawer {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-left: 4px solid hsl(var(--brand-green));
+}
+
+/* Theme-scoped fade-in */
+@keyframes theme24-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-24 .animate-fade-in { animation: theme24-fadeIn 0.3s ease-out; }
+
+/* ---- Hide ProductDetailModal image when theme-24 keeps cards in grid;
+ *  unlike theme-22, theme-24 KEEPS product photos throughout, so the
+ *  modal image stays. Just restyle the close button into brand green. */
+.theme-24 div[class*="h-56"][class*="rounded-t-["] > button {
+  background: hsl(var(--brand-green)) !important;
+}
+.theme-24 div[class*="h-56"][class*="rounded-t-["] > button svg {
+  color: #fff !important;
+}

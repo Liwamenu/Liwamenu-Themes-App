@@ -1,0 +1,675 @@
+/* ============================================================
+ * Theme 26 — Parchment Scroll (Ottoman / Vintage Menu)
+ *
+ * The palette and the product-row layout are drawn directly from
+ * the reference HTML the user supplied (Lezzet Durağı parchment
+ * card). Key colors used by the reference, and the HSL forms we
+ * convert them to:
+ *
+ *   #f4e4bc parchment cream    → 39 75% 85%
+ *   #4a301a deep walnut        → 25 48% 20%
+ *   #5d4037 raw umber          → 16 26% 29%
+ *   #6d4c31 mid brown          → 25 38% 31%
+ *   #8d6e63 weathered taupe    → 14 17% 47%
+ *   #2e7d32 forest green       → 122 47% 34%
+ *   #c62828 sealing-wax red    → 0 65% 47%
+ *   #ffc107 amber accent       → 45 100% 51%
+ *
+ * Typography:
+ *   - Cinzel for category/menu titles (Roman capitals, carved-stone)
+ *   - Cormorant Garamond for body and price (warm humanist serif)
+ *
+ * Product rows are intentionally photo-less in this theme — like a
+ * printed paper menu, the line reads
+ *
+ *      {name} . . . . . . . . . . . . . . . . . . .  {price}
+ *      italic description in olive brown
+ *
+ * Subcategory pills, modals, and other surfaces inherit the same
+ * palette so nothing breaks visual cohesion with the parchment.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Birthstone&family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&display=swap');
+
+/* ---- Light palette (parchment cream canvas, walnut text, forest price) ---- */
+.theme-26 {
+  --background: 39 75% 85%;             /* #f4e4bc parchment cream */
+  --foreground: 25 48% 20%;             /* #4a301a deep walnut */
+
+  --card: 39 70% 90%;                   /* lighter parchment for surfaces */
+  --card-foreground: 25 48% 20%;
+
+  --popover: 39 70% 90%;
+  --popover-foreground: 25 48% 20%;
+
+  --primary: 25 48% 20%;                /* walnut for primary buttons */
+  --primary-foreground: 39 75% 92%;     /* parchment text on walnut */
+
+  --secondary: 39 55% 80%;
+  --secondary-foreground: 25 48% 20%;
+
+  --muted: 39 50% 82%;
+  --muted-foreground: 25 38% 31%;       /* #6d4c31 mid brown */
+
+  --accent: 14 17% 47%;                 /* #8d6e63 weathered taupe */
+  --accent-foreground: 39 75% 92%;
+
+  --destructive: 0 65% 47%;             /* #c62828 sealing-wax red */
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 122 47% 34%;               /* #2e7d32 forest green */
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 0 65% 47%;                /* same wax-red — campaign reads as a seal */
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 100% 51%;               /* #ffc107 amber accent for "special" */
+  --special-foreground: 25 48% 20%;
+
+  --cart: 25 48% 20%;                   /* walnut cart button */
+  --cart-foreground: 39 75% 92%;
+
+  --border: 14 17% 47%;                 /* taupe borders */
+  --input: 39 55% 88%;
+  --ring: 25 48% 20%;
+
+  /* Theme-26 brand tokens — referenced by ProductCard and MenuPage */
+  --parchment: 39 75% 85%;
+  --parchment-soft: 39 70% 90%;
+  --walnut: 25 48% 20%;
+  --walnut-mid: 25 38% 31%;
+  --walnut-warm: 16 26% 29%;
+  --taupe: 14 17% 47%;
+  --forest: 122 47% 34%;
+  --wax-red: 0 65% 47%;
+  --amber: 45 100% 51%;
+
+  /* Compatibility aliases — RestaurantHeader, Footer, etc. are copied
+   *  from theme-24 and still reference its leaf-green / indigo brand
+   *  tokens. Without these aliases the var() resolves to the empty
+   *  string and the entire hsl() expression becomes invalid → element
+   *  renders with no color (often appears transparent or default).
+   *  We remap each legacy token to the closest parchment equivalent so
+   *  all inherited UI lights up correctly on the new canvas. */
+  --brand-green: 25 48% 20%;            /* → walnut (primary brand color) */
+  --brand-green-bright: 45 100% 51%;    /* → amber (accent / hover) */
+  --brand-green-soft: 39 70% 90%;       /* → parchment-soft (halo bg) */
+  --brand-green-deep: 25 55% 14%;       /* → darker walnut for depth */
+  --brand-indigo: 25 48% 20%;           /* → walnut (legacy active state) */
+  --brand-pink: 0 65% 47%;              /* → wax-red (legacy alt accent) */
+
+  --shadow-sm: 0 2px 6px hsla(25, 50%, 18%, 0.10);
+  --shadow-md: 0 6px 16px hsla(25, 50%, 18%, 0.15);
+  --shadow-lg: 0 14px 28px hsla(25, 50%, 18%, 0.22);
+  --shadow-xl: 0 22px 44px hsla(25, 50%, 18%, 0.30);
+  --shadow-glow: 0 0 18px hsla(45, 100%, 51%, 0.3);
+}
+
+/* ---- Dark palette (mahogany night — deep oxblood with parchment text) ---- */
+.dark .theme-26,
+.dark.theme-26 {
+  --background: 18 35% 10%;             /* near-black mahogany */
+  --foreground: 39 60% 88%;             /* warm parchment text */
+
+  --card: 18 30% 14%;                   /* slightly lighter mahogany surface */
+  --card-foreground: 39 60% 88%;
+
+  --popover: 18 30% 14%;
+  --popover-foreground: 39 60% 88%;
+
+  --primary: 45 100% 51%;                /* amber gets primary attention in dark mode */
+  --primary-foreground: 18 35% 10%;
+
+  --secondary: 18 25% 18%;
+  --secondary-foreground: 39 60% 88%;
+
+  --muted: 18 22% 16%;
+  --muted-foreground: 39 30% 70%;
+
+  --accent: 45 100% 51%;
+  --accent-foreground: 18 35% 10%;
+
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 122 50% 45%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 0 70% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 100% 56%;
+  --special-foreground: 18 35% 10%;
+
+  --cart: 45 100% 51%;
+  --cart-foreground: 18 35% 10%;
+
+  --border: 18 20% 24%;
+  --input: 18 25% 18%;
+  --ring: 45 100% 51%;
+
+  --parchment: 39 50% 18%;
+  --parchment-soft: 39 45% 22%;
+  --walnut: 39 60% 88%;                  /* invert — "walnut" reads light in dark mode */
+  --walnut-mid: 39 45% 72%;
+  --walnut-warm: 39 40% 65%;
+  --taupe: 39 25% 55%;
+  --forest: 122 50% 55%;
+  --wax-red: 0 70% 55%;
+  --amber: 45 100% 56%;
+
+  /* Legacy brand-token aliases (see light palette for rationale) —
+   *  in dark mode the primary brand color flips to amber so accents
+   *  pop against the mahogany canvas. */
+  --brand-green: 45 100% 56%;            /* → amber (primary in dark) */
+  --brand-green-bright: 45 100% 65%;     /* → brighter amber */
+  --brand-green-soft: 39 45% 22%;        /* → parchment-soft (dark halo) */
+  --brand-green-deep: 39 40% 14%;        /* → deeper canvas */
+  --brand-indigo: 45 100% 56%;           /* → amber for legacy active states */
+  --brand-pink: 0 70% 55%;                /* → wax-red */
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.6);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.7);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.75);
+  --shadow-glow: 0 0 24px hsla(45, 100%, 51%, 0.4);
+}
+
+/* ---- Fonts: Cinzel for titles, Cormorant Garamond for body ---- */
+.theme-26 {
+  /* Slight bump in body size — Cormorant Garamond looks elegant
+   *  but small on screen at typical 14px, so we anchor at 95%
+   *  so default 16px → 15.2px, giving the menu rows breathing
+   *  room without busting layouts of borrowed shared components. */
+  font-size: 95%;
+}
+.theme-26,
+.theme-26 * {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+}
+.theme-26 h1,
+.theme-26 h2,
+.theme-26 h3,
+.theme-26 .font-display,
+.theme-26 .menu-section-title h2 {
+  font-family: 'Cinzel', 'Georgia', serif;
+  letter-spacing: 0.06em;
+}
+
+/* ---- Subtle parchment texture on the page background.
+ *  Generated as inline SVG noise — same trick as the reference HTML
+ *  so the canvas isn't a flat fill. Layered under the bg color via
+ *  background-image, scoped to the theme wrapper so no other theme
+ *  inherits it. */
+.theme-26 {
+  background-color: hsl(var(--parchment));
+  background-image:
+    radial-gradient(circle at 50% 50%, hsla(45, 100%, 60%, 0.10) 0%, hsla(25, 40%, 18%, 0.04) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cfilter id='n26'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n26)' opacity='0.06'/%3E%3C/svg%3E");
+}
+.dark .theme-26,
+.dark.theme-26 {
+  background-color: hsl(var(--parchment));
+  background-image:
+    radial-gradient(circle at 50% 50%, hsla(45, 90%, 30%, 0.06) 0%, hsla(0, 0%, 0%, 0.10) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cfilter id='n26d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n26d)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* ---- Brand text gradient ---- */
+.theme-26 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    hsl(var(--walnut)) 0%,
+    hsl(var(--taupe)) 100%
+  );
+}
+
+/* ---- Shadow utilities ---- */
+.theme-26 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-26 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-26 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-26 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Glass surface ---- */
+.theme-26 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(39, 70%, 90%, 0.85);
+}
+.dark .theme-26 .glass,
+.dark.theme-26 .glass {
+  background: hsla(18, 30%, 14%, 0.85);
+}
+
+/* ---- Category section title — Cinzel double-rule underline ---- */
+.theme-26 .menu-section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.75rem 0 1rem;
+}
+.theme-26 .menu-section-title h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: hsl(var(--walnut-warm));
+  font-size: 1.35rem;
+  line-height: 1.1;
+  margin: 0;
+  padding-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 2px double hsl(var(--taupe));
+  display: inline-block;
+}
+
+/* ---- Category banner — accordion header.
+ *  A parchment strip with a double-rule title and a small chevron.
+ *  When used as a <button> (the accordion variant in MenuPage), it
+ *  becomes interactive: hover deepens the surface, active state
+ *  swaps to a walnut fill with parchment text — same vocabulary as
+ *  the CategoryTabs active pill, so users instantly recognize which
+ *  section is open. */
+.theme-26 .cat-banner {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+  background: hsl(var(--parchment-soft));
+  border: 1px solid hsl(var(--taupe) / 0.4);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+.theme-26 button.cat-banner {
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.theme-26 button.cat-banner:hover {
+  background: hsl(var(--parchment));
+  border-color: hsl(var(--taupe) / 0.7);
+}
+.theme-26 button.cat-banner[aria-expanded="true"] {
+  background: hsl(var(--walnut));
+  border-color: hsl(var(--walnut));
+}
+.theme-26 button.cat-banner[aria-expanded="true"] .menu-section-title h2 {
+  color: hsl(var(--parchment));
+  border-bottom-color: hsl(var(--amber));
+}
+.theme-26 .cat-banner .cat-banner-image,
+.theme-26 .cat-banner::after {
+  display: none;
+}
+.theme-26 .cat-banner .cat-banner-inner {
+  position: relative;
+  padding: 0.75rem 1rem;
+}
+.theme-26 .cat-banner .menu-section-title {
+  margin: 0;
+}
+.theme-26 .cat-banner .menu-section-title h2 {
+  text-shadow: none;
+  font-size: 1.1rem;
+  transition: color 200ms ease, border-bottom-color 200ms ease;
+}
+
+/* =============================================================
+ * Product row — the heart of this theme. The reference renders
+ *
+ *   {bold name} . . . . . . . . . . . . . . . . . {price}
+ *   italic, sage-brown description
+ *
+ * We rebuild that here. ProductCard.tsx in theme-26 emits markup
+ * that matches these selectors. No photo, no card background —
+ * the row is text on parchment, like a printed à la carte sheet.
+ * ============================================================= */
+.theme-26 .menu-row {
+  display: block;
+  background: transparent;
+  padding: 0.5rem 0 0.25rem;
+  cursor: pointer;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+.theme-26 .menu-row + .menu-row {
+  margin-top: 0.5rem;
+}
+.theme-26 .menu-row:hover .menu-row-name {
+  color: hsl(var(--walnut));
+}
+/* Price stays its locked color through hover — see the .menu-row-price
+ *  block below (pure black in light, parchment in dark). The previous
+ *  hover rule used to retint the price brown, which fought the
+ *  printed-menu "ink black" look the user asked for. */
+.theme-26 .menu-row .menu-row-line {
+  display: flex;
+  /* Imperial Script ascenders sit much higher than upright serifs;
+   *  baseline alignment would push the dots + price toward the top
+   *  of the name. Switching to last baseline / bottom keeps the
+   *  dotted leader visually tied to the name's underline area and
+   *  the price reads on the same optical line. */
+  align-items: last baseline;
+  gap: 0.5rem;
+}
+.theme-26 .menu-row .menu-row-name {
+  /* Birthstone — flowing copperplate-style script with thick down-
+   *  strokes and hairline up-strokes. Like all script faces it reads
+   *  visually smaller than upright serifs, so we keep the bump in
+   *  font-size and loosen line-height to give the calligraphic
+   *  ascenders/descenders room without clipping. */
+  font-family: 'Birthstone', 'Cormorant Garamond', cursive, serif;
+  font-weight: 400;
+  color: hsl(var(--walnut));
+  font-size: 1.85rem;
+  line-height: 1.0;
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 0 1 auto;
+
+  /* Pen-writing reveal — HARD-EDGE left-to-right wipe.
+   *
+   *  Strategy: the mask is a 200%-wide horizontal gradient with a
+   *  *binary* boundary at 50%. The OPAQUE half is on the LEFT, the
+   *  transparent half on the RIGHT, so the gradient reads
+   *      [████████|        ]
+   *  with a knife-sharp cut at the midpoint. Birthstone is a
+   *  connected calligraphy face, so as the hard boundary sweeps
+   *  rightward across the word, each glyph's starting stroke
+   *  springs cleanly into existence — the visible effect IS
+   *  "letters being written one by one, ink left behind".
+   *
+   *  Position math (mask is 2x wider than the element):
+   *    position 100% 0 → mask-right aligns to element-right,
+   *                      mask-left sits 1x left of the element.
+   *                      Visible window catches the mask's RIGHT
+   *                      half = transparent → text fully hidden.
+   *    position 0% 0   → mask-left aligns to element-left,
+   *                      mask-right sits 1x right of the element.
+   *                      Visible window catches the mask's LEFT
+   *                      half = opaque → text fully drawn.
+   *
+   *  Animating position from 100% → 0% therefore SLIDES the mask
+   *  RIGHTWARD relative to the element — which the user reads as a
+   *  pen tip moving from LEFT to RIGHT laying down ink. (Easy to
+   *  get backwards: animating 0% → 100% with this same gradient
+   *  would produce right-to-left writing, which is exactly the bug
+   *  the user reported earlier.) */
+  -webkit-mask-image: linear-gradient(to right, #000 50%, transparent 50%);
+          mask-image: linear-gradient(to right, #000 50%, transparent 50%);
+  -webkit-mask-size: 200% 100%;
+          mask-size: 200% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+          mask-position: 100% 0;
+}
+.theme-26 .menu-row .menu-row-name.is-written {
+  /* Easing is near-linear — a real calligrapher's pen moves at a
+   *  steady cadence, not the spring-curve that JS animation libs
+   *  default to. Duration 2.2s feels deliberate without being slow. */
+  animation: theme26-penWrite 2.2s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+@keyframes theme26-penWrite {
+  from {
+    -webkit-mask-position: 100% 0;
+            mask-position: 100% 0;
+  }
+  to {
+    -webkit-mask-position: 0% 0;
+            mask-position: 0% 0;
+  }
+}
+.theme-26 .menu-row .menu-row-dots {
+  flex: 1 1 auto;
+  align-self: center;
+  border-bottom: 1px dotted hsl(var(--taupe));
+  opacity: 0.55;
+  margin: 0 4px;
+  position: relative;
+  top: -2px;
+}
+.theme-26 .menu-row .menu-row-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  /* Pure black — printed-menu look. The forest-green default we
+   *  inherited from the reference HTML felt out of place against
+   *  walnut/ink palette; #000 (ink black) reads as part of the same
+   *  printing-press print run as the name beside it. Dark mode
+   *  overrides below — pure black on mahogany would disappear. */
+  color: #000;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+/* Dark mode: flip price to warm parchment so it still reads as the
+ *  highest-contrast element on the line (just like #000 was in light
+ *  mode), without losing the printed-menu intent. */
+.dark .theme-26 .menu-row .menu-row-price,
+.dark.theme-26 .menu-row .menu-row-price {
+  color: hsl(var(--walnut));
+}
+.theme-26 .menu-row .menu-row-desc {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: hsl(var(--walnut-mid));
+  line-height: 1.4;
+  margin-top: 0;
+  padding-right: 1rem;
+}
+.theme-26 .menu-row .menu-row-old-price {
+  text-decoration: line-through;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+}
+
+/* Campaign/special chip — kept very small so it doesn't break the
+ *  printed-menu illusion. Wax-red for campaign, amber for special. */
+.theme-26 .menu-row .menu-row-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+.theme-26 .menu-row .menu-row-chip {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+.theme-26 .menu-row .menu-row-chip.is-campaign {
+  background: hsl(var(--wax-red));
+  color: #fff;
+}
+.theme-26 .menu-row .menu-row-chip.is-special {
+  background: hsl(var(--amber));
+  color: hsl(var(--walnut));
+}
+
+/* ---- Subcategory pill buttons — parchment cards with walnut text ----
+ *  Selector exclusion `:not([role="dialog"] *)` keeps these rules
+ *  from also matching the survey/reservation modal close button
+ *  (which is `rounded-full` and lives inside a `.grid` ancestor),
+ *  which would otherwise force it to `position: relative` and break
+ *  the absolute `right-4 top-8` Tailwind positioning. */
+.theme-26 .grid > button.rounded-full:not([role="dialog"] *) {
+  border-radius: 4px !important;
+  padding: 0.5rem 0.9rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  background: hsl(var(--parchment-soft)) !important;
+  color: hsl(var(--walnut-mid)) !important;
+  border: 1px solid hsl(var(--taupe) / 0.5) !important;
+  box-shadow: var(--shadow-sm) !important;
+  position: relative;
+  margin-bottom: 4px;
+  font-family: 'Cormorant Garamond', serif !important;
+}
+.theme-26 .grid > button.rounded-full.bg-primary:not([role="dialog"] *) {
+  background: hsl(var(--walnut)) !important;
+  color: hsl(var(--parchment)) !important;
+  border-color: hsl(var(--walnut)) !important;
+}
+.theme-26 .grid > button.rounded-full.bg-primary:not([role="dialog"] *)::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 4px;
+  background: hsl(var(--amber));
+}
+
+/* ---- Hamburger drawer panel ---- */
+.theme-26 .menu-drawer {
+  background: hsl(var(--parchment-soft));
+  color: hsl(var(--walnut));
+  border-left: 4px solid hsl(var(--amber));
+}
+
+/* Theme-scoped fade-in (kept identical to theme-24 so any code
+ *  referencing `.animate-fade-in` in shared components still works) */
+@keyframes theme26-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-26 .animate-fade-in { animation: theme26-fadeIn 0.3s ease-out; }
+
+/* ---- ProductDetailModal close-button restyling — match the walnut
+ *  cart button so the modal feels native to the theme. */
+.theme-26 div[class*="h-56"][class*="rounded-t-["] > button {
+  background: hsl(var(--walnut)) !important;
+}
+.theme-26 div[class*="h-56"][class*="rounded-t-["] > button svg {
+  color: hsl(var(--parchment)) !important;
+}
+
+/* =============================================================
+ *  Survey + Reservation modal surfaces — apply the parchment
+ *  canvas (color + noise texture) to all Radix Dialog content
+ *  so the modal feels like a torn-off scrap of the same menu
+ *  scroll. The shared SurveyModal has a built-in amber/orange
+ *  gradient header strip; we neutralize that so the parchment
+ *  shows through, and re-color any text/icon that would
+ *  otherwise be unreadable on the warm cream background.
+ *  Class `.theme-26` is mirrored onto <html> (see MenuPage
+ *  useEffect) so these rules reach portal-rendered modals.
+ *  ============================================================= */
+.theme-26 [role="dialog"] {
+  background-color: hsl(var(--parchment)) !important;
+  background-image:
+    radial-gradient(circle at 50% 50%, hsla(45, 100%, 60%, 0.12) 0%, hsla(25, 40%, 18%, 0.05) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cfilter id='nDlg26'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nDlg26)' opacity='0.06'/%3E%3C/svg%3E");
+  color: hsl(var(--walnut));
+}
+.dark .theme-26 [role="dialog"],
+.dark.theme-26 [role="dialog"] {
+  background-color: hsl(var(--parchment)) !important;
+  background-image:
+    radial-gradient(circle at 50% 50%, hsla(45, 90%, 30%, 0.06) 0%, hsla(0, 0%, 0%, 0.10) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cfilter id='nDlg26d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nDlg26d)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* Survey modal gradient header — flatten so the parchment shows. The
+ *  shared component applies `bg-gradient-to-br from-primary/10
+ *  via-amber-500/10 to-orange-500/10` plus two radial gradients via
+ *  arbitrary `bg-[radial-gradient(...)]` utilities. We override all
+ *  three with the parchment color so the header looks like another
+ *  torn strip of the same scroll. */
+.theme-26 [role="dialog"] [class*="bg-gradient-to-br"][class*="from-primary"] {
+  background: transparent !important;
+}
+.theme-26 [role="dialog"] [class*="bg-[radial-gradient"] {
+  background: transparent !important;
+}
+
+/* Survey title gradient — `bg-clip-text text-transparent` makes the
+ *  header title invisible on parchment because the source gradient
+ *  is amber → orange (basically the same hue as our background).
+ *  Force the title back to solid walnut so it reads. */
+.theme-26 [role="dialog"] [class*="bg-clip-text"][class*="text-transparent"] {
+  background: none !important;
+  -webkit-text-fill-color: hsl(var(--walnut)) !important;
+  color: hsl(var(--walnut)) !important;
+}
+
+/* Modal body text — keep walnut color throughout so labels,
+ *  descriptions, and form copy stay readable on the parchment
+ *  surface. `:where()` keeps specificity at zero so Tailwind
+ *  utilities for chips/badges/warnings still win. */
+:where(.theme-26 [role="dialog"]) label,
+:where(.theme-26 [role="dialog"]) h2,
+:where(.theme-26 [role="dialog"]) h3,
+:where(.theme-26 [role="dialog"]) h4,
+:where(.theme-26 [role="dialog"]) p,
+:where(.theme-26 [role="dialog"]) span {
+  color: hsl(var(--walnut));
+}
+
+/* Survey "secondary" tiles (the category cards rated 1-5) use
+ *  `bg-secondary/50` — on the parchment that's a dirty cream that
+ *  blends out. Bump opacity and tint slightly so each card has a
+ *  clear edge against the canvas. */
+.theme-26 [role="dialog"] .bg-secondary\/50,
+.theme-26 [role="dialog"] [class*="bg-secondary"] {
+  background-color: hsl(var(--parchment-soft)) !important;
+  border: 1px solid hsl(var(--taupe) / 0.4);
+}
+
+/* Survey close button — keep the same wax-red circle pattern we use
+ *  for AlertDialogs, so the close affordance reads instantly on the
+ *  warm parchment. `position: absolute !important` defends the
+ *  Tailwind `.absolute right-4 top-8` anchoring against any other
+ *  rule (e.g. the subcategory pill style) that might otherwise
+ *  promote this button to position: relative and shift it leftward
+ *  off-canvas. */
+.theme-26 [role="dialog"] button[class*="bg-red-100"] {
+  position: absolute !important;
+  background-color: hsl(var(--wax-red)) !important;
+  width: 36px !important;
+  height: 36px !important;
+  box-shadow: 0 2px 8px hsla(0, 70%, 30%, 0.35);
+}
+.theme-26 [role="dialog"] button[class*="bg-red-100"]:hover {
+  background-color: hsl(0, 70%, 40%) !important;
+}
+.theme-26 [role="dialog"] button[class*="bg-red-100"] svg {
+  color: #fff !important;
+  stroke: #fff !important;
+  stroke-width: 2.75 !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* AlertDialog title + description scope (Sepeti Temizle? etc.) */
+:where(.theme-26 [role="alertdialog"]) label,
+:where(.theme-26 [role="alertdialog"]) h2,
+:where(.theme-26 [role="alertdialog"]) h3,
+:where(.theme-26 [role="alertdialog"]) h4,
+:where(.theme-26 [role="alertdialog"]) p,
+:where(.theme-26 [role="alertdialog"]) span {
+  color: hsl(var(--walnut));
+}
+.theme-26 [role="alertdialog"] .text-muted-foreground,
+.theme-26 [role="alertdialog"] [class*="text-muted-foreground"] {
+  color: hsl(var(--walnut-mid)) !important;
+}

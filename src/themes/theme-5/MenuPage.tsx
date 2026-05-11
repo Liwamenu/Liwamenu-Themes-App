@@ -23,7 +23,7 @@ import { ExternalPageView } from "@/components/menu/ExternalPageView";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
-import { Product, Order } from "@/types/restaurant";
+import { Product, Order, ExternalPage } from "@/types/restaurant";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
 import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
 import { Input } from "@/components/ui/input";
@@ -70,7 +70,11 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
-  const [showExternalPage, setShowExternalPage] = useState(false);
+  // Holds the currently-open external page (or null). Replaces the
+  // old boolean — the API now returns an array of pages, so we need
+  // to remember which one the user tapped.
+  const [selectedExternalPage, setSelectedExternalPage] = useState<ExternalPage | null>(null);
+  const showExternalPage = selectedExternalPage !== null;
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
@@ -196,7 +200,10 @@ export function MenuPage() {
   const scrollToCategory = useCallback(
     (categoryId: string) => {
       if (categoryId === "__external__") {
-        setShowExternalPage(true);
+        // Old single-page trigger — fall back to the first published
+        // external page so legacy callers (if any) still work.
+        const first = restaurant.externalPages?.[0];
+        if (first) setSelectedExternalPage(first);
         return;
       }
       scrollToSection(categoryId);
@@ -508,20 +515,23 @@ export function MenuPage() {
           </div>
         )}
 
-        {/* External Page Button - styled like a category banner */}
-        {!searchQuery &&
-          restaurant.externalPageButtonName &&
-          (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-            <button
-              onClick={() => setShowExternalPage(true)}
-              className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden mt-[30px] group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10 group-hover:scale-105 transition-transform">
-                {restaurant.externalPageButtonName}
-              </h2>
-            </button>
-          )}
+        {/* External Page Banners — one per admin-published page,
+            rendered in sortOrder ascending. Banner-style like a category. */}
+        {!searchQuery && restaurant.externalPages && restaurant.externalPages.length > 0 &&
+          [...restaurant.externalPages]
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((page) => (
+              <button
+                key={page.id}
+                onClick={() => setSelectedExternalPage(page)}
+                className="relative w-full h-[200px] lg:h-[250px] bg-primary flex items-center justify-center overflow-hidden mt-[30px] group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary/95" />
+                <h2 className="text-3xl md:text-5xl font-display font-bold text-primary-foreground tracking-wider uppercase z-10 group-hover:scale-105 transition-transform">
+                  {page.buttonName}
+                </h2>
+              </button>
+            ))}
       </div>
 
       {/* Footer */}
@@ -582,11 +592,11 @@ export function MenuPage() {
         />
       )}
 
-      {showExternalPage && (
+      {selectedExternalPage && (
         <ExternalPageView
-          html={restaurant.externalPageHTML}
-          image={restaurant.externalPageImage}
-          onClose={() => setShowExternalPage(false)}
+          html={selectedExternalPage.htmlBody}
+          image={selectedExternalPage.imageURL}
+          onClose={() => setSelectedExternalPage(null)}
         />
       )}
 
