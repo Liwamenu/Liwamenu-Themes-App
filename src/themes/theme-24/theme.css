@@ -351,9 +351,10 @@
   /* Tabular figures keep prices vertically aligned across cards. */
   font-variant-numeric: tabular-nums;
 }
-/* Dark mode: revert price to indigo (yellow vs near-black canvas
-   would be visually noisy; indigo reads cleanly there). */
-.dark .theme-24 .menu-row .product-price {
+/* Dark mode: indigo — yellow vs near-black canvas would be visually
+ *  noisy; indigo reads cleanly there. */
+.dark .theme-24 .menu-row .product-price,
+.dark.theme-24 .menu-row .product-price {
   color: hsl(var(--brand-indigo));
 }
 
