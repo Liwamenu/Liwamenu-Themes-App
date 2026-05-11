@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Facebook, Instagram, Youtube, MessageCircle, CalendarDays, Star } from "lucide-react";
+import { TikTok } from "@/components/icons/TikTok";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
@@ -18,6 +19,7 @@ export function Footer() {
   const socialLinks = [
     { url: SocialLinks.facebookUrl, icon: Facebook, label: "Facebook", color: "hover:bg-blue-500" },
     { url: SocialLinks.instagramUrl, icon: Instagram, label: "Instagram", color: "hover:bg-pink-500" },
+    { url: SocialLinks.tiktokUrl, icon: TikTok, label: "TikTok", color: "hover:bg-zinc-900" },
     { url: SocialLinks.youtubeUrl, icon: Youtube, label: "YouTube", color: "hover:bg-red-500" },
     { url: SocialLinks.whatsappUrl, icon: MessageCircle, label: "WhatsApp", color: "hover:bg-green-500" },
   ].filter((link) => link.url);

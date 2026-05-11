@@ -26,6 +26,8 @@ import { tr, enUS } from "date-fns/locale";
 import i18n from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { CallWaiterModal } from "./CallWaiterModal";
+import { ChangeTableModal } from "./ChangeTableModal";
+import { toast } from "sonner";
 
 interface OrderReceiptProps {
   orderId: string;
@@ -146,8 +148,47 @@ function StatusZigzag({
 
 export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
   const { t } = useTranslation();
-  const { restaurant, formatPrice, isCurrentlyOpen } = useRestaurant();
+  const { restaurant, formatPrice, isCurrentlyOpen, setTableNumber } = useRestaurant();
   const [showCallWaiterModal, setShowCallWaiterModal] = useState(false);
+  const [showTableSelection, setShowTableSelection] = useState(false);
+
+  /**
+   * Garson Çağır from the receipt screen needs the same gating the menu's
+   * floating button uses:
+   *   1. Restaurant currently open?
+   *   2. Customer has a table assigned (QR scanned)? If not, prompt them
+   *      to scan/enter the table before opening the call waiter modal.
+   * Without this guard the request would post with no tableNumber, leaving
+   * staff with a "ring at unknown table" notification.
+   */
+  const handleOpenCallWaiter = useCallback(() => {
+    if (!isCurrentlyOpen) {
+      toast.error(t("common.closedHours"));
+      return;
+    }
+    if (!restaurant.tableNumber) {
+      setShowTableSelection(true);
+      return;
+    }
+    setShowCallWaiterModal(true);
+  }, [isCurrentlyOpen, restaurant.tableNumber, t]);
+
+  const handleTableSelected = useCallback(
+    (newTable: string) => {
+      const trimmed = newTable?.trim();
+      if (!trimmed) {
+        // Invalid scan / empty value — abort instead of falling through
+        // and opening the call-waiter modal with no table to send.
+        toast.error(t("cart.tableInvalid", "Geçersiz masa bilgisi"));
+        return;
+      }
+      setTableNumber(trimmed);
+      toast.success(t("cart.tableChanged", { table: trimmed }));
+      setShowTableSelection(false);
+      if (isCurrentlyOpen) setShowCallWaiterModal(true);
+    },
+    [setTableNumber, t, isCurrentlyOpen],
+  );
   
   // Subscribe to live order from Zustand store
   const order = useOrder((state) => state.orders.find((o) => o.id === orderId));
@@ -420,7 +461,7 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
 
           {order.orderType === "inPerson" && (
             <Button
-              onClick={() => setShowCallWaiterModal(true)}
+              onClick={handleOpenCallWaiter}
               disabled={waiterCooldown > 0 || !isCurrentlyOpen}
               className={`w-full h-12 rounded-xl gap-2 ${
                 waiterCooldown > 0 || !isCurrentlyOpen ? "bg-muted text-muted-foreground" : ""
@@ -442,6 +483,15 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
         isOpen={showCallWaiterModal}
         onClose={() => setShowCallWaiterModal(false)}
         onSuccess={onWaiterSuccess}
+      />
+
+      {/* Table-selection (QR scan) modal — opens automatically when the
+          customer taps Garson Çağır without an assigned table. */}
+      <ChangeTableModal
+        isOpen={showTableSelection}
+        onClose={() => setShowTableSelection(false)}
+        onTableChange={handleTableSelected}
+        currentTable={restaurant.tableNumber || undefined}
       />
     </motion.div>
   );

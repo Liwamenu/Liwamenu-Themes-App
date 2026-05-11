@@ -73,7 +73,9 @@
     "checkout": "الدفع",
     "tableChanged": "تم التغيير إلى الطاولة {{table}}!",
     "tableChanged?": "هل تغيرت طاولتك؟",
-    "scanNewQr": "امسح رمز QR لطاولتك الجديدة"
+    "scanNewQr": "امسح رمز QR لطاولتك الجديدة",
+    "tableRequired": "يرجى مسح رمز QR لطاولتك أولاً",
+    "tableInvalid": "معلومات الطاولة غير صالحة"
   },
   "productCard": {
     "recommended": "موصى به",

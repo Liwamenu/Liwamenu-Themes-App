@@ -73,7 +73,9 @@
     "checkout": "结账",
     "tableChanged": "已更换到{{table}}号桌！",
     "tableChanged?": "您的桌号变了吗？",
-    "scanNewQr": "扫描新桌的二维码"
+    "scanNewQr": "扫描新桌的二维码",
+    "tableRequired": "请先扫描您餐桌的二维码",
+    "tableInvalid": "无效的餐桌信息"
   },
   "productCard": {
     "recommended": "推荐",

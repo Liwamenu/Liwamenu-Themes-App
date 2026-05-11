@@ -75,7 +75,9 @@
     "checkout": "Checkout",
     "tableChanged": "Changed to Table {{table}}!",
     "tableChanged?": "Has Your Table Changed?",
-    "scanNewQr": "Scan your new table's QR code"
+    "scanNewQr": "Scan your new table's QR code",
+    "tableRequired": "Please scan your table's QR code first",
+    "tableInvalid": "Invalid table info"
   },
   "productCard": {
     "recommended": "Recommended",

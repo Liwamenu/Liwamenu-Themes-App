@@ -1,0 +1,391 @@
+/* ============================================================
+ * Theme 23 — Green Border (clean grid-card menu)
+ *
+ * Bright leaf-green primary (#4FCB45-ish) on a soft warm-gray canvas.
+ * Inter handles everything (no display scripts). Cards live in a 2-col
+ * grid with a circular green-tinted product photo on top, bold name +
+ * gray description + green price underneath. Subcategory tabs use white
+ * pill buttons with a green underline marking the active one.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+/* ---- Light palette (default — bright green on warm gray) ---- */
+.theme-23 {
+  --background: 0 0% 96%;               /* warm light gray */
+  --foreground: 0 0% 10%;
+
+  --card: 0 0% 100%;                    /* pure white cards */
+  --card-foreground: 0 0% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+
+  --primary: 110 65% 45%;               /* leaf green */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 14%;
+
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 42%;
+
+  --accent: 110 65% 45%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 75% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 110 65% 45%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 25 95% 55%;               /* warm orange for campaigns */
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 50%;                /* warm amber for specials */
+  --special-foreground: 0 0% 14%;
+
+  --cart: 110 65% 45%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 0 0% 88%;
+  --input: 0 0% 92%;
+  --ring: 110 65% 45%;
+
+  --brand-green: 110 65% 45%;           /* main leaf green */
+  --brand-green-bright: 110 70% 55%;    /* hero gradient highlight */
+  --brand-green-soft: 110 60% 88%;      /* image halo / disc */
+  --brand-green-deep: 135 55% 32%;      /* forest green (active state) */
+  --brand-indigo: 243 75% 50%;          /* indigo for price */
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.05);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.07);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.1);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.15);
+  --shadow-glow: 0 0 24px hsla(110, 65%, 45%, 0.35);
+}
+
+/* ---- Dark palette (deep forest at night) ---- */
+.dark .theme-23 {
+  --background: 110 12% 10%;            /* deep forest gray */
+  --foreground: 0 0% 96%;
+
+  --card: 110 8% 14%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 110 8% 14%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 110 65% 55%;               /* brighter green for dark bg */
+  --primary-foreground: 110 30% 8%;
+
+  --secondary: 110 8% 18%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 110 8% 16%;
+  --muted-foreground: 0 0% 65%;
+
+  --accent: 110 65% 55%;
+  --accent-foreground: 110 30% 8%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 110 65% 55%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 25 95% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 55%;
+  --special-foreground: 0 0% 14%;
+
+  --cart: 110 65% 55%;
+  --cart-foreground: 110 30% 8%;
+
+  --border: 110 8% 24%;
+  --input: 110 8% 18%;
+  --ring: 110 65% 55%;
+
+  --brand-green: 110 65% 55%;
+  --brand-green-bright: 110 70% 65%;
+  --brand-green-soft: 110 40% 22%;
+  --brand-green-deep: 135 55% 38%;      /* forest green (active state) */
+  --brand-indigo: 243 80% 65%;
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.6);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.7);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.75);
+  --shadow-glow: 0 0 24px hsla(110, 65%, 55%, 0.4);
+}
+
+/* ---- Fonts: Inter everywhere ---- */
+.theme-23,
+.theme-23 * {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.theme-23 .font-display,
+.theme-23 .font-script,
+.theme-23 .font-body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ---- Brand text gradient ---- */
+.theme-23 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    hsl(var(--brand-green)) 0%,
+    hsl(var(--brand-green-bright)) 100%
+  );
+}
+
+/* ---- Shadow utilities ---- */
+.theme-23 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-23 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-23 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-23 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Glass surface ---- */
+.theme-23 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 100%, 0.92);
+}
+.dark .theme-23 .glass {
+  background: hsla(110, 8%, 14%, 0.92);
+}
+
+/* ---- Category section title — Nunito heavy, bold dark text, centered ---- */
+.theme-23 .menu-section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0 1rem;
+}
+.theme-23 .menu-section-title h2 {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 900;
+  color: hsl(var(--foreground));
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+/* In dark mode the section title flips to indigo so it stays distinct
+   from white menu copy and the green active accents. */
+.dark .theme-23 .menu-section-title h2 {
+  color: hsl(var(--brand-indigo));
+}
+
+/* ---- Category banner (image background optional) ----
+ *  Image extends 25% past each side (50% total wider than the card) so
+ *  the photo dominates the banner. No transparent overlay — the photo
+ *  shows at full clarity; the section title above gets its own
+ *  text-shadow to stay readable. */
+.theme-23 .cat-banner {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+  background-color: transparent;
+}
+.theme-23 .cat-banner .cat-banner-image {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -25%;
+  right: -25%;
+  background-size: cover;
+  background-position: center;
+  opacity: 1;
+}
+.theme-23 .cat-banner .cat-banner-inner {
+  position: relative;
+  /* Vertical padding increased ~50% so more of the photo is visible
+     above and below the section title (matches the user's request to
+     expand the banner vertically). */
+  padding: 1.75rem 1rem 1.75rem;
+}
+.theme-23 .cat-banner .menu-section-title h2 {
+  /* Sit readably over the photo regardless of brightness */
+  text-shadow:
+    0 2px 4px hsla(0, 0%, 100%, 0.85),
+    0 0 12px hsla(0, 0%, 100%, 0.55);
+}
+
+/* ---- Product card — grid tile with circular photo on top ----
+ *  Vertical stack: round green-tinted image + bold name + description +
+ *  thin divider + green price. Reference design lives in a 2-column
+ *  grid; the parent in MenuPage handles the grid layout, .menu-row only
+ *  styles the individual card. */
+.theme-23 .menu-row {
+  display: flex;
+  flex-direction: column;
+  background: hsl(var(--card));
+  border-radius: 16px;
+  padding: 1rem 0.875rem 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  /* No overflow:hidden — the image halo's outer shadow needs room. */
+  /* Container query context: child font-sizes can scale with card width
+     using `cqi` so long prices like ₺ 3.595.000 stay readable in narrow
+     2-column layouts without wrapping or being clipped. */
+  container-type: inline-size;
+}
+.theme-23 .menu-row:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.theme-23 .menu-row:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Product image — 3D disc: the wrap is a green halo (15px ring of
+ *  --brand-green-soft) with a deep drop shadow, and the actual photo
+ *  sits 15px inside it. The inner image gets its own soft shadow so it
+ *  looks like a coin lifted off the plate. */
+.theme-23 .menu-row .product-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  background: hsl(var(--brand-green-soft));
+  margin: 0 auto 0.75rem;
+  box-shadow:
+    0 14px 28px hsla(110, 65%, 30%, 0.28),
+    0 6px 12px hsla(110, 65%, 30%, 0.18),
+    inset 0 -6px 14px hsla(110, 65%, 25%, 0.18),
+    inset 0 6px 14px hsla(0, 0%, 100%, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-23 .menu-row .product-image-wrap img {
+  width: calc(100% - 30px);
+  height: calc(100% - 30px);
+  object-fit: cover;
+  border-radius: 9999px;
+  box-shadow: 0 6px 14px hsla(0, 0%, 0%, 0.2);
+}
+
+.theme-23 .menu-row .product-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-align: center;
+  /* clamp to 2 lines so 2-col rows stay aligned, but no min-height
+   *  reserve — cards with shorter content collapse naturally. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theme-23 .menu-row .product-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.45;
+  margin-top: 0.5rem;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theme-23 .menu-row .product-divider {
+  height: 1px;
+  background: hsl(var(--border));
+  margin: 0.875rem 0 0.625rem;
+}
+.theme-23 .menu-row .product-price {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--brand-indigo));
+  /* Responsive: shrinks on narrow cards (so a 10-digit price stays on
+     one line) and caps at 22px on wider screens. Uses cqi (container
+     query inline) so it scales with card width, not viewport width. */
+  font-size: clamp(0.875rem, 10cqi, 1.375rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  /* Tabular figures keep prices vertically aligned across cards. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Subcategory pill buttons — white cards with green underline ----
+ *  Override the shared SubcategoryButtons (compact pill-row fallback)
+ *  styling so it matches the reference: bigger white tiles with a
+ *  shadow, and the active one gets a thick green underline at the
+ *  bottom. We target the original Tailwind classes (`rounded-full`,
+ *  `bg-primary`, `bg-secondary`) so we don't have to fork the shared
+ *  component. */
+.theme-23 .grid > button.rounded-full {
+  border-radius: 5px !important;
+  padding: 0.625rem 0.75rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: var(--shadow-sm) !important;
+  position: relative;
+  margin-bottom: 4px;
+}
+.theme-23 .grid > button.rounded-full.bg-primary {
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--brand-green)) !important;
+}
+.theme-23 .grid > button.rounded-full.bg-primary::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -4px;
+  height: 3px;
+  border-radius: 9999px;
+  background: hsl(var(--brand-green));
+}
+/* Dark mode: active subcategory gets a deep-green filled background
+   instead of the white-card style used in light mode. */
+.dark .theme-23 .grid > button.rounded-full.bg-primary {
+  background: hsl(var(--brand-green-deep)) !important;
+  color: hsl(0 0% 100%) !important;
+  border-color: hsl(var(--brand-green-deep)) !important;
+}
+
+/* ---- Hamburger drawer panel ---- */
+.theme-23 .menu-drawer {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-left: 4px solid hsl(var(--brand-green));
+}
+
+/* Theme-scoped fade-in */
+@keyframes theme23-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-23 .animate-fade-in { animation: theme23-fadeIn 0.3s ease-out; }
+
+/* ---- Hide ProductDetailModal image when theme-23 keeps cards in grid;
+ *  unlike theme-22, theme-23 KEEPS product photos throughout, so the
+ *  modal image stays. Just restyle the close button into brand green. */
+.theme-23 div[class*="h-56"][class*="rounded-t-["] > button {
+  background: hsl(var(--brand-green)) !important;
+}
+.theme-23 div[class*="h-56"][class*="rounded-t-["] > button svg {
+  color: #fff !important;
+}

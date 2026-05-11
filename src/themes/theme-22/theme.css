@@ -1,0 +1,332 @@
+/* ============================================================
+ * Theme 22 — Sakura Sushi (Japanese izakaya / sushi house)
+ *
+ * Hand-drawn typography over a clean rice-paper canvas. The bold red
+ * (#d31f1f) brand color is borrowed directly from the reference Sushi
+ * design; amber prices recall warm sake light. Waterfall and Permanent
+ * Marker provide the calligraphic feel; Nunito carries body copy.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Waterfall&family=Nunito:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ---- Light palette (rice paper / izakaya daytime) ---- */
+.theme-22 {
+  --background: 0 0% 100%;              /* clean white */
+  --foreground: 0 0% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+
+  --primary: 0 75% 47%;                 /* #d31f1f sushi red */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 14%;
+
+  --muted: 0 0% 95%;
+  --muted-foreground: 0 0% 38%;
+
+  --accent: 38 92% 50%;                 /* amber accent */
+  --accent-foreground: 0 0% 10%;
+
+  --destructive: 0 75% 47%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 55% 38%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 0 75% 47%;                /* same red — campaigns sit in the brand */
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 38 92% 50%;
+  --special-foreground: 0 0% 10%;
+
+  --cart: 0 75% 47%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 0 0% 88%;
+  --input: 0 0% 92%;
+  --ring: 0 75% 47%;
+
+  --sushi-red: 0 75% 47%;               /* #d31f1f */
+  --sushi-red-dark: 0 75% 38%;
+  --sushi-amber: 38 92% 50%;
+  --sushi-ink: 0 0% 14%;                /* near-black for brushed lines */
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.06);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.08);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.12);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.18);
+  --shadow-glow: 0 0 24px hsla(0, 75%, 47%, 0.35);
+}
+
+/* ---- Dark palette (izakaya night — deep ink + warm lantern reds) ---- */
+.dark .theme-22 {
+  --background: 0 0% 8%;                /* near-black */
+  --foreground: 0 0% 96%;
+
+  --card: 0 0% 11%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 0 0% 11%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 0 80% 58%;                 /* brighter red for dark bg */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 16%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 0 0% 14%;
+  --muted-foreground: 0 0% 65%;
+
+  --accent: 38 95% 60%;
+  --accent-foreground: 0 0% 8%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 65% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 0 80% 58%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 38 95% 60%;
+  --special-foreground: 0 0% 8%;
+
+  --cart: 0 80% 58%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 0 0% 22%;
+  --input: 0 0% 16%;
+  --ring: 0 80% 58%;
+
+  --sushi-red: 0 80% 58%;
+  --sushi-red-dark: 0 75% 45%;
+  --sushi-amber: 38 95% 60%;
+  --sushi-ink: 0 0% 92%;
+
+  --shadow-sm: 0 2px 6px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 6px 16px hsla(0, 0%, 0%, 0.6);
+  --shadow-lg: 0 14px 28px hsla(0, 0%, 0%, 0.7);
+  --shadow-xl: 0 22px 44px hsla(0, 0%, 0%, 0.75);
+  --shadow-glow: 0 0 24px hsla(0, 80%, 58%, 0.4);
+}
+
+/* ---- Fonts ---- */
+.theme-22,
+.theme-22 * {
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.theme-22 .font-display {
+  font-family: 'Permanent Marker', cursive;
+  letter-spacing: 0.02em;
+}
+
+.theme-22 .font-script {
+  font-family: 'Waterfall', cursive;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.theme-22 .font-body {
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+/* ---- Brand text gradient ---- */
+.theme-22 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(var(--sushi-red)) 0%, hsl(var(--sushi-amber)) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-22 .shadow-card        { box-shadow: var(--shadow-md); }
+.theme-22 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-22 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-22 .shadow-elegant     { box-shadow: var(--shadow-xl); }
+
+/* ---- Glass surface ---- */
+.theme-22 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 100%, 0.92);
+}
+.dark .theme-22 .glass {
+  background: hsla(0, 0%, 8%, 0.92);
+}
+
+/* ---- Brush-stroke red category strip ----
+ *  An asymmetric polygon clip-path mimics ink/torn-paper edges. Used by
+ *  CategoryTabs as the sticky red navigation row. */
+.theme-22 .brush-strip {
+  background: hsl(var(--sushi-red));
+  clip-path: polygon(
+    2% 20%, 8% 5%, 18% 18%, 30% 0%, 45% 22%, 60% 5%, 75% 20%,
+    88% 8%, 98% 25%, 96% 80%, 88% 95%, 75% 78%, 60% 95%,
+    45% 80%, 30% 96%, 15% 82%, 5% 95%, 1% 75%
+  );
+  color: #fff;
+}
+
+/* ---- Section title with rotated brush underlines ----
+ *  Two thin ink bars rotated -6deg above and below the active category
+ *  name. Mirrors the SushiMenu reference. */
+.theme-22 .menu-section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.25rem 0 0.75rem;
+}
+.theme-22 .menu-section-title::before,
+.theme-22 .menu-section-title::after {
+  content: "";
+  display: block;
+  width: 16rem;
+  max-width: 80%;
+  height: 3px;
+  background: hsl(var(--sushi-ink));
+  transform: rotate(-6deg);
+  border-radius: 9999px;
+}
+.theme-22 .menu-section-title h2 {
+  font-family: 'Waterfall', cursive;
+  font-weight: 700;
+  color: hsl(var(--sushi-red));
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0.5rem 0;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Category banner (image background optional) ---- */
+.theme-22 .cat-banner {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  background-color: hsl(var(--card));
+}
+.theme-22 .cat-banner .cat-banner-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.16;
+}
+.theme-22 .cat-banner .cat-banner-inner {
+  position: relative;
+  padding: 0.5rem 1rem 1rem;
+}
+
+/* ---- Product row layout ----
+ *  Sushi-menu reference style: round photo (left, optional) + script red
+ *  name and amber price on a single baseline + Nunito description below.
+ *  Bottom border is a dashed ink line. */
+.theme-22 .menu-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 0.875rem 0.25rem;
+  border-bottom: 1px dashed hsl(var(--border));
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease;
+}
+.theme-22 .menu-row:hover {
+  background-color: hsl(var(--secondary) / 0.6);
+  transform: translateX(2px);
+}
+.theme-22 .menu-row:active {
+  transform: translateX(0) scale(0.995);
+}
+.theme-22 .menu-row:last-child {
+  border-bottom: none;
+}
+
+.theme-22 .menu-row .product-name {
+  font-family: 'Waterfall', cursive;
+  font-weight: 700;
+  color: hsl(var(--sushi-red));
+  font-size: 1.875rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.theme-22 .menu-row .product-price {
+  font-family: 'Waterfall', cursive;
+  font-weight: 700;
+  color: hsl(var(--sushi-amber));
+  font-size: 1.875rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.theme-22 .menu-row .product-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+  margin-top: 0.375rem;
+}
+
+/* ---- Hamburger drawer panel — slides in from the right edge ---- */
+.theme-22 .menu-drawer {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-left: 4px solid hsl(var(--sushi-red));
+}
+
+/* ---- Theme-22 doesn't use product photos inside the ProductDetailModal.
+ *  The shared modal renders an <img> in a fixed h-56 header with rounded
+ *  top corners; we target that exact combination (the hero in the
+ *  RestaurantHeader is also h-56 but doesn't have rounded-t, so it stays
+ *  intact). The close button is recolored in sushi-red and given a
+ *  z-index so it sits above the content card's -mt-8 overlap. */
+.theme-22 div[class*="h-56"][class*="rounded-t-["] > img {
+  display: none;
+}
+.theme-22 div[class*="h-56"][class*="rounded-t-["] > [class*="bg-gradient-to-t"] {
+  display: none;
+}
+.theme-22 div[class*="h-56"][class*="rounded-t-["] {
+  height: 4.5rem !important;
+  background: hsl(var(--card));
+}
+.theme-22 div[class*="h-56"][class*="rounded-t-["] > button {
+  z-index: 20;
+  background: hsl(var(--sushi-red)) !important;
+  box-shadow: 0 4px 12px hsla(0, 75%, 30%, 0.35);
+}
+.theme-22 div[class*="h-56"][class*="rounded-t-["] > button svg {
+  color: #fff !important;
+}
+
+.theme-22 h2.font-display.text-2xl,
+.theme-22 h2.font-display.text-xl,
+.theme-22 h2.font-display.text-3xl {
+  font-family: 'Waterfall', cursive !important;
+  font-weight: 700;
+  color: hsl(var(--sushi-red)) !important;
+  font-size: 2.75rem !important;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+/* Hide the optional category banner background image — theme-22 keeps
+ *  category headers minimal (script title between rotated ink lines). */
+.theme-22 .cat-banner .cat-banner-image {
+  display: none;
+}
+
+/* Theme-scoped fade-in */
+@keyframes theme22-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-22 .animate-fade-in { animation: theme22-fadeIn 0.3s ease-out; }

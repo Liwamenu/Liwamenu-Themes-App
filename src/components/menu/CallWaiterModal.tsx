@@ -87,6 +87,18 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   };
 
   const handleCallWaiter = async () => {
+    // Defensive guard: refuse to send a call-waiter request without a
+    // table assignment. The callers (menu floating button, cart drawer,
+    // order receipt) are supposed to gate this with ChangeTableModal
+    // first — but if any new entry-point forgets to, this catch-all
+    // surfaces the prompt instead of letting the API reject it with a
+    // confusing error.
+    if (!restaurant.tableNumber || !String(restaurant.tableNumber).trim()) {
+      toast.error(t('cart.tableRequired', 'Önce masanızın QR kodunu tarayın'));
+      setShowChangeTableModal(true);
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Distance gate — parity with in-person ordering
@@ -189,13 +201,33 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
 
               {/* Content */}
               <div className="p-5 space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-secondary rounded-2xl">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Bell className="w-6 h-6 text-primary" />
+                <div
+                  className={`flex items-center gap-4 p-4 rounded-2xl ${
+                    restaurant.tableNumber
+                      ? 'bg-secondary'
+                      : 'bg-destructive/10 border border-destructive/30'
+                  }`}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      restaurant.tableNumber ? 'bg-primary/10' : 'bg-destructive/15'
+                    }`}
+                  >
+                    <Bell
+                      className={`w-6 h-6 ${
+                        restaurant.tableNumber ? 'text-primary' : 'text-destructive'
+                      }`}
+                    />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm text-muted-foreground">{t('waiter.currentTable')}</p>
-                    <p className="text-xl font-bold">{restaurant.tableNumber}</p>
+                    {restaurant.tableNumber ? (
+                      <p className="text-xl font-bold">{restaurant.tableNumber}</p>
+                    ) : (
+                      <p className="text-sm font-semibold text-destructive">
+                        {t('cart.tableRequired', 'Önce masanızın QR kodunu tarayın')}
+                      </p>
+                    )}
                   </div>
                 </div>
 

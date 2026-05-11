@@ -52,7 +52,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       defaults[tag.id] = defaultItems.slice(0, cap);
     });
     setSelectedTags(defaults);
-    setFreeTagNotes({});
+    // NOTE: freeTagNotes is intentionally NOT reset here. If the customer
+    // typed a free-tagging note and then switched portions, we keep their
+    // text so they don't lose it. Notes that belong to free-tags not
+    // present in the new portion are still kept in state but hidden from
+    // the UI, and filtered out at add-to-cart time so they don't pollute
+    // the order note.
   }, [selectedPortion]);
 
   // Prevent body scroll when modal is open
@@ -231,13 +236,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     const allSelectedTags = Object.values(selectedTags).flat();
 
     // Merge per-tag-group free-tagging notes into the product note so the
-    // backend sees them via the existing `note` field.
+    // backend sees them via the existing `note` field. Only notes whose
+    // free-tag still exists in the currently selected portion are sent —
+    // a customer might have typed notes for a different portion and then
+    // switched, in which case those stale notes shouldn't go through.
+    const currentFreeTagIds = new Set(
+      selectedPortion.orderTags.filter((t) => t.freeTagging).map((t) => t.id),
+    );
     const freeLines = Object.entries(freeTagNotes)
-      .map(([tagId, text]) => {
-        const trimmed = text.trim();
-        if (!trimmed) return '';
-        return trimmed;
-      })
+      .filter(([tagId]) => currentFreeTagIds.has(tagId))
+      .map(([, text]) => text.trim())
       .filter(Boolean);
     const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
 
