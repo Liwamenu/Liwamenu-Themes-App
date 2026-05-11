@@ -1,0 +1,523 @@
+/* ============================================================
+ * Theme 25 — Orange Fresh (Premium "Orange White" reference)
+ *
+ * Vibrant orange wallpaper canvas with a single floating white card
+ * (rounded-[32px], heavy soft shadow) that holds the whole menu UI.
+ * Active accents in deeper orange-500, soft chips in orange-100.
+ * Poppins typeface for the modern fresh-food vibe.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+
+/* ---- Light palette — anthracite canvas, white cards float on top.
+ *  Only --background is dark; --foreground stays dark so text inside
+ *  white cards/modals/drawers remains readable. Anything that sits
+ *  directly on the canvas (page-level headings) uses explicit text-white
+ *  styling in the JSX rather than relying on --foreground. */
+.theme-25 {
+  --background: 220 8% 18%;             /* anthracite canvas */
+  --foreground: 215 35% 14%;             /* dark text (used inside white cards) */
+
+  --card: 0 0% 100%;                    /* white card */
+  --card-foreground: 0 0% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 12%;
+
+  --primary: 22 92% 52%;                /* #F97316 — orange-500 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 28 100% 96%;             /* very soft orange-50 */
+  --secondary-foreground: 24 30% 18%;
+
+  --muted: 0 0% 96%;
+  --muted-foreground: 220 10% 46%;
+
+  --accent: 22 92% 52%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 55% 45%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 350 75% 55%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 50%;
+  --special-foreground: 0 0% 14%;
+
+  --cart: 22 92% 52%;
+  --cart-foreground: 0 0% 100%;
+
+  --border: 24 35% 90%;
+  --input: 24 35% 95%;
+  --ring: 22 92% 52%;
+
+  --brand-orange: 22 92% 52%;           /* orange-500 — main accent */
+  --brand-orange-bright: 24 100% 60%;   /* orange-400 — canvas */
+  --brand-orange-soft: 30 100% 94%;     /* orange-100 — inactive chips */
+  --brand-orange-deep: 18 88% 42%;      /* orange-700 — pressed states */
+  --brand-amber: 38 92% 55%;            /* star rating fill */
+  --anthracite: 220 8% 18%;             /* anthracite (dark slate gray) */
+  --anthracite-foreground: 0 0% 96%;
+
+  --shadow-sm: 0 1px 3px hsla(20, 30%, 30%, 0.06);
+  --shadow-md: 0 4px 18px hsla(20, 30%, 30%, 0.08);
+  --shadow-lg: 0 14px 32px hsla(20, 30%, 30%, 0.14);
+  --shadow-xl: 0 24px 48px hsla(20, 35%, 30%, 0.22);
+  --shadow-card: 0 4px 18px hsla(0, 0%, 0%, 0.08);
+  --shadow-mega: 0 30px 60px hsla(20, 50%, 25%, 0.3),
+                 0 12px 24px hsla(20, 35%, 25%, 0.15);
+  --shadow-glow: 0 0 24px hsla(22, 92%, 52%, 0.4);
+}
+
+/* ---- Dark palette — anthracite-tinted neutrals (no more brown hue).
+ *  All surface tokens use hue 220 (slate/anthracite axis) instead of
+ *  the previous 22 (orange-brown) so dark mode reads as cool charcoal
+ *  rather than muddy brown. Orange accents are kept for CTAs only.
+ *
+ *  IMPORTANT: matches BOTH `.dark .theme-25` (descendant — for the
+ *  wrapper div) AND `.dark.theme-25` (compound — when both classes
+ *  sit on the same <html> element). The compound case is what allows
+ *  Radix portal content (rendered to <body>) to inherit dark mode CSS
+ *  variables. Without it, portals would resolve --card-foreground from
+ *  the light palette since their nearest .theme-25 ancestor is <html>. */
+.dark .theme-25,
+.dark.theme-25 {
+  --background: 0 0% 25%;               /* black @ 50% transparency visual */
+  --foreground: 0 0% 96%;
+
+  --card: 220 8% 16%;                   /* anthracite card surface */
+  --card-foreground: 0 0% 96%;
+
+  --popover: 220 8% 16%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 24 95% 60%;                /* orange CTA stays */
+  --primary-foreground: 220 8% 8%;
+
+  --secondary: 220 8% 22%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 220 8% 18%;
+  --muted-foreground: 220 5% 65%;
+
+  --accent: 24 95% 60%;
+  --accent-foreground: 220 8% 8%;
+
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 55% 50%;
+  --success-foreground: 0 0% 100%;
+
+  --campaign: 350 75% 60%;
+  --campaign-foreground: 0 0% 100%;
+
+  --special: 45 95% 55%;
+  --special-foreground: 220 8% 8%;
+
+  --cart: 24 95% 60%;
+  --cart-foreground: 220 8% 8%;
+
+  --border: 220 8% 26%;
+  --input: 220 8% 22%;
+  --ring: 24 95% 60%;
+
+  --brand-orange: 24 95% 60%;
+  --brand-orange-bright: 28 100% 65%;
+  --brand-orange-soft: 220 8% 24%;      /* anthracite-tinted (was orange-brown) */
+  --brand-orange-deep: 18 88% 48%;
+  --brand-amber: 38 95% 60%;
+  --anthracite: 220 8% 14%;             /* slightly deeper for dark mode */
+  --anthracite-foreground: 0 0% 96%;
+
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 4px 16px hsla(0, 0%, 0%, 0.55);
+  --shadow-lg: 0 14px 32px hsla(0, 0%, 0%, 0.65);
+  --shadow-xl: 0 24px 48px hsla(0, 0%, 0%, 0.75);
+  --shadow-card: 0 4px 18px hsla(0, 0%, 0%, 0.5);
+  --shadow-mega: 0 30px 60px hsla(0, 0%, 0%, 0.55),
+                 0 12px 24px hsla(0, 0%, 0%, 0.35);
+  --shadow-glow: 0 0 24px hsla(24, 95%, 60%, 0.4);
+}
+
+/* ---- Fonts: Poppins everywhere ---- */
+.theme-25,
+.theme-25 * {
+  font-family: 'Play', system-ui, -apple-system, sans-serif;
+}
+
+/* ---- Brand text gradient ---- */
+.theme-25 .text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(var(--brand-orange)) 0%, hsl(var(--brand-orange-bright)) 100%);
+}
+
+/* ---- Shadow utilities ---- */
+.theme-25 .shadow-card        { box-shadow: var(--shadow-card); }
+.theme-25 .shadow-card-hover  { box-shadow: var(--shadow-lg); }
+.theme-25 .shadow-glow        { box-shadow: var(--shadow-glow); }
+.theme-25 .shadow-elegant     { box-shadow: var(--shadow-mega); }
+.theme-25 .shadow-mega        { box-shadow: var(--shadow-mega); }
+
+/* ---- Glass surface ---- */
+.theme-25 .glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(0, 0%, 100%, 0.92);
+}
+.dark .theme-25 .glass {
+  background: hsla(220, 8%, 16%, 0.92);
+}
+
+/* ---- Mega card (floating white container around sections of the menu).
+ *  No overflow:hidden — long product grids need to flow with the page
+ *  scroll. The rounded outer mask was visually appealing in the
+ *  reference but here we prefer a usable scroll. */
+.theme-25 .mega-card {
+  background: hsl(var(--card));
+  border-radius: 32px;
+  box-shadow: var(--shadow-mega);
+}
+
+/* ---- Filter pill — rounded-full, active orange / inactive light-orange ---- */
+.theme-25 .filter-pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease;
+  background: hsl(var(--brand-orange-soft));
+  color: hsl(var(--brand-orange));
+}
+.theme-25 .filter-pill.is-active {
+  background: hsl(var(--brand-orange));
+  color: #fff;
+}
+
+/* ---- Section title ---- */
+.theme-25 .menu-section-title {
+  display: flex;
+  align-items: center;
+  margin: 0.75rem 0 0.75rem;
+}
+.theme-25 .menu-section-title h2 {
+  font-family: 'Play', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* ---- Cat banner (kept compact like a section heading row) ---- */
+.theme-25 .cat-banner {
+  position: relative;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+.theme-25 .cat-banner .cat-banner-image { display: none; }
+.theme-25 .cat-banner .cat-banner-inner { padding: 0; }
+
+/* ---- Product card — white tile, square photo, center text + stars ---- */
+.theme-25 .menu-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: hsl(var(--card));
+  border-radius: 16px;
+  padding: 0.625rem;
+  cursor: pointer;
+  box-shadow: 0 4px 18px hsla(0, 0%, 0%, 0.08);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  /* Container query — price font-size scales with card width */
+  container-type: inline-size;
+}
+.theme-25 .menu-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.12);
+}
+.theme-25 .menu-row:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 18px hsla(0, 0%, 0%, 0.08);
+}
+.dark .theme-25 .menu-row {
+  box-shadow: 0 4px 18px hsla(0, 0%, 0%, 0.45);
+}
+
+/* Image — square, contained (reference uses object-contain) */
+.theme-25 .menu-row .product-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: transparent;
+}
+.theme-25 .menu-row .product-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Heart icon top-left */
+.theme-25 .menu-row .heart-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Star rating row */
+.theme-25 .menu-row .star-row {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.theme-25 .menu-row .product-name {
+  font-family: 'Play', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theme-25 .menu-row .product-price {
+  font-family: 'Play', sans-serif;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  font-size: clamp(0.75rem, 8cqi, 1rem);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+/* Subcategory rows render in a 4-column grid by default. Theme-25
+ *  wants them in 2 columns — force the inline gridTemplateColumns.
+ *  Without further height capping the buttons would grow because their
+ *  inner image keeps a 4:3 aspect ratio and 2-col width is ~2× wider.
+ *  Pin the image (or its placeholder div) to a fixed compact height so
+ *  the overall tile stays roughly the same height as the original
+ *  4-column layout. */
+.theme-25 div[style*="repeat(4"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+.theme-25 div[style*="repeat(4"] > button > img,
+.theme-25 div[style*="repeat(4"] > button > div[class*="aspect-"] {
+  aspect-ratio: unset !important;
+  /* Image height = button min-height (52) minus the name strip (~14):
+     image stretches to fill exactly the space above the label so no
+     black gap remains and total tile stays at 52px. */
+  height: 38px !important;
+  width: 100% !important;
+  object-fit: cover !important;
+}
+.theme-25 div[style*="repeat(4"] > button > span {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  font-size: 10px !important;
+  /* Stick to the bottom edge of the tile so the leftover space sits
+     between the image and the name strip (not under the name). */
+  margin-top: auto !important;
+}
+/* Pin the tile to ~52px (15% taller than the previous ~45px target) and
+   give the outer button a 4px corner radius for a sharper, modern feel. */
+.theme-25 div[style*="repeat(4"] > button {
+  min-height: 52px !important;
+  border-radius: 4px !important;
+}
+
+/* Subcategory pill row — override shared component classes to match
+   the orange filter aesthetic. */
+.theme-25 .grid > button.rounded-full {
+  background: hsl(var(--brand-orange-soft)) !important;
+  color: hsl(var(--brand-orange)) !important;
+  font-size: 0.75rem !important;
+  padding: 6px 14px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.theme-25 .grid > button.rounded-full.bg-primary {
+  background: hsl(var(--brand-orange)) !important;
+  color: #fff !important;
+}
+
+/* Hamburger drawer panel */
+.theme-25 .menu-drawer {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-left: 4px solid hsl(var(--brand-orange));
+}
+
+/* Theme-scoped fade-in */
+@keyframes theme25-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-25 .animate-fade-in { animation: theme25-fadeIn 0.3s ease-out; }
+
+/* Book-page reveal for product tiles — drops each row down from above
+ *  with a fade. Pure CSS keyframe, no JS, so it never blocks rendering
+ *  even on slower devices. Stagger is set per-card via inline
+ *  animationDelay style. */
+@keyframes theme25-pageFlip {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.theme-25 .animate-page-flip {
+  animation: theme25-pageFlip 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---- Form fields that use bg-background sit on the anthracite canvas
+ *  in light mode, so the default foreground (dark) becomes unreadable.
+ *  Scope tightly to FORM fields (input/textarea/combobox-trigger) so
+ *  the rule doesn't cascade onto the page wrapper which also has the
+ *  `bg-background` class and would inherit white text everywhere. */
+.theme-25 input.bg-background,
+.theme-25 textarea.bg-background,
+.theme-25 button[role="combobox"],
+.theme-25 button[role="combobox"] > span,
+/* Phone10Field nests a bg-transparent <input> inside a div with
+   bg-background — make sure that nested input's text is also light. */
+.theme-25 div.bg-background > input,
+.theme-25 div.bg-background > textarea {
+  color: hsl(0 0% 96%);
+}
+.theme-25 input.bg-background::placeholder,
+.theme-25 textarea.bg-background::placeholder,
+.theme-25 div.bg-background > input::placeholder,
+.theme-25 div.bg-background > textarea::placeholder {
+  color: hsl(0 0% 70%);
+}
+
+/* ---- Modal text colors — labels and copy inside the modal card
+ *  inherit browser-default black, which becomes unreadable on the
+ *  anthracite modal surface in dark mode. Bind them to card-foreground
+ *  so they flip with the palette (dark text on white card in light,
+ *  white text on anthracite in dark).
+ *
+ *  Specificity trick: wrap the parent selector with `:where(...)` so
+ *  the rule has zero specificity contribution from the parent. Any
+ *  Tailwind utility class like `text-red-400`, `text-amber-500`,
+ *  `text-muted-foreground` etc. (specificity 0,1,0) cleanly wins over
+ *  this rule (specificity 0,0,1 from the element selector). Result:
+ *  unstyled labels/headers/paragraphs/spans get card-foreground, while
+ *  explicitly-colored elements (icon labels, gradient titles, muted
+ *  subtitles) keep their author colors. */
+/* `.bg-card` modals (Reservation, custom modals) follow card-foreground
+ *  which flips correctly per mode (dark text on white card in light;
+ *  white text on anthracite in dark). */
+:where(.theme-25 .bg-card) label,
+:where(.theme-25 .bg-card) h2,
+:where(.theme-25 .bg-card) h3,
+:where(.theme-25 .bg-card) h4,
+:where(.theme-25 .bg-card) p,
+:where(.theme-25 .bg-card) span {
+  color: hsl(var(--card-foreground));
+}
+
+/* Radix Dialog (Survey, etc.) is forced to anthracite bg in BOTH modes
+ *  (see the [role="dialog"] override below) — so its text needs to be
+ *  light regardless of the active mode, otherwise light-mode default
+ *  dark text becomes invisible on the anthracite surface.
+ *  AlertDialog uses role="alertdialog" (separate ARIA role) — without
+ *  this, "Sepeti Temizle?" / "Ürünü Sil?" confirm popups would render
+ *  their title (h2) and description (p.text-muted-foreground) in dark
+ *  colors and be unreadable on the anthracite surface. */
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) label,
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h2,
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h3,
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h4,
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) p,
+:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) span {
+  color: hsl(var(--anthracite-foreground));
+}
+
+/* AlertDialog description uses Tailwind's `text-muted-foreground`
+ *  utility which beats :where() (zero specificity). Force it to a
+ *  readable, slightly-dimmed light tone so the description is legible
+ *  but visually subordinate to the title. */
+.theme-25 [role="alertdialog"] .text-muted-foreground,
+.theme-25 [role="alertdialog"] [class*="text-muted-foreground"] {
+  color: hsl(0 0% 88%) !important;
+}
+
+/* ---- Radix Dialog body — force anthracite so the modal blends with
+ *  the rest of the anthracite-canvas theme. NOTE: we deliberately do
+ *  NOT set `color` here; the dialog's children include icons with
+ *  Tailwind text-red / text-amber classes whose specificity would lose
+ *  to `.theme-25 [role="dialog"]`, making them invisible. Color is
+ *  inherited per-element from the modal's own markup. */
+.theme-25 [role="dialog"] {
+  background-color: hsl(var(--anthracite)) !important;
+}
+.theme-25 [role="dialog"] .bg-secondary\/50 {
+  background-color: hsla(220, 8%, 28%, 0.5);
+}
+/* SurveyModal's close button — make it a clear, instantly recognizable
+ *  solid red circle with a bold white X. Universal close-button vocab,
+ *  high contrast on any header background. */
+.theme-25 [role="dialog"] button[class*="bg-red-100"] {
+  background-color: hsl(0, 75%, 55%) !important;
+  width: 36px !important;
+  height: 36px !important;
+  box-shadow: 0 2px 8px hsla(0, 75%, 30%, 0.35);
+}
+.theme-25 [role="dialog"] button[class*="bg-red-100"]:hover {
+  background-color: hsl(0, 75%, 45%) !important;
+}
+.theme-25 [role="dialog"] button[class*="bg-red-100"] svg {
+  color: #fff !important;
+  stroke: #fff !important;
+  stroke-width: 2.75 !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* ---- ProductDetailModal restyle: white card, centered content,
+ *  circular qty badge, dots, ADD TO CART full-width button.
+ *  Targets the shared modal's structure via attribute selectors. */
+.theme-25 div[class*="h-56"][class*="rounded-t-["] {
+  height: auto !important;
+  background: transparent;
+}
+.theme-25 div[class*="h-56"][class*="rounded-t-["] img {
+  /* Reference shows large centered product photo — keep but contain */
+  object-fit: cover;
+}
+.theme-25 div[class*="h-56"][class*="rounded-t-["] > button {
+  background: hsl(var(--brand-orange)) !important;
+}
+.theme-25 div[class*="h-56"][class*="rounded-t-["] > button svg {
+  color: #fff !important;
+}
+
+/* Product name in detail modal — Poppins bold center */
+.theme-25 h2.font-display.text-2xl {
+  font-family: 'Play', sans-serif !important;
+  font-weight: 700;
+  color: hsl(var(--foreground)) !important;
+  font-size: 1.5rem !important;
+  text-align: center;
+}

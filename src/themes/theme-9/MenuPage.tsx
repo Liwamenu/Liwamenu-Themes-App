@@ -25,7 +25,7 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant, useInitializeRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
-import { Product, Order } from "@/types/restaurant";
+import { Product, Order, ExternalPage } from "@/types/restaurant";
 import { Input } from "@/components/ui/input";
 import { groupBySubcategory } from "@/lib/groupBySubcategory";
 import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/SubcategoryButtons";
@@ -74,7 +74,11 @@ export function MenuPage() {
   const [showReservation, setShowReservation] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
-  const [showExternalPage, setShowExternalPage] = useState(false);
+  // Holds the currently-open external page (or null). Replaces the
+  // old boolean — the API now returns an array of pages, so we need
+  // to remember which one the user tapped.
+  const [selectedExternalPage, setSelectedExternalPage] = useState<ExternalPage | null>(null);
+  const showExternalPage = selectedExternalPage !== null;
   const [waiterCooldown, setWaiterCooldown] = useState(() => {
     const savedEndTime = localStorage.getItem("waiterCooldownEnd");
     if (savedEndTime) {
@@ -156,7 +160,10 @@ export function MenuPage() {
   const scrollToCategory = useCallback(
     (categoryId: string) => {
       if (categoryId === EXTERNAL_PAGE_ID) {
-        setShowExternalPage(true);
+        // Old single-page trigger — fall back to the first published
+        // external page so legacy callers (if any) still work.
+        const first = restaurant.externalPages?.[0];
+        if (first) setSelectedExternalPage(first);
         return;
       }
       // Handle campaign category scrolling
@@ -505,19 +512,25 @@ export function MenuPage() {
           </div>
         )}
 
-        {/* External Page Button - at the very bottom */}
-        {!searchQuery &&
-          restaurant.externalPageButtonName &&
-          (restaurant.externalPageHTML || restaurant.externalPageImage) && (
-            <button
-              onClick={() => setShowExternalPage(true)}
-              className="w-full mb-8 py-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-            >
-              <h2 className="font-display text-xl font-bold text-primary flex items-center justify-center gap-2">
-                {restaurant.externalPageButtonName}
-              </h2>
-            </button>
-          )}
+        {/* External Page Buttons - at the very bottom. One button per
+            admin-published page, rendered in sortOrder ascending. */}
+        {!searchQuery && restaurant.externalPages && restaurant.externalPages.length > 0 && (
+          <div className="space-y-2 mb-8">
+            {[...restaurant.externalPages]
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => setSelectedExternalPage(page)}
+                  className="w-full py-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+                >
+                  <h2 className="font-display text-xl font-bold text-primary flex items-center justify-center gap-2">
+                    {page.buttonName}
+                  </h2>
+                </button>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
@@ -581,11 +594,11 @@ export function MenuPage() {
       )}
 
       {/* External Page View */}
-      {showExternalPage && (
+      {selectedExternalPage && (
         <ExternalPageView
-          html={restaurant.externalPageHTML}
-          image={restaurant.externalPageImage}
-          onClose={() => setShowExternalPage(false)}
+          html={selectedExternalPage.htmlBody}
+          image={selectedExternalPage.imageURL}
+          onClose={() => setSelectedExternalPage(null)}
         />
       )}
 

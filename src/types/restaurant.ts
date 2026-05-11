@@ -135,6 +135,22 @@ export interface AnnouncementSettings {
   htmlContent: string;
 }
 
+/**
+ * One admin-authored external microsite (e.g. campaign landing,
+ * weekly menu PDF screenshot, custom HTML page). The restaurant
+ * may publish multiple in any order — `sortOrder` controls how
+ * they're listed on the menu page. `type` selects which payload
+ * field is rendered (Image → imageURL, Html → htmlBody).
+ */
+export interface ExternalPage {
+  id: string;
+  type: "Image" | "Html" | string;
+  imageURL: string | null;
+  htmlBody: string | null;
+  buttonName: string;
+  sortOrder: number;
+}
+
 export interface ReservationSettings {
   restaurantId?: string;
   isActive: boolean;
@@ -201,9 +217,13 @@ export interface RestaurantData {
   decimalPlaces?: number | null;
   heroImageUrl: string;
   logoImageUrl: string;
-  externalPageHTML?: string | null;
-  externalPageImage?: string | null;
-  externalPageButtonName?: string | null;
+  /**
+   * External (admin-authored) microsites that appear as standalone
+   * buttons in the menu. Backend returns a sorted array — replaces
+   * the old flat `externalPage{HTML,Image,ButtonName}` trio so
+   * restaurants can publish multiple landing pages now.
+   */
+  externalPages?: ExternalPage[] | null;
   announcementSettings?: AnnouncementSettings;
   reservationSettings?: ReservationSettings;
   surveySettings?: SurveySettings;
