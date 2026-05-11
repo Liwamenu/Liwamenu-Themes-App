@@ -1,7 +1,6 @@
-import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AnnouncementModalProps {
@@ -14,12 +13,6 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
   ({ isOpen, onClose, htmlContent }, ref) => {
     const { t } = useTranslation();
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
-    const timeoutsRef = useRef<number[]>([]);
-
-    const clearPendingTimeouts = useCallback(() => {
-      timeoutsRef.current.forEach((id) => clearTimeout(id));
-      timeoutsRef.current = [];
-    }, []);
 
     const srcDoc = useMemo(() => {
       if (!isOpen) return "";
@@ -71,73 +64,10 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
       return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>${heightOverride}</head><body>${htmlContent}</body></html>`;
     }, [htmlContent, isOpen]);
 
-    const resizeIframe = useCallback(() => {
-      const iframe = iframeRef.current;
-      if (!iframe) return;
-      try {
-        const doc = iframe.contentDocument;
-        if (!doc) return;
-        const body = doc.body;
-        const html = doc.documentElement;
-        const height = Math.max(
-          body?.scrollHeight ?? 0,
-          body?.offsetHeight ?? 0,
-          html?.scrollHeight ?? 0,
-          html?.offsetHeight ?? 0
-        );
-        const footerPx = 64;
-        const maxPx = Math.floor(window.innerHeight * 0.9) - footerPx;
-        const clamped = Math.min(Math.max(height, 400), maxPx);
-        iframe.style.height = `${clamped}px`;
-      } catch {
-        // cross-origin or sandbox restriction — keep default
-      }
-    }, []);
-
-    const handleIframeLoad = useCallback(() => {
-      clearPendingTimeouts();
-      resizeIframe();
-      const iframe = iframeRef.current;
-      const doc = iframe?.contentDocument;
-      if (!doc) return;
-
-      // Re-measure after late images load
-      const imgs = Array.from(doc.images || []);
-      imgs.forEach((img) => {
-        if (!img.complete) {
-          img.addEventListener("load", resizeIframe, { once: true });
-          img.addEventListener("error", resizeIframe, { once: true });
-        }
-      });
-
-      // Tailwind CDN / async stylesheets inject styles after load — re-measure a few times
-      [100, 400, 1000, 2000].forEach((delay) => {
-        const id = window.setTimeout(resizeIframe, delay);
-        timeoutsRef.current.push(id);
-      });
-
-      try {
-        let raf = 0;
-        const ro = new ResizeObserver(() => {
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => resizeIframe());
-        });
-        if (doc.body) ro.observe(doc.body);
-        (iframe as any)._ro?.disconnect?.();
-        (iframe as any)._ro = ro;
-      } catch {
-        /* noop */
-      }
-    }, [resizeIframe, clearPendingTimeouts]);
-
-    useEffect(() => {
-      return () => {
-        clearPendingTimeouts();
-        const iframe = iframeRef.current as any;
-        iframe?._ro?.disconnect?.();
-        if (iframe) iframe._ro = null;
-      };
-    }, [clearPendingTimeouts]);
+    // The modal is now a fixed 9:16 frame, so the iframe always fills the
+    // remaining height after the OK button via flex-1. No JS-driven height
+    // calculation is needed — content that exceeds the frame scrolls inside
+    // the iframe natively.
 
     useEffect(() => {
       if (isOpen) {
@@ -209,18 +139,14 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl overflow-hidden bg-transparent shadow-2xl"
+              // 9:16 portrait frame. Width is the smaller of (95% viewport
+              // width) and (95vh × 9/16), so the modal fits inside the screen
+              // in both narrow and tall viewports. aspect-[9/16] then derives
+              // the height from the chosen width.
+              style={{ width: "min(95vw, calc(95vh * 9 / 16))" }}
+              className="relative aspect-[9/16] max-h-[95vh] flex flex-col rounded-[10px] overflow-hidden bg-transparent shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
               {/* Sandbox + Permissions Policy mirror the admin panel's
                   preview iframe (see Liwa Menu - Frontend admin
                   announcementSettings.jsx). Tokens chosen so embedded
@@ -244,9 +170,7 @@ export const AnnouncementModal = forwardRef<HTMLDivElement, AnnouncementModalPro
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="no-referrer"
                 loading="lazy"
-                onLoad={handleIframeLoad}
-                style={{ height: 400 }}
-                className="w-full border-0 bg-transparent block"
+                className="flex-1 min-h-0 w-full border-0 bg-transparent block"
               />
 
               <div className="shrink-0 p-3 bg-background/95 backdrop-blur border-t border-border">

@@ -73,7 +73,9 @@
     "checkout": "Commander",
     "tableChanged": "Changé pour la table {{table}} !",
     "tableChanged?": "Votre table a-t-elle changé ?",
-    "scanNewQr": "Scannez le code QR de votre nouvelle table"
+    "scanNewQr": "Scannez le code QR de votre nouvelle table",
+    "tableRequired": "Veuillez d'abord scanner le code QR de votre table",
+    "tableInvalid": "Information de table invalide"
   },
   "productCard": {
     "recommended": "Recommandé",

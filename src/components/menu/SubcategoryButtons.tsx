@@ -31,24 +31,33 @@ interface SubcategoryButtonsProps {
   products: Product[];
   activeSub: string | null;
   onToggle: (subId: string) => void;
+  /**
+   * When true, force the compact pill-row layout regardless of whether
+   * any subcategory has an image. Themes that intentionally drop product
+   * photography (e.g. theme-22 / Sakura Sushi) opt in to this so the
+   * subcategory filters stay text-only and consistent with the rest of
+   * the UI.
+   */
+  hideImages?: boolean;
 }
 
 /**
  * Renders subcategory filters.
  *
- * - When ANY subcategory in the group has a `subImage`, all are rendered as
- *   small image-tile cards (image on top, name below). Subcategories that
- *   lack their own image still get a tile but show a name-only fallback,
- *   so the layout stays uniform.
- * - When NONE have an image, falls back to the original compact pill row.
+ * - When ANY subcategory in the group has a `subImage` (and `hideImages`
+ *   is not set), all are rendered as small image-tile cards (image on
+ *   top, name below). Subcategories that lack their own image still get
+ *   a tile but show a name-only fallback, so the layout stays uniform.
+ * - When NONE have an image (or `hideImages` is true), falls back to the
+ *   original compact pill row.
  *
  * Renders nothing if the category has no subcategories at all.
  */
-export function SubcategoryButtons({ categoryId, products, activeSub, onToggle }: SubcategoryButtonsProps) {
+export function SubcategoryButtons({ categoryId, products, activeSub, onToggle, hideImages }: SubcategoryButtonsProps) {
   const subGroups = groupBySubcategory(products).filter((g) => g.subId !== null);
   if (subGroups.length === 0) return null;
 
-  const hasAnyImage = subGroups.some((g) => !!g.subImage);
+  const hasAnyImage = !hideImages && subGroups.some((g) => !!g.subImage);
 
   if (hasAnyImage) {
     return (

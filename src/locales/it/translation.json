@@ -73,7 +73,9 @@
     "checkout": "Ordina",
     "tableChanged": "Cambiato al tavolo {{table}}!",
     "tableChanged?": "Il tuo tavolo è cambiato?",
-    "scanNewQr": "Scansiona il codice QR del tuo nuovo tavolo"
+    "scanNewQr": "Scansiona il codice QR del tuo nuovo tavolo",
+    "tableRequired": "Per favore scansiona prima il codice QR del tuo tavolo",
+    "tableInvalid": "Informazioni del tavolo non valide"
   },
   "productCard": {
     "recommended": "Consigliato",

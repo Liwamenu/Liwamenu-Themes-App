@@ -56,7 +56,8 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       defaults[tag.id] = defaultItems.slice(0, cap);
     });
     setSelectedTags(defaults);
-    setFreeTagNotes({});
+    // Preserve freeTagNotes across portion switches — see shared
+    // ProductDetailModal for rationale (filter happens at add-to-cart).
   }, [selectedPortion]);
 
   const canAddToCart = isRestaurantActive && isCurrentlyOpen;
@@ -155,12 +156,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       triggerFlyingEmoji(rect.left + rect.width / 2, rect.top);
     }
     const allSelectedTags = Object.values(selectedTags).flat();
+    // Only include free-tag notes whose tag still exists in the current
+    // portion; stale notes from a previously selected portion are dropped.
+    const currentFreeTagIds = new Set(
+      selectedPortion.orderTags.filter((t) => t.freeTagging).map((t) => t.id),
+    );
     const freeLines = Object.entries(freeTagNotes)
-      .map(([tagId, text]) => {
-        const trimmed = text.trim();
-        if (!trimmed) return '';
-        return trimmed;
-      })
+      .filter(([tagId]) => currentFreeTagIds.has(tagId))
+      .map(([, text]) => text.trim())
       .filter(Boolean);
     const finalNote = [...freeLines, productNote.trim()].filter(Boolean).join(' | ');
     addItem(product, selectedPortion, allSelectedTags, quantity, finalNote || undefined);

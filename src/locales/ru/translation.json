@@ -73,7 +73,9 @@
     "checkout": "Оформить заказ",
     "tableChanged": "Переключено на стол {{table}}!",
     "tableChanged?": "Ваш стол изменился?",
-    "scanNewQr": "Отсканируйте QR-код нового стола"
+    "scanNewQr": "Отсканируйте QR-код нового стола",
+    "tableRequired": "Сначала отсканируйте QR-код вашего стола",
+    "tableInvalid": "Неверная информация о столе"
   },
   "productCard": {
     "recommended": "Рекомендуем",

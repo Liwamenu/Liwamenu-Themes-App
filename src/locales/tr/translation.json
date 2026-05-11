@@ -74,7 +74,9 @@
     "checkout": "Siparişi Tamamla",
     "tableChanged": "Masa {{table}} olarak değiştirildi!",
     "tableChanged?": "Masanız Değişti mi?",
-    "scanNewQr": "Yeni masanızın QR kodunu tarayın"
+    "scanNewQr": "Yeni masanızın QR kodunu tarayın",
+    "tableRequired": "Önce masanızın QR kodunu tarayın",
+    "tableInvalid": "Geçersiz masa bilgisi"
   },
   "productCard": {
     "recommended": "Önerilen",

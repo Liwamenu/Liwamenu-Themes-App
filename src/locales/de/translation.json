@@ -73,7 +73,9 @@
     "checkout": "Zur Kasse",
     "tableChanged": "Zu Tisch {{table}} gewechselt!",
     "tableChanged?": "Hat sich Ihr Tisch geändert?",
-    "scanNewQr": "Scannen Sie den QR-Code Ihres neuen Tisches"
+    "scanNewQr": "Scannen Sie den QR-Code Ihres neuen Tisches",
+    "tableRequired": "Bitte scannen Sie zuerst den QR-Code Ihres Tisches",
+    "tableInvalid": "Ungültige Tischinformation"
   },
   "productCard": {
     "recommended": "Empfohlen",
