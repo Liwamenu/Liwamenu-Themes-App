@@ -303,13 +303,21 @@
 .theme-25 .menu-row .product-price {
   font-family: 'Play', sans-serif;
   font-weight: 700;
-  color: hsl(var(--foreground));
+  /* Light mode: bright crimson — high contrast against the
+   *  parchment/cream card surface. */
+  color: hsl(0 80% 58%);
   font-size: clamp(0.75rem, 8cqi, 1rem);
   text-align: center;
   width: 100%;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
   margin-top: 2px;
+}
+/* Dark mode: warm sun yellow — readable on the slate/anthracite
+ *  card surface, complementary to the orange brand accents. */
+.dark .theme-25 .menu-row .product-price,
+.dark.theme-25 .menu-row .product-price {
+  color: hsl(48 95% 58%);
 }
 
 /* Subcategory rows render in a 4-column grid by default. Theme-25
@@ -427,13 +435,18 @@
  *  subtitles) keep their author colors. */
 /* `.bg-card` modals (Reservation, custom modals) follow card-foreground
  *  which flips correctly per mode (dark text on white card in light;
- *  white text on anthracite in dark). */
-:where(.theme-25 .bg-card) label,
-:where(.theme-25 .bg-card) h2,
-:where(.theme-25 .bg-card) h3,
-:where(.theme-25 .bg-card) h4,
-:where(.theme-25 .bg-card) p,
-:where(.theme-25 .bg-card) span {
+ *  white text on anthracite in dark). The `:not(button *)` exclusion
+ *  keeps the rule from also recoloring button labels — buttons set
+ *  their own foreground via variants (e.g. text-white, bg-primary
+ *  text-primary-foreground) and shouldn't be overridden by the
+ *  generic card text rule. Same goes for anchors that style their
+ *  own text (footer's address link). */
+:where(.theme-25 .bg-card) label:not(button *),
+:where(.theme-25 .bg-card) h2:not(button *),
+:where(.theme-25 .bg-card) h3:not(button *),
+:where(.theme-25 .bg-card) h4:not(button *),
+:where(.theme-25 .bg-card) p:not(button *),
+:where(.theme-25 .bg-card) span:not(button *):not(a *) {
   color: hsl(var(--card-foreground));
 }
 

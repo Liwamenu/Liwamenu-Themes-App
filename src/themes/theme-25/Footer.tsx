@@ -59,12 +59,12 @@ export function Footer() {
 
           <div className="flex justify-center gap-3 mt-6 flex-wrap">
             {restaurant.reservationSettings?.isActive && (
-              <Button onClick={() => setIsReservationOpen(true)} variant="outline" className="flex items-center gap-2 rounded-full border-primary/30 text-white hover:bg-primary hover:text-primary-foreground transition-all">
+              <Button onClick={() => setIsReservationOpen(true)} variant="outline" className="flex items-center gap-2 rounded-full border-primary/30 !text-white hover:!bg-primary hover:!text-primary-foreground transition-all">
                 <CalendarDays className="w-4 h-4" />
                 <span>{t("reservation.button")}</span>
               </Button>
             )}
-            <Button onClick={() => setIsSurveyOpen(true)} variant="outline" className="flex items-center gap-2 rounded-full border-special/30 text-white hover:bg-special hover:text-special-foreground transition-all">
+            <Button onClick={() => setIsSurveyOpen(true)} variant="outline" className="flex items-center gap-2 rounded-full border-special/30 !text-white hover:!bg-special hover:!text-special-foreground transition-all">
               <Star className="w-4 h-4" />
               <span>{t("survey.button")}</span>
             </Button>
