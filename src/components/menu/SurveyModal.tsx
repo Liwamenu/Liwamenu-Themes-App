@@ -176,9 +176,13 @@ export function SurveyModal({
     if (!isPhoneValid) return;
     setIsSubmitting(true);
     try {
+      const ratingEntries = categoriesFromSettings
+        .filter((cat) => cat.id && ratings[cat.key] > 0)
+        .map((cat) => ({ categoryId: cat.id as string, rating: ratings[cat.key] }));
+
       const surveyData = {
         restaurantId: restaurant.restaurantId,
-        ratings,
+        ratings: ratingEntries,
         feedback: formData.feedback.trim(),
         customerName: formData.name.trim() || undefined,
         customerPhone: formData.phone || undefined,

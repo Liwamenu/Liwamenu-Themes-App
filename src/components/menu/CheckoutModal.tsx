@@ -74,6 +74,7 @@ export function CheckoutModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWithinRange, setIsWithinRange] = useState(false);
   const [isChangeTableOpen, setIsChangeTableOpen] = useState(false);
+  const [customerLocation, setCustomerLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationErrorModal, setLocationErrorModal] = useState<{
     isOpen: boolean;
     message: string;
@@ -118,6 +119,7 @@ export function CheckoutModal({
       }
       try {
         const coords = await getLocation();
+        setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
         const withinRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, restaurant.maxDistance);
         setIsWithinRange(withinRange);
         if (!withinRange) {
@@ -148,6 +150,7 @@ export function CheckoutModal({
       if (restaurant.checkTableOrderDistance) {
         try {
           const coords = await getLocation();
+          setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
           // Convert maxTableOrderDistanceMeter from meters to kilometers
           const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
           const withinTableRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, maxDistanceKm);
@@ -248,6 +251,7 @@ export function CheckoutModal({
       totalAmount: total,
       orderNote: orderNote || undefined,
       createdAt: new Date().toISOString(),
+      ...(customerLocation ? { customerLocation } : {}),
       ...(orderType === "inPerson" ? {
         tableNumber
       } : {

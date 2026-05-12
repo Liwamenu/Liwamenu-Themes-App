@@ -29,11 +29,11 @@ Backend API base: `https://liwamenu.pentegrasyon.net`. A `USE_DUMMY_DATA` flag i
 
 ### Theme System
 
-Six themes (`src/themes/theme-1` through `theme-6`), each a complete set of UI components (MenuPage, ProductCard, CartDrawer, modals, etc.). The `ThemeRouter` (`src/themes/ThemeRouter.tsx`) lazy-loads the active theme based on `restaurantData.themeId` (0–5). Theme 1 is the default fallback.
+23 themes (`src/themes/theme-1` through `theme-23`), each a complete set of UI components (MenuPage, ProductCard, CartDrawer, modals, etc.). The `ThemeRouter` (`src/themes/ThemeRouter.tsx`) lazy-loads the active theme based on `restaurantData.themeId` (0-indexed: `themeId` 0 → `theme-1`, `themeId` 22 → `theme-23`). Theme 1 is the default fallback when `themeId` is missing or unmapped.
 
-To add a new theme: create `src/themes/theme-N/index.tsx` exporting a default component, then register it in the `themeComponents` map in `ThemeRouter.tsx`.
+To add a new theme: copy `src/themes/_template/` to `src/themes/theme-N/`, customize, then register it in the `themeComponents` map in `ThemeRouter.tsx` (keying by `themeId`, i.e. `N - 1`).
 
-Theme 1 reuses shared components from `src/components/menu/`. Themes 2–6 each have their own full component set plus a `theme.css`.
+Theme 1 reuses shared components from `src/components/menu/`. Themes 2+ each have their own full component set plus a `theme.css`.
 
 ### State Management (Zustand)
 

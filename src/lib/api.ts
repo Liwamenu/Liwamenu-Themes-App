@@ -21,7 +21,7 @@ export const API_URLS = {
   resendReservationVerification: `${API_BASE_URL}/api/SMS/ResendReservationVerification`,
 
   // Survey
-  sendSurvey: `${API_BASE_URL}/api/Surveys/SendSurvey`,
+  sendSurvey: `${API_BASE_URL}/api/Restaurants/SubmitSurveyRating`,
 
   // Legacy aliases (kept for backwards compat)
   reservations: `${API_BASE_URL}/api/Reservations/Create`,
