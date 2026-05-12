@@ -279,6 +279,10 @@ export interface OrderPayload {
   paymentMethodId?: string;
   paymentMethodName?: string;
   tableNumber?: string;
+  customerLocation?: {
+    latitude: number;
+    longitude: number;
+  };
   totalAmount: number;
   orderNote?: string;
   createdAt: string;
