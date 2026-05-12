@@ -29,7 +29,7 @@ Backend API base: `https://liwamenu.pentegrasyon.net`. A `USE_DUMMY_DATA` flag i
 
 ### Theme System
 
-23 themes (`src/themes/theme-1` through `theme-23`), each a complete set of UI components (MenuPage, ProductCard, CartDrawer, modals, etc.). The `ThemeRouter` (`src/themes/ThemeRouter.tsx`) lazy-loads the active theme based on `restaurantData.themeId` (0-indexed: `themeId` 0 → `theme-1`, `themeId` 22 → `theme-23`). Theme 1 is the default fallback when `themeId` is missing or unmapped.
+26 themes (`src/themes/theme-1` through `theme-26`), each a complete set of UI components (MenuPage, ProductCard, CartDrawer, modals, etc.). The `ThemeRouter` (`src/themes/ThemeRouter.tsx`) lazy-loads the active theme based on `restaurantData.themeId` (0-indexed: `themeId` 0 → `theme-1`, `themeId` 25 → `theme-26`). Theme 1 is the default fallback when `themeId` is missing or unmapped.
 
 To add a new theme: copy `src/themes/_template/` to `src/themes/theme-N/`, customize, then register it in the `themeComponents` map in `ThemeRouter.tsx` (keying by `themeId`, i.e. `N - 1`).
 
