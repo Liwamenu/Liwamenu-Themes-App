@@ -344,8 +344,12 @@ export function MenuPage() {
                       </div>
                     )}
                   </div>
-                  <div className="p-3 text-center bg-[hsl(var(--anthracite))]">
-                    <h3 className="font-bold text-sm text-[hsl(var(--anthracite-foreground))] line-clamp-1">
+                  {/* Category name strip — white in light mode, anthracite
+                   *  in dark mode (handled via the bg-white/dark:bg-anthracite
+                   *  pair). Text flips the other way: black on white,
+                   *  parchment on anthracite. */}
+                  <div className="p-3 text-center bg-white dark:bg-[hsl(var(--anthracite))]">
+                    <h3 className="font-bold text-sm text-black dark:text-[hsl(var(--anthracite-foreground))] line-clamp-1">
                       {cat.name}
                     </h3>
                   </div>
