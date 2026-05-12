@@ -15,8 +15,8 @@
  *  directly on the canvas (page-level headings) uses explicit text-white
  *  styling in the JSX rather than relying on --foreground. */
 .theme-25 {
-  --background: 220 8% 18%;             /* anthracite canvas */
-  --foreground: 215 35% 14%;             /* dark text (used inside white cards) */
+  --background: 0 0% 100%;              /* pure white canvas */
+  --foreground: 215 35% 14%;             /* dark text on white */
 
   --card: 0 0% 100%;                    /* white card */
   --card-foreground: 0 0% 12%;
@@ -356,8 +356,12 @@
 }
 
 /* Subcategory pill row — override shared component classes to match
-   the orange filter aesthetic. */
-.theme-25 .grid > button.rounded-full {
+ *  the orange filter aesthetic. The `:not(...)` exclusions keep this
+ *  from also painting AlertDialog footer buttons (Sepeti Temizle?,
+ *  Ürünü Sil? popups) — those buttons are also `rounded-full` and
+ *  sit inside a `.grid` ancestor, which would otherwise force them
+ *  to orange-on-cream and obliterate the destructive button's red. */
+.theme-25 .grid > button.rounded-full:not([role="dialog"] *):not([role="alertdialog"] *) {
   background: hsl(var(--brand-orange-soft)) !important;
   color: hsl(var(--brand-orange)) !important;
   font-size: 0.75rem !important;
@@ -366,7 +370,7 @@
   box-shadow: none !important;
   border: none !important;
 }
-.theme-25 .grid > button.rounded-full.bg-primary {
+.theme-25 .grid > button.rounded-full.bg-primary:not([role="dialog"] *):not([role="alertdialog"] *) {
   background: hsl(var(--brand-orange)) !important;
   color: #fff !important;
 }
@@ -402,20 +406,33 @@
  *  Scope tightly to FORM fields (input/textarea/combobox-trigger) so
  *  the rule doesn't cascade onto the page wrapper which also has the
  *  `bg-background` class and would inherit white text everywhere. */
-.theme-25 input.bg-background,
-.theme-25 textarea.bg-background,
-.theme-25 button[role="combobox"],
-.theme-25 button[role="combobox"] > span,
-/* Phone10Field nests a bg-transparent <input> inside a div with
-   bg-background — make sure that nested input's text is also light. */
-.theme-25 div.bg-background > input,
-.theme-25 div.bg-background > textarea {
+/* DARK mode only — when the canvas is anthracite/dark, the default
+ *  foreground (dark) inside form fields becomes unreadable. Force
+ *  light text for inputs/textareas/comboboxes. In LIGHT mode the
+ *  canvas is white, so the default dark foreground is correct and
+ *  no override is needed. */
+.dark .theme-25 input.bg-background,
+.dark .theme-25 textarea.bg-background,
+.dark .theme-25 button[role="combobox"],
+.dark .theme-25 button[role="combobox"] > span,
+.dark .theme-25 div.bg-background > input,
+.dark .theme-25 div.bg-background > textarea,
+.dark.theme-25 input.bg-background,
+.dark.theme-25 textarea.bg-background,
+.dark.theme-25 button[role="combobox"],
+.dark.theme-25 button[role="combobox"] > span,
+.dark.theme-25 div.bg-background > input,
+.dark.theme-25 div.bg-background > textarea {
   color: hsl(0 0% 96%);
 }
-.theme-25 input.bg-background::placeholder,
-.theme-25 textarea.bg-background::placeholder,
-.theme-25 div.bg-background > input::placeholder,
-.theme-25 div.bg-background > textarea::placeholder {
+.dark .theme-25 input.bg-background::placeholder,
+.dark .theme-25 textarea.bg-background::placeholder,
+.dark .theme-25 div.bg-background > input::placeholder,
+.dark .theme-25 div.bg-background > textarea::placeholder,
+.dark.theme-25 input.bg-background::placeholder,
+.dark.theme-25 textarea.bg-background::placeholder,
+.dark.theme-25 div.bg-background > input::placeholder,
+.dark.theme-25 div.bg-background > textarea::placeholder {
   color: hsl(0 0% 70%);
 }
 
@@ -450,30 +467,41 @@
   color: hsl(var(--card-foreground));
 }
 
-/* Radix Dialog (Survey, etc.) is forced to anthracite bg in BOTH modes
- *  (see the [role="dialog"] override below) — so its text needs to be
- *  light regardless of the active mode, otherwise light-mode default
- *  dark text becomes invisible on the anthracite surface.
- *  AlertDialog uses role="alertdialog" (separate ARIA role) — without
- *  this, "Sepeti Temizle?" / "Ürünü Sil?" confirm popups would render
- *  their title (h2) and description (p.text-muted-foreground) in dark
- *  colors and be unreadable on the anthracite surface. */
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) label,
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h2,
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h3,
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) h4,
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) p,
-:where(.theme-25 [role="dialog"], .theme-25 [role="alertdialog"]) span {
+/* Radix Dialog (Survey, etc.) — the anthracite-bg force below now
+ *  applies in DARK mode only, so its companion text-color override
+ *  is scoped the same way. In light mode the dialog falls back to
+ *  Radix's default `bg-background` (white in this theme), and its
+ *  children inherit the standard --foreground, which is already dark
+ *  and readable — no override needed. */
+.dark :where(.theme-25 [role="dialog"]) label,
+.dark :where(.theme-25 [role="dialog"]) h2,
+.dark :where(.theme-25 [role="dialog"]) h3,
+.dark :where(.theme-25 [role="dialog"]) h4,
+.dark :where(.theme-25 [role="dialog"]) p,
+.dark :where(.theme-25 [role="dialog"]) span,
+.dark.theme-25 [role="dialog"] label,
+.dark.theme-25 [role="dialog"] h2,
+.dark.theme-25 [role="dialog"] h3,
+.dark.theme-25 [role="dialog"] h4,
+.dark.theme-25 [role="dialog"] p,
+.dark.theme-25 [role="dialog"] span {
   color: hsl(var(--anthracite-foreground));
 }
 
-/* AlertDialog description uses Tailwind's `text-muted-foreground`
- *  utility which beats :where() (zero specificity). Force it to a
- *  readable, slightly-dimmed light tone so the description is legible
- *  but visually subordinate to the title. */
-.theme-25 [role="alertdialog"] .text-muted-foreground,
-.theme-25 [role="alertdialog"] [class*="text-muted-foreground"] {
-  color: hsl(0 0% 88%) !important;
+/* AlertDialog ("Sepeti Temizle?", "Ürünü Sil?" confirm popups) is a
+ *  separate ARIA role and uses the standard `bg-background` token —
+ *  which now follows mode (white in light, dark in dark). So its text
+ *  should follow the matching foreground/muted-foreground tokens. We
+ *  scope to label/h2/h3/h4/p (no `span` — Tailwind utility classes
+ *  applied to spans for chips/badges should keep winning). */
+:where(.theme-25 [role="alertdialog"]) label,
+:where(.theme-25 [role="alertdialog"]) h2,
+:where(.theme-25 [role="alertdialog"]) h3,
+:where(.theme-25 [role="alertdialog"]) h4 {
+  color: hsl(var(--foreground));
+}
+:where(.theme-25 [role="alertdialog"]) p {
+  color: hsl(var(--muted-foreground));
 }
 
 /* ---- Radix Dialog body — force anthracite so the modal blends with
@@ -482,10 +510,17 @@
  *  Tailwind text-red / text-amber classes whose specificity would lose
  *  to `.theme-25 [role="dialog"]`, making them invisible. Color is
  *  inherited per-element from the modal's own markup. */
-.theme-25 [role="dialog"] {
+/* DARK mode only: force anthracite so the survey/reservation modal
+ *  reads as a coherent dark canvas. In LIGHT mode the dialog uses
+ *  Radix's default `bg-background` (now white in this theme) — that
+ *  satisfies the user's "açık temada survey arka planı beyaz olsun"
+ *  request without disturbing dark mode. */
+.dark .theme-25 [role="dialog"],
+.dark.theme-25 [role="dialog"] {
   background-color: hsl(var(--anthracite)) !important;
 }
-.theme-25 [role="dialog"] .bg-secondary\/50 {
+.dark .theme-25 [role="dialog"] .bg-secondary\/50,
+.dark.theme-25 [role="dialog"] .bg-secondary\/50 {
   background-color: hsla(220, 8%, 28%, 0.5);
 }
 /* SurveyModal's close button — make it a clear, instantly recognizable

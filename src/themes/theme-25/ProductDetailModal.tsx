@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Minus, Plus, Check } from "lucide-react";
+import { X, Minus, Plus, Check } from "lucide-react";
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from "@/types/restaurant";
 import { AllergensSection } from "@/components/menu/AllergensSection";
 import { useCart } from "@/hooks/useCart";
@@ -219,14 +219,17 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed left-2 right-2 bottom-2 z-50 max-h-[calc(100dvh-8px)] bg-card rounded-[32px] flex flex-col shadow-mega overflow-hidden"
       >
-        {/* Back arrow */}
+        {/* Close — red circle with white X (replaces the back-arrow
+         *  affordance; universal close vocabulary reads instantly on
+         *  any card background and gives a stronger visual exit cue
+         *  than a thin arrow icon). */}
         <div className="px-5 pt-4 shrink-0">
           <button
             onClick={onClose}
             aria-label="Close"
-            className="w-9 h-9 rounded-full hover:bg-secondary flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-full bg-[hsl(0,75%,55%)] hover:bg-[hsl(0,75%,45%)] flex items-center justify-center transition-colors shadow-[0_2px_8px_hsla(0,75%,30%,0.35)]"
           >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
+            <X className="w-5 h-5 text-white" strokeWidth={2.75} />
           </button>
         </div>
 
