@@ -15,7 +15,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;

@@ -35,8 +35,13 @@ const getCategoryIcon = (categoryName: string) => {
 
 export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab, isHidden = false }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef(true);
 
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     const activeElement = scrollRef.current?.querySelector(`[data-category="${activeCategory}"]`);
     if (activeElement) {
       activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });

@@ -15,7 +15,17 @@ export function getPortionDisplayPrice(
   if (isSpecialPriceActive && portion.specialPrice != null) {
     return portion.specialPrice;
   }
-  if (isCampaign && portion.campaignPrice != null) {
+  // Same validity rule as the campaign filter in useRestaurant:
+  // a campaign price only takes effect if it's strictly > 0 AND
+  // strictly less than the base price. Otherwise fall through to the
+  // normal price so the cart never undercharges (or charges 0) on a
+  // misconfigured campaign entry.
+  if (
+    isCampaign &&
+    portion.campaignPrice != null &&
+    portion.campaignPrice > 0 &&
+    portion.campaignPrice < portion.price
+  ) {
     return portion.campaignPrice;
   }
   return portion.price;

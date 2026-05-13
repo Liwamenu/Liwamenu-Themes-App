@@ -387,12 +387,29 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const campaignProducts = useMemo(() => {
+    // A product is shown as a campaign ONLY when at least one of its
+    // portions has a campaign price that is BOTH:
+    //   (a) strictly greater than 0  → discards null / 0 / negative
+    //       values the admin panel may save when the field is cleared
+    //       or mistyped, and
+    //   (b) strictly less than the portion's normal price  → discards
+    //       "campaigns" where the admin entered a value >= the base,
+    //       which isn't actually a discount and confuses users.
+    //
+    // Without this guard the carousel and per-card badge surfaced
+    // bogus campaigns (e.g. portion with campaignPrice=0 looked free
+    // while the real sale price was 0₺).
     const all = data.products.filter(
       p =>
         !p.hide &&
         p.categoryIsActive !== false &&
         p.isCampaign &&
-        p.portions.some(portion => portion.campaignPrice != null),
+        p.portions.some(
+          portion =>
+            portion.campaignPrice != null &&
+            portion.campaignPrice > 0 &&
+            portion.campaignPrice < portion.price,
+        ),
     );
     if (allowedCategoryIds) {
       const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));

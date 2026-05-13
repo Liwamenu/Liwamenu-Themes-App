@@ -52,6 +52,7 @@ export function MenuPage() {
   const {
     categories,
     campaignProducts,
+    recommendedProducts,
     isRestaurantActive,
     isCurrentlyOpen,
     restaurant,
@@ -449,13 +450,54 @@ export function MenuPage() {
         ) : !activeCategory ? (
           /* CATEGORY GRID */
           <>
+            {/* Chef Recommended — horizontal carousel.
+             *  Gated by !searchQuery + !activeCategory so it only shows on
+             *  the landing view. Square photos with a gold-accent name +
+             *  price plate underneath, matching the cafe's Playfair/gold
+             *  vocabulary. */}
+            {recommendedProducts.length > 0 && (
+              <section className="mb-7">
+                <div className="flex items-center gap-3 mb-3">
+                  <h2 className="font-display text-2xl font-bold text-foreground">
+                    <span className="mr-1">✨</span>
+                    {t("menu.recommended")}
+                  </h2>
+                  <span className="gold-divider" />
+                </div>
+                <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-fade-x pb-2 -mx-5 px-5">
+                  {/* Reuse the theme's real ProductCard so the recommended
+                   *  carousel items match the cards in the main grid — the
+                   *  previous custom mini-card markup made them look like
+                   *  category tiles instead of products. Wrapping in
+                   *  shrink-0 w-44 gives each card a fixed horizontal slot
+                   *  inside the flex carousel. */}
+                  {recommendedProducts.slice(0, 8).map((product) => (
+                    <div key={product.id} className="shrink-0 w-44">
+                      <ProductCard
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <h2 className="text-muted-foreground tracking-[0.25em] text-xs font-semibold mb-4">
               MENÜLER
             </h2>
             <div className="grid grid-cols-2 gap-3.5">
               {campaignProducts.length > 0 && (
                 <button
-                  onClick={() => setSelectedCategoryId(CAMPAIGN_CATEGORY_ID)}
+                  onClick={() => {
+                    setSelectedCategoryId(CAMPAIGN_CATEGORY_ID);
+                    // Land at the top of the product list rather than
+                    // wherever the category tile happened to sit.
+                    window.scrollTo({ top: 0, behavior: "auto" });
+                  }}
                   className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md group"
                 >
                   <img
@@ -479,7 +521,10 @@ export function MenuPage() {
                 return (
                   <button
                     key={category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
+                    onClick={() => {
+                      setSelectedCategoryId(category.id);
+                      window.scrollTo({ top: 0, behavior: "auto" });
+                    }}
                     className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md group"
                   >
                     <img
@@ -517,15 +562,12 @@ export function MenuPage() {
             )}
           </>
         ) : (
-          /* PRODUCT LIST FOR SELECTED CATEGORY */
+          /* PRODUCT LIST FOR SELECTED CATEGORY.
+           *  The inline "← MENÜLER" back button that used to live above
+           *  the title was removed in favor of the floating bottom pill
+           *  rendered after the grid — users no longer have to scroll
+           *  back to the top of a long category just to leave it. */
           <div>
-            <button
-              onClick={() => setSelectedCategoryId(null)}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-3"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm">MENÜLER</span>
-            </button>
             <div className="flex items-center gap-3 mb-5">
               <h2 className="font-display text-3xl font-bold text-foreground">
                 {activeCategory.name}
@@ -558,6 +600,20 @@ export function MenuPage() {
                 ))}
               </AnimatePresence>
             </div>
+
+            {/* Floating back-to-categories pill — z-30 keeps it under
+             *  modals (z-50) but above page content + LiwaMenuFooter.
+             *  Centered bottom so it's discoverable from any scroll
+             *  position within a long category. */}
+            <button
+              type="button"
+              onClick={() => setSelectedCategoryId(null)}
+              aria-label={t("menu.backToCategories", "Kategorilere Dön")}
+              className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-11 px-5 rounded-full bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold shadow-lg flex items-center gap-2 transition-opacity"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>{t("menu.backToCategories", "Kategorilere Dön")}</span>
+            </button>
           </div>
         )}
       </div>

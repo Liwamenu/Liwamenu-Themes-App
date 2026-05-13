@@ -16,7 +16,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -60,7 +60,7 @@ export const ProductCard = memo(function ProductCard({
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
-      className="group rounded-2xl overflow-hidden bg-card shadow-card cursor-pointer flex flex-col border border-border/40"
+      className="group w-full rounded-2xl overflow-hidden bg-card shadow-card cursor-pointer flex flex-col border border-border/40"
     >
       {/* Square image */}
       <div className="relative aspect-square w-full overflow-hidden bg-secondary">

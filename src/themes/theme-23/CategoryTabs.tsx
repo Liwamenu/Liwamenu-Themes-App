@@ -26,8 +26,13 @@ export const CategoryTabs = memo(function CategoryTabs({
   campaignTab,
 }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef(true);
 
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     const activeElement = scrollRef.current?.querySelector(
       `[data-category="${activeCategory}"]`,
     );

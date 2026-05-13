@@ -22,7 +22,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -164,6 +164,15 @@ export const ProductCard = memo(function ProductCard({
         <span
           ref={nameRef}
           className={`menu-row-name${hasWritten ? " is-written" : ""}`}
+          // Once the pen-writing animation completes, clear the GPU
+          // compositor layer hint. Without this, every product name
+          // on a long menu keeps a will-change layer indefinitely,
+          // which on mobile snowballs into noticeable memory pressure.
+          onAnimationEnd={(e) => {
+            if (e.animationName.startsWith("theme26-penWrite")) {
+              (e.currentTarget as HTMLElement).style.willChange = "auto";
+            }
+          }}
         >
           {product.name}
           {(priceType !== "normal" || spicyLevel > 0 || isVegetarian) && (

@@ -73,7 +73,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                 </div>
                 <div className="flex items-center gap-2">
                   {items.length > 0 && (
-                    <button onClick={() => setShowClearConfirm(true)} className="text-sm text-secondary hover:text-secondary/80 dark:text-white dark:hover:text-white/80 bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg transition-colors font-medium">
+                    <button onClick={() => setShowClearConfirm(true)} className="text-sm text-white hover:text-white/80 bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg transition-colors font-medium">
                       {t('cart.clearCart')}
                     </button>
                   )}

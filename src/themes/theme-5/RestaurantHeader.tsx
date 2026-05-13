@@ -14,9 +14,13 @@ interface RestaurantHeaderProps {
   orders?: Order[];
   onViewOrder?: (order: Order) => void;
   isVisible?: boolean;
+  /** Fired when the cart icon in the top-right is tapped. The header
+   *  used to render the cart as a static <ShoppingCart> with no click
+   *  handler — users had no way to open the cart from the header. */
+  onCartClick?: () => void;
 }
 
-export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true }: RestaurantHeaderProps) {
+export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true, onCartClick }: RestaurantHeaderProps) {
   const { restaurant } = useRestaurant();
   const { t } = useTranslation();
   const { items } = useCart();
@@ -78,14 +82,19 @@ export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true }:
           )}
           <ThemeSwitcher />
           <LanguageSwitcher />
-          <div className="relative ml-1">
+          <button
+            type="button"
+            onClick={onCartClick}
+            className="relative ml-1 p-2 -m-2 rounded-full hover:bg-muted transition-colors"
+            aria-label={t("cart.title")}
+          >
             <ShoppingCart className="w-5 h-5 text-foreground" />
             {totalItems > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute top-0 right-0 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
                 {totalItems}
               </span>
             )}
-          </div>
+          </button>
         </div>
       </div>
 

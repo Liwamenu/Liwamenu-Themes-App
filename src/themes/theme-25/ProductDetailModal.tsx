@@ -86,7 +86,15 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     if (restaurant.isSpecialPriceActive && selectedPortion.specialPrice != null) {
       return selectedPortion.specialPrice;
     }
-    if (product.isCampaign && selectedPortion.campaignPrice != null) {
+    // Campaign-price validity: must be > 0 AND < base price; otherwise
+    // fall through to the normal portion price. Matches the rule in
+    // useRestaurant / useCart / shared ProductDetailModal.
+    if (
+      product.isCampaign &&
+      selectedPortion.campaignPrice != null &&
+      selectedPortion.campaignPrice > 0 &&
+      selectedPortion.campaignPrice < selectedPortion.price
+    ) {
       return selectedPortion.campaignPrice;
     }
     return selectedPortion.price;

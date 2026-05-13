@@ -375,6 +375,19 @@ export function MenuPage() {
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-sky-400 text-white hover:bg-sky-500"
+              }`}
+              aria-label={t("waiter.title")}
+            >
+              <Bell className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
@@ -421,7 +434,7 @@ export function MenuPage() {
       {!searchQuery && recommendedProducts.length > 0 && (
         <section className="container px-4 py-6">
           <h2 className="font-display text-xl font-bold mb-4">✨ {t("menu.recommended")}</h2>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
             {recommendedProducts.slice(0, 5).map((product) => (
               <motion.div
                 key={product.id}
@@ -604,30 +617,6 @@ export function MenuPage() {
           onClose={() => setSelectedExternalPage(null)}
         />
       )}
-
-      {/* Floating Call Waiter Button - Top Right (hidden when modals are open) */}
-      {!isCartOpen &&
-        !selectedProduct &&
-        !showCallWaiter &&
-        !isCheckoutOpen &&
-        !showReservation &&
-        !showTableSelection && (
-          <div className="fixed top-[120px] right-4 z-50">
-            <button
-              onClick={handleOpenCallWaiterFloating}
-              disabled={waiterCooldown > 0}
-              className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-                waiterCooldown > 0
-                  ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : "bg-sky-400 text-white hover:bg-sky-500"
-              }`}
-              aria-label={t("waiter.title")}
-            >
-              <Bell className="w-4 h-4" />
-              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-            </button>
-          </div>
-        )}
 
       <ScrollToTop />
       <LiwaMenuFooter />

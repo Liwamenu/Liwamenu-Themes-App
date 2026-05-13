@@ -19,6 +19,7 @@ import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
 import { ExternalPageView } from "@/components/menu/ExternalPageView";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
@@ -35,6 +36,7 @@ export function MenuPage() {
   const {
     categories,
     campaignProducts,
+    recommendedProducts,
     isRestaurantActive,
     isCurrentlyOpen,
     restaurant,
@@ -229,6 +231,19 @@ export function MenuPage() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              aria-label={t("waiter.title")}
+              className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-xs font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
+              }`}
+            >
+              <Bell className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -247,20 +262,6 @@ export function MenuPage() {
                 </button>
               )}
             </div>
-            {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-              <button
-                onClick={handleOpenCallWaiterFloating}
-                disabled={waiterCooldown > 0}
-                className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-xs font-medium transition-all ${
-                  waiterCooldown > 0
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:opacity-90"
-                }`}
-              >
-                <Bell className="w-4 h-4" />
-                <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-              </button>
-            )}
             {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
               <CartButton onClick={handleOpenCart} />
             )}
@@ -269,6 +270,41 @@ export function MenuPage() {
       </div>
 
       <div className="container px-3 py-4 pb-24 space-y-4">
+        {/* Chef Recommended — horizontal carousel.
+         *  Sits above the category scrollers on the landing view.
+         *  Matches theme-20's charcoal/gold vocabulary: dark card
+         *  surface inside a tinted gold-band header strip, with the
+         *  scroll-row helper providing the fade-right and gold scrollbar. */}
+        {!searchQuery && recommendedProducts.length > 0 && (
+          <section className="cat-section">
+            <div className="cat-header-band py-3 mb-4 px-4">
+              <h2 className="cat-title text-center text-xl">
+                <span className="mr-1">✨</span>
+                {t("menu.recommended")}
+              </h2>
+            </div>
+            <div className="scroll-row overflow-x-auto pb-4">
+              <div className="flex gap-3 px-4 min-w-min">
+                {/* Use the theme's real ProductCard so recommended items
+                 *  match the grid cards instead of looking like little
+                 *  custom mini-cards. shrink-0 w-40 fixes slot width
+                 *  inside the horizontal scroll-row. */}
+                {recommendedProducts.slice(0, 8).map((product) => (
+                  <div key={`recommended-${product.id}`} className="shrink-0 w-40">
+                    <ProductCard
+                      product={product}
+                      onSelect={handleSelectProduct}
+                      isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                      specialPriceName={restaurant.specialPriceName}
+                      formatPrice={formatPrice}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {sections.length === 0 && searchQuery && (
           <div className="text-center py-12 rounded-2xl bg-card border border-border">
             <div className="text-4xl mb-3">🔍</div>
