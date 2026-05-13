@@ -72,15 +72,6 @@ export interface Product {
   categoryName: string;
   categoryImage: string;
   categorySortOrder: number;
-  /**
-   * Denormalized active-flag from the parent category. Backend should
-   * project `Category.IsActive` onto each product so the customer can
-   * filter inactive categories without a second round-trip. Optional
-   * for backwards compat — when undefined we treat as visible. Only an
-   * explicit `false` removes the product (and therefore its category)
-   * from the menu.
-   */
-  categoryIsActive?: boolean;
   subCategoryId: string | null;
   subCategoryName: string | null;
   subCategoryImage: string | null;

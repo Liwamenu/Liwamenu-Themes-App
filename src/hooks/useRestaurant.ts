@@ -322,16 +322,14 @@ export function useRestaurant() {
   }, [activeMenu]);
 
   const categories = useMemo((): Category[] => {
-    // Visibility predicate: drop the product if either the product is
-    // hidden (`hide: true`) OR its parent category was switched off in
-    // the admin (`categoryIsActive: false`). The category flag is
-    // optional — `undefined` is treated as visible so older API
-    // responses that don't include the field still render the menu.
-    // The whole category disappears naturally because `categoryMap`
-    // below only registers categories it sees a visible product for.
-    const allVisible = data.products.filter(
-      p => !p.hide && p.categoryIsActive !== false,
-    );
+    // Backend now strips hidden products + products under inactive
+    // categories/subcategories server-side (GetRestaurantFullByTenant
+    // applies `!hide AND isActive AND category.isActive AND
+    // (subCategory IS NULL OR subCategory.isActive)`), so anything
+    // here is already meant to be visible. We still keep the `!p.hide`
+    // belt-and-braces guard in case a legacy endpoint or staging
+    // tenant leaks a hidden row.
+    const allVisible = data.products.filter(p => !p.hide);
     let visibleProducts = allVisible;
 
     if (allowedCategoryIds) {
@@ -373,12 +371,7 @@ export function useRestaurant() {
   };
 
   const recommendedProducts = useMemo(() => {
-    // Same `categoryIsActive !== false` guard as `categories` above —
-    // we don't want a product appearing in the "recommended" carousel
-    // while its category is disabled everywhere else.
-    const all = data.products.filter(
-      p => p.recommendation && !p.hide && p.categoryIsActive !== false,
-    );
+    const all = data.products.filter(p => p.recommendation && !p.hide);
     if (allowedCategoryIds) {
       const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
       return filtered.length > 0 ? filtered : all;
@@ -402,7 +395,6 @@ export function useRestaurant() {
     const all = data.products.filter(
       p =>
         !p.hide &&
-        p.categoryIsActive !== false &&
         p.isCampaign &&
         p.portions.some(
           portion =>
