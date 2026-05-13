@@ -230,6 +230,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  /* `width: 100%` so the card fills its parent slot. In the drill-in
+   *  grid the parent is a grid cell (auto-stretches), but inside the
+   *  Recommended carousel the parent is a `shrink-0 w-36` wrapper
+   *  where a default-width column-flex button would collapse to its
+   *  content (no visible image, only the price label). */
+  width: 100%;
   background: hsl(var(--card));
   border-radius: 16px;
   padding: 0.625rem;
@@ -452,18 +458,23 @@
  *  subtitles) keep their author colors. */
 /* `.bg-card` modals (Reservation, custom modals) follow card-foreground
  *  which flips correctly per mode (dark text on white card in light;
- *  white text on anthracite in dark). The `:not(button *)` exclusion
- *  keeps the rule from also recoloring button labels — buttons set
- *  their own foreground via variants (e.g. text-white, bg-primary
- *  text-primary-foreground) and shouldn't be overridden by the
- *  generic card text rule. Same goes for anchors that style their
- *  own text (footer's address link). */
-:where(.theme-25 .bg-card) label:not(button *),
-:where(.theme-25 .bg-card) h2:not(button *),
-:where(.theme-25 .bg-card) h3:not(button *),
-:where(.theme-25 .bg-card) h4:not(button *),
-:where(.theme-25 .bg-card) p:not(button *),
-:where(.theme-25 .bg-card) span:not(button *):not(a *) {
+ *  white text on anthracite in dark).
+ *
+ *  Exclusion list (each `:not()` documents a real bug it prevents):
+ *  • `:not(button *)`  — buttons set their own foreground via variants
+ *    (text-white, bg-primary text-primary-foreground); don't override.
+ *  • `:not(a *)`       — anchors style their own text (footer address).
+ *  • `:not(.bg-stone-100 *)` — CheckoutModal's "Sipariş Özeti" card is
+ *    bg-stone-100 + text-stone-800 by design, intentionally light in
+ *    BOTH modes for readability. Without this exclusion the dark-mode
+ *    --card-foreground (near-white) cascades onto product-name spans
+ *    and makes them invisible on the off-white card. */
+:where(.theme-25 .bg-card) label:not(button *):not(.bg-stone-100 *),
+:where(.theme-25 .bg-card) h2:not(button *):not(.bg-stone-100 *),
+:where(.theme-25 .bg-card) h3:not(button *):not(.bg-stone-100 *),
+:where(.theme-25 .bg-card) h4:not(button *):not(.bg-stone-100 *),
+:where(.theme-25 .bg-card) p:not(button *):not(.bg-stone-100 *),
+:where(.theme-25 .bg-card) span:not(button *):not(a *):not(.bg-stone-100 *) {
   color: hsl(var(--card-foreground));
 }
 
@@ -472,19 +483,21 @@
  *  is scoped the same way. In light mode the dialog falls back to
  *  Radix's default `bg-background` (white in this theme), and its
  *  children inherit the standard --foreground, which is already dark
- *  and readable — no override needed. */
-.dark :where(.theme-25 [role="dialog"]) label,
-.dark :where(.theme-25 [role="dialog"]) h2,
-.dark :where(.theme-25 [role="dialog"]) h3,
-.dark :where(.theme-25 [role="dialog"]) h4,
-.dark :where(.theme-25 [role="dialog"]) p,
-.dark :where(.theme-25 [role="dialog"]) span,
-.dark.theme-25 [role="dialog"] label,
-.dark.theme-25 [role="dialog"] h2,
-.dark.theme-25 [role="dialog"] h3,
-.dark.theme-25 [role="dialog"] h4,
-.dark.theme-25 [role="dialog"] p,
-.dark.theme-25 [role="dialog"] span {
+ *  and readable — no override needed.
+ *  `:not(.bg-stone-100 *)` carves out the CheckoutModal "Sipariş
+ *  Özeti" card, which is intentionally off-white in both modes. */
+.dark :where(.theme-25 [role="dialog"]) label:not(.bg-stone-100 *),
+.dark :where(.theme-25 [role="dialog"]) h2:not(.bg-stone-100 *),
+.dark :where(.theme-25 [role="dialog"]) h3:not(.bg-stone-100 *),
+.dark :where(.theme-25 [role="dialog"]) h4:not(.bg-stone-100 *),
+.dark :where(.theme-25 [role="dialog"]) p:not(.bg-stone-100 *),
+.dark :where(.theme-25 [role="dialog"]) span:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] label:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] h2:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] h3:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] h4:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] p:not(.bg-stone-100 *),
+.dark.theme-25 [role="dialog"] span:not(.bg-stone-100 *) {
   color: hsl(var(--anthracite-foreground));
 }
 

@@ -327,6 +327,19 @@ export function MenuPage() {
       <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              aria-label={t("waiter.title")}
+              className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
+              }`}
+            >
+              <Bell className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -345,21 +358,6 @@ export function MenuPage() {
                 </button>
               )}
             </div>
-            {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-              <button
-                onClick={handleOpenCallWaiterFloating}
-                disabled={waiterCooldown > 0}
-                aria-label={t("waiter.title")}
-                className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-                  waiterCooldown > 0
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:opacity-90"
-                }`}
-              >
-                <Bell className="w-4 h-4" />
-                <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-              </button>
-            )}
             {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
               <CartButton onClick={handleOpenCart} />
             )}
@@ -374,7 +372,7 @@ export function MenuPage() {
             <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">⭐</span>
             {t("menu.recommended")}
           </h2>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
             {recommendedProducts.slice(0, 5).map((product) => (
               <motion.div
                 key={product.id}

@@ -319,25 +319,40 @@ export function MenuPage() {
 
   return (
     <div className="theme-4 min-h-screen bg-background pb-20 overflow-x-hidden">
-      <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} />
+      <RestaurantHeader orders={orders} onViewOrder={handleViewOrder} onCartClick={handleOpenCart} />
 
       {searchQuery !== null && (
         <div className="sticky top-0 z-40 bg-background border-b border-border">
           <div className="max-w-5xl mx-auto px-4 py-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder={t("menu.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 pl-10 pr-10 rounded-full bg-input border-border text-sm"
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <X className="w-4 h-4 text-muted-foreground" />
-                </button>
-              )}
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={handleOpenCallWaiterFloating}
+                disabled={waiterCooldown > 0}
+                className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
+                  waiterCooldown > 0
+                    ? "bg-muted text-muted-foreground cursor-not-allowed"
+                    : "bg-accent text-accent-foreground hover:opacity-90"
+                }`}
+                aria-label={t("waiter.title")}
+              >
+                <Bell className="w-4 h-4 shrink-0" />
+                <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+              </button>
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder={t("menu.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 pl-10 pr-10 rounded-full bg-input border-border text-sm"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <X className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -559,29 +574,6 @@ export function MenuPage() {
           onClose={() => setSelectedExternalPage(null)}
         />
       )}
-
-      {!isCartOpen &&
-        !selectedProduct &&
-        !showCallWaiter &&
-        !isCheckoutOpen &&
-        !showReservation &&
-        !showTableSelection && (
-          <div className="fixed top-[120px] right-4 z-50">
-            <button
-              onClick={handleOpenCallWaiterFloating}
-              disabled={waiterCooldown > 0}
-              className={`h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
-                waiterCooldown > 0
-                  ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : "bg-accent text-accent-foreground hover:opacity-90"
-              }`}
-              aria-label={t("waiter.title")}
-            >
-              <Bell className="w-4 h-4" />
-              <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-            </button>
-          </div>
-        )}
 
       {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
         <div className="fixed bottom-16 right-4 z-50">

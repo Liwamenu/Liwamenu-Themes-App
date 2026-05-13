@@ -13,7 +13,10 @@
    leak unstyled defaults into modals/cart/etc. */
 .theme-19,
 .dark .theme-19 {
-  background-color: hsl(252 45% 18%);
+  /* 50% alpha lets the near-white body bg show through, washing the
+   *  deep plum into a softer lavender-plum. Reduces the heavy "dark
+   *  cave" feel the user reported without redesigning the palette. */
+  background-color: hsla(252, 45%, 18%, 0.5);
   color: hsl(30 60% 95%);
 
   /* ZONE 1 — Page background (deep plum / midnight) */
@@ -154,21 +157,26 @@
   border: 1px solid hsl(var(--surface-light-border));
   box-shadow: var(--shadow-lg);
 }
-.theme-19 .product-zone .product-card {
+/* Product card surface — `.product-zone` requirement was dropped so
+ *  product cards look identical inside the drill-in panel AND in any
+ *  other context (e.g. the Recommended carousel on the landing page).
+ *  Without this widening, recommended cards rendered transparent on
+ *  the plum canvas and looked nothing like the grid cards. */
+.theme-19 .product-card {
   background: white;
   border: 1px solid hsl(var(--surface-light-border));
   color: hsl(var(--surface-light-foreground));
 }
-.theme-19 .product-zone .product-card-muted {
+.theme-19 .product-card-muted {
   color: hsl(var(--surface-light-muted));
 }
-.theme-19 .product-zone .product-card-price {
+.theme-19 .product-card-price {
   color: hsl(252, 50%, 25%);
 }
 
 /* Product card name + price use Nunito for a friendlier read on the cream zone. */
-.theme-19 .product-zone .product-card h3,
-.theme-19 .product-zone .product-card .product-card-price {
+.theme-19 .product-card h3,
+.theme-19 .product-card .product-card-price {
   font-family: 'Nunito', system-ui, sans-serif;
   font-style: normal;
 }

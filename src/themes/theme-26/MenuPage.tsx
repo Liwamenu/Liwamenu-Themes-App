@@ -359,7 +359,7 @@ export function MenuPage() {
             <Star className="w-4 h-4 text-[hsl(var(--brand-green))] fill-[hsl(var(--brand-green))]" />
             {t("menu.recommended")}
           </h2>
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
             {recommendedProducts.slice(0, 8).map((product) => (
               <motion.div
                 key={product.id}

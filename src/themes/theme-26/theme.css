@@ -377,55 +377,51 @@
 
   /* Pen-writing reveal — HARD-EDGE left-to-right wipe.
    *
-   *  Strategy: the mask is a 200%-wide horizontal gradient with a
-   *  *binary* boundary at 50%. The OPAQUE half is on the LEFT, the
-   *  transparent half on the RIGHT, so the gradient reads
-   *      [████████|        ]
-   *  with a knife-sharp cut at the midpoint. Birthstone is a
-   *  connected calligraphy face, so as the hard boundary sweeps
-   *  rightward across the word, each glyph's starting stroke
-   *  springs cleanly into existence — the visible effect IS
-   *  "letters being written one by one, ink left behind".
+   *  Performance note: this used to animate `mask-position` with a
+   *  binary linear-gradient mask. That works visually but on mobile
+   *  Safari/Chrome the mask compositor has to recomposite the masked
+   *  layer every frame, which produced significant frame drops when
+   *  the accordion expanded a category and ~10-20 cards fired their
+   *  animations in unison. Switched to `clip-path: inset()` which is
+   *  GPU-accelerated on every modern engine and animates as cheaply
+   *  as a transform — same visual result (hard-edge wipe revealing
+   *  the script left-to-right) with no compositing overhead.
    *
-   *  Position math (mask is 2x wider than the element):
-   *    position 100% 0 → mask-right aligns to element-right,
-   *                      mask-left sits 1x left of the element.
-   *                      Visible window catches the mask's RIGHT
-   *                      half = transparent → text fully hidden.
-   *    position 0% 0   → mask-left aligns to element-left,
-   *                      mask-right sits 1x right of the element.
-   *                      Visible window catches the mask's LEFT
-   *                      half = opaque → text fully drawn.
-   *
-   *  Animating position from 100% → 0% therefore SLIDES the mask
-   *  RIGHTWARD relative to the element — which the user reads as a
-   *  pen tip moving from LEFT to RIGHT laying down ink. (Easy to
-   *  get backwards: animating 0% → 100% with this same gradient
-   *  would produce right-to-left writing, which is exactly the bug
-   *  the user reported earlier.) */
-  -webkit-mask-image: linear-gradient(to right, #000 50%, transparent 50%);
-          mask-image: linear-gradient(to right, #000 50%, transparent 50%);
-  -webkit-mask-size: 200% 100%;
-          mask-size: 200% 100%;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-position: 100% 0;
-          mask-position: 100% 0;
+   *  Initial state: `inset(0 100% 0 0)` clips the entire element from
+   *  the right edge inward by 100% of its width → fully hidden.
+   *  Final state: `inset(0 0 0 0)` no clipping → fully visible.
+   *  Animating the right inset 100%→0% sweeps the visible region
+   *  rightward, which reads as a pen drawing ink across the word. */
+  clip-path: inset(0 100% 0 0);
 }
 .theme-26 .menu-row .menu-row-name.is-written {
   /* Easing is near-linear — a real calligrapher's pen moves at a
    *  steady cadence, not the spring-curve that JS animation libs
    *  default to. Duration 2.2s feels deliberate without being slow. */
   animation: theme26-penWrite 2.2s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  /* `will-change: clip-path` is scoped to the animating element only —
+   *  it promotes JUST the actively-animating names to their own GPU
+   *  layer, instead of pre-allocating a layer for every menu row on
+   *  the page. Critical on long menus where naively setting will-change
+   *  on all rows would blow up mobile memory. */
+  will-change: clip-path;
 }
 @keyframes theme26-penWrite {
-  from {
-    -webkit-mask-position: 100% 0;
-            mask-position: 100% 0;
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* Accessibility / low-end safety net: users who opt into reduced
+ *  motion (system pref) skip the animation entirely — names render
+ *  fully-visible from the start. This also protects users on truly
+ *  low-end devices, who tend to have this OS toggle on. */
+@media (prefers-reduced-motion: reduce) {
+  .theme-26 .menu-row .menu-row-name {
+    clip-path: none;
   }
-  to {
-    -webkit-mask-position: 0% 0;
-            mask-position: 0% 0;
+  .theme-26 .menu-row .menu-row-name.is-written {
+    animation: none;
+    will-change: auto;
   }
 }
 .theme-26 .menu-row .menu-row-dots {

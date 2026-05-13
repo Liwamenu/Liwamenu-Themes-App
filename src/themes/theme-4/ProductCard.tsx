@@ -16,7 +16,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -58,10 +58,13 @@ export const ProductCard = memo(function ProductCard({
       style={{ contentVisibility: "auto", containIntrinsicSize: "140px" } as React.CSSProperties}
       className="group relative bg-card rounded-lg shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden cursor-pointer flex flex-row h-[140px]"
     >
+      {/* Content + image swapped: text on the LEFT (title, desc, price
+       *  flush to the bottom-left), image on the RIGHT. Badge anchored
+       *  to the top-right corner so it still overlays the photo. */}
       {priceType !== "normal" && (
         <div
           className={cn(
-            "absolute top-2 left-2 z-10 px-2 py-0.5 rounded text-[10px] font-bold shadow",
+            "absolute top-2 right-2 z-10 px-2 py-0.5 rounded text-[10px] font-bold shadow",
             priceType === "campaign"
               ? "bg-campaign text-campaign-foreground"
               : "bg-special text-special-foreground"
@@ -70,6 +73,26 @@ export const ProductCard = memo(function ProductCard({
           {priceType === "special" ? specialPriceName : t("productCard.campaign")}
         </div>
       )}
+
+      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+        <div>
+          <h3 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 break-words">
+            {product.name}
+          </h3>
+          <p className="text-muted-foreground text-xs line-clamp-2 mt-1">
+            {product.description}
+          </p>
+        </div>
+
+        <div className="flex items-end justify-start gap-2 mt-auto">
+          <div className="flex flex-col items-start gap-0.5 min-w-0">
+            {originalPrice && (
+              <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
+            )}
+            <span className="text-lg font-bold text-card-foreground whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
+          </div>
+        </div>
+      </div>
 
       <div className="w-[140px] flex-shrink-0 overflow-hidden">
         <img
@@ -82,27 +105,6 @@ export const ProductCard = memo(function ProductCard({
           width={140}
           height={140}
         />
-      </div>
-
-      <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
-        <div>
-          <h3 className="font-semibold text-card-foreground text-sm leading-tight line-clamp-2 break-words">
-            {product.name}
-          </h3>
-          <p className="text-muted-foreground text-xs line-clamp-2 mt-1">
-            {product.description}
-          </p>
-        </div>
-
-        <div className="flex items-end justify-between gap-2 mt-auto">
-          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
-            {originalPrice && (
-              <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
-            )}
-            <span className="text-lg font-bold text-card-foreground whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
-          </div>
-
-        </div>
       </div>
     </motion.div>
   );

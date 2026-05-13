@@ -16,7 +16,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -61,7 +61,7 @@ export const ProductCard = memo(function ProductCard({
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
       /* product-card class is styled via theme.css inside .product-zone */
-      className="product-card group relative overflow-hidden rounded-2xl flex flex-col cursor-pointer transition-shadow duration-300 hover:shadow-md"
+      className="product-card group relative w-full overflow-hidden rounded-2xl flex flex-col cursor-pointer transition-shadow duration-300 hover:shadow-md"
     >
       {/* Image */}
       <div className="relative aspect-square w-full overflow-hidden bg-[hsl(var(--surface-light))]">

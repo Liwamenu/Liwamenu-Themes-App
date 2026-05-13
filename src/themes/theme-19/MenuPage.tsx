@@ -37,6 +37,7 @@ export function MenuPage() {
   const {
     categories,
     campaignProducts,
+    recommendedProducts,
     isRestaurantActive,
     isCurrentlyOpen,
     restaurant,
@@ -232,6 +233,19 @@ export function MenuPage() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
+            <button
+              onClick={handleOpenCallWaiterFloating}
+              disabled={waiterCooldown > 0}
+              aria-label={t("waiter.title")}
+              className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-xs font-medium transition-all ${
+                waiterCooldown > 0
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
+              }`}
+            >
+              <Bell className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
+            </button>
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -250,20 +264,6 @@ export function MenuPage() {
                 </button>
               )}
             </div>
-            {!isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && !showTableSelection && (
-              <button
-                onClick={handleOpenCallWaiterFloating}
-                disabled={waiterCooldown > 0}
-                className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-xs font-medium transition-all ${
-                  waiterCooldown > 0
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:opacity-90"
-                }`}
-              >
-                <Bell className="w-4 h-4" />
-                <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
-              </button>
-            )}
             {canOrder && !isCartOpen && !selectedProduct && !showCallWaiter && !isCheckoutOpen && !showReservation && (
               <CartButton onClick={handleOpenCart} />
             )}
@@ -302,6 +302,43 @@ export function MenuPage() {
         ) : !activeCategory ? (
           /* CATEGORY GRID — Zone 2 (amber tiles on plum bg) */
           <>
+            {/* Chef Recommended — horizontal carousel.
+             *  Sits on the plum page background between the search bar
+             *  and the category bento grid. Bento-style tiles: cream
+             *  surface, square photo with amber accent badge, and a
+             *  burnt-orange band hosting the name + price (echoes the
+             *  cat-band gradient used on the category tiles below). */}
+            {recommendedProducts.length > 0 && (
+              <section className="mb-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="font-display text-xl italic text-[hsl(var(--amber-soft))]">
+                    <span className="mr-1">✨</span>
+                    {t("menu.recommended")}
+                  </h3>
+                  <span className="flex-1 h-px bg-[hsl(var(--amber))]/40" />
+                </div>
+                <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-fade-x pb-2 -mx-4 px-4">
+                  {/* Render the theme's actual ProductCard so the recommended
+                   *  carousel items look like products, not category tiles
+                   *  (the previous markup used `.cat-tile` + `.cat-band`,
+                   *  which made these reads as little categories). The
+                   *  shrink-0 w-40 wrapper gives each card a fixed slot
+                   *  inside the horizontal flex carousel. */}
+                  {recommendedProducts.slice(0, 8).map((product) => (
+                    <div key={product.id} className="shrink-0 w-40">
+                      <ProductCard
+                        product={product}
+                        onSelect={handleSelectProduct}
+                        isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                        specialPriceName={restaurant.specialPriceName}
+                        formatPrice={formatPrice}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <div className="text-center mb-6">
               <h2 className="font-display text-3xl text-[hsl(var(--amber-soft))] italic">
                 {t("menu.menuTitle", "Menümüz")}
@@ -312,7 +349,10 @@ export function MenuPage() {
             <div className="grid grid-cols-2 gap-3">
               {campaignProducts.length > 0 && (
                 <button
-                  onClick={() => setSelectedCategoryId(CAMPAIGN_CATEGORY_ID)}
+                  onClick={() => {
+                    setSelectedCategoryId(CAMPAIGN_CATEGORY_ID);
+                    window.scrollTo({ top: 0, behavior: "auto" });
+                  }}
                   className="cat-tile relative aspect-[16/15] rounded-[8px] overflow-hidden flex flex-col text-center"
                 >
                   <div className="relative flex-1 overflow-hidden">
@@ -344,7 +384,12 @@ export function MenuPage() {
                 return (
                   <button
                     key={category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
+                    onClick={() => {
+                      setSelectedCategoryId(category.id);
+                      // Land at the top of the product list rather than
+                      // wherever the category tile happened to sit.
+                      window.scrollTo({ top: 0, behavior: "auto" });
+                    }}
                     className="cat-tile relative aspect-[16/15] rounded-[8px] overflow-hidden flex flex-col text-center"
                   >
                     <div className="relative flex-1 overflow-hidden">
@@ -390,24 +435,17 @@ export function MenuPage() {
             )}
           </>
         ) : (
-          /* PRODUCT LIST FOR SELECTED CATEGORY — Zone 3 (cream pearl panel) */
+          /* PRODUCT LIST FOR SELECTED CATEGORY — Zone 3 (cream pearl panel).
+           *  The inline "Kategorilere Dön" pill that used to live above
+           *  the title was removed in favor of the floating bottom pill
+           *  rendered after the grid — users no longer have to scroll
+           *  back to the top of a long category just to leave it. */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="product-zone rounded-3xl p-4"
           >
-            <button
-              onClick={() => setSelectedCategoryId(null)}
-              className="inline-flex items-center gap-2 mb-4 pl-2.5 pr-4 py-2 rounded-full text-white font-semibold text-xs uppercase tracking-wider shadow-md hover:shadow-lg active:scale-95 transition-all"
-              style={{ background: "linear-gradient(180deg, hsl(15, 80%, 38%) 0%, hsl(15, 85%, 30%) 100%)" }}
-            >
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20">
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </span>
-              <span>{t("menu.backToCategories", "Kategorilere Dön")}</span>
-            </button>
-
             <div className="flex items-center gap-3 mb-4">
               <h2 className="font-display text-2xl font-bold italic" style={{ color: "hsl(var(--surface-light-foreground))" }}>
                 {activeCategory.name}
@@ -444,6 +482,24 @@ export function MenuPage() {
                 ))}
               </AnimatePresence>
             </div>
+
+            {/* Floating back-to-categories pill — same gradient as the
+             *  removed inline button so the brand vocabulary survives,
+             *  just relocated to a sticky bottom-center position so
+             *  it's reachable from any scroll offset within a long
+             *  category. z-30 keeps it under modals (z-50). */}
+            <button
+              type="button"
+              onClick={() => setSelectedCategoryId(null)}
+              aria-label={t("menu.backToCategories", "Kategorilere Dön")}
+              className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-2 h-11 pl-3 pr-5 rounded-full text-white font-semibold text-sm shadow-lg hover:shadow-xl active:scale-95 transition-all"
+              style={{ background: "linear-gradient(180deg, hsl(15, 80%, 38%) 0%, hsl(15, 85%, 30%) 100%)" }}
+            >
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20">
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </span>
+              <span>{t("menu.backToCategories", "Kategorilere Dön")}</span>
+            </button>
           </motion.div>
         )}
       </div>

@@ -16,7 +16,7 @@ interface ProductCardProps {
 
 function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCampaign: boolean) {
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
-  const hasCampaign = isCampaign && portion.campaignPrice != null;
+  const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
   let displayPrice = portion.price;
   let originalPrice: number | null = null;
@@ -110,8 +110,12 @@ export const ProductCard = memo(function ProductCard({
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-2 mt-2">
-          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
+        {/* Price block aligned to the bottom-right corner — was previously
+         *  flush-left of the content column; the user asked for the price
+         *  to sit at the bottom-right of each product card, so the inner
+         *  column now uses items-end and the parent justifies to end. */}
+        <div className="flex items-center justify-end gap-2 mt-2">
+          <div className="flex flex-col items-end gap-0.5 min-w-0">
             {originalPrice && (
               <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
                 {formatPrice(originalPrice)}
@@ -121,7 +125,6 @@ export const ProductCard = memo(function ProductCard({
               {formatPrice(displayPrice)}
             </span>
           </div>
-
         </div>
       </div>
     </motion.div>

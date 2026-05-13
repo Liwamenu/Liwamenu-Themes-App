@@ -28,6 +28,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef(true);
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
@@ -40,6 +41,15 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
   }, []);
 
   useEffect(() => {
+    // Skip the first run: on mount `activeCategory` defaults to the first
+    // real category, so auto-scrolling to center it pushes the campaign
+    // tab (which sits as the very first item) off-screen and the user
+    // misses it. Only auto-scroll on subsequent activeCategory changes,
+    // i.e. when the user explicitly navigates.
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     // Scroll active tab into view
     const activeElement = scrollRef.current?.querySelector(`[data-category="${activeCategory}"]`);
     if (activeElement) {

@@ -64,7 +64,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
   const getDisplayPrice = (portion: Portion) => {
     if (restaurant.isSpecialPriceActive && portion.specialPrice != null) return portion.specialPrice;
-    if (product.isCampaign && portion.campaignPrice != null) return portion.campaignPrice;
+    if (product.isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price) return portion.campaignPrice;
     return portion.price;
   };
 

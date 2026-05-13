@@ -355,7 +355,7 @@ export function MenuPage() {
             <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">⭐</span>
             {t("menu.recommended")}
           </h2>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
             {recommendedProducts.slice(0, 5).map((product) => (
               <motion.div
                 key={product.id}

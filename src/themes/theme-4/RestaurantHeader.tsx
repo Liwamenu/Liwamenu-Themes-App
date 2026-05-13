@@ -13,9 +13,13 @@ import { useCart } from "@/hooks/useCart";
 interface RestaurantHeaderProps {
   orders?: Order[];
   onViewOrder?: (order: Order) => void;
+  /** Fired when the cart icon in the top-right is tapped. The header
+   *  used to render the cart as a static <ShoppingCart> div with no
+   *  click handler — users had to find a separate cart trigger. */
+  onCartClick?: () => void;
 }
 
-export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderProps) {
+export function RestaurantHeader({ orders = [], onViewOrder, onCartClick }: RestaurantHeaderProps) {
   const { restaurant } = useRestaurant();
   const { t } = useTranslation();
   const { items } = useCart();
@@ -82,12 +86,19 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
           )}
           <ThemeSwitcher />
           <LanguageSwitcher />
-          <div className="relative ml-2">
+          <button
+            type="button"
+            onClick={onCartClick}
+            className="relative ml-2 p-2 -m-2 rounded-full hover:bg-muted transition-colors"
+            aria-label={t("cart.title")}
+          >
             <ShoppingCart className="w-6 h-6 text-foreground" />
-            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center">
-              {totalItems}
-            </span>
-          </div>
+            {totalItems > 0 && (
+              <span className="absolute top-0 right-0 w-5 h-5 rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 

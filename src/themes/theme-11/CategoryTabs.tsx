@@ -28,6 +28,7 @@ function throttle<T extends (...args: unknown[]) => void>(fn: T, delay: number):
 
 export const CategoryTabs = memo(function CategoryTabs({ categories, activeCategory, onCategoryChange, campaignTab }: CategoryTabsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef(true);
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
@@ -39,6 +40,10 @@ export const CategoryTabs = memo(function CategoryTabs({ categories, activeCateg
   }, []);
 
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     const activeElement = scrollRef.current?.querySelector(`[data-category="${activeCategory}"]`);
     if (activeElement) {
       activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });

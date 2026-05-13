@@ -217,6 +217,29 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Soft right-edge fade for horizontally-scrolling rows. The trailing
+   *  ~28px of the row fades from opaque to transparent, giving users a
+   *  passive visual cue that there is more content off to the right —
+   *  paired with `hide-scrollbar` it solves the discoverability gap
+   *  (hidden scrollbar made the swipe affordance invisible). Pure CSS,
+   *  no JS, no extra DOM. Apply alongside `overflow-x-auto`.
+   *
+   *  Theme-20 already had a per-theme variant of this; this utility is
+   *  the portable version that any theme can opt into without extra
+   *  custom CSS. */
+  .scroll-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+            mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+  }
 }
 
 /* RTL Support */

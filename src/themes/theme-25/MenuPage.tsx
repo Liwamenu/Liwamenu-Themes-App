@@ -30,6 +30,12 @@ import { SubcategoryButtons, useSubcategoryFilter } from "@/components/menu/Subc
 
 type View = "menu" | "order";
 
+/** Synthetic id used by the category grid + drill-in flow to represent
+ *  the "all campaign products" pseudo-category. Lets the user dive into
+ *  every campaign-flagged product in one place from the landing screen,
+ *  matching the campaign-tab UX in theme-1 (shared MenuPage). */
+const CAMPAIGN_CATEGORY_ID = "__campaign__";
+
 /**
  * Theme-25 MenuPage — category-first drill-down layout.
  *
@@ -45,6 +51,8 @@ export function MenuPage() {
   const { t } = useTranslation();
   const {
     categories,
+    recommendedProducts,
+    campaignProducts,
     isRestaurantActive,
     isCurrentlyOpen,
     restaurant,
@@ -203,14 +211,29 @@ export function MenuPage() {
       );
   }, [searchQuery, categories]);
 
-  /* Active category data (when drilled-in) */
-  const activeCategory = useMemo(
-    () => categories.find((c) => c.id === selectedCategoryId) ?? null,
-    [categories, selectedCategoryId],
-  );
+  /* Active category data (when drilled-in). Handles the synthetic
+   *  "campaign" pseudo-category by materializing a category-shaped
+   *  object on the fly — keeps the rest of the drill-in template
+   *  (title, product grid, subcategory pills) generic. */
+  const activeCategory = useMemo(() => {
+    if (selectedCategoryId === CAMPAIGN_CATEGORY_ID) {
+      return {
+        id: CAMPAIGN_CATEGORY_ID,
+        name: t("menu.campaignProducts"),
+        image: "",
+        sortOrder: -1,
+        products: campaignProducts,
+      };
+    }
+    return categories.find((c) => c.id === selectedCategoryId) ?? null;
+  }, [categories, campaignProducts, selectedCategoryId, t]);
 
   const activeCategoryProducts = useMemo(() => {
     if (!activeCategory) return [];
+    // No subcategory filtering for the synthetic campaign view — the
+    // products come from across real categories and have no shared
+    // subcategory taxonomy.
+    if (activeCategory.id === CAMPAIGN_CATEGORY_ID) return activeCategory.products;
     return subFilter.filter(activeCategory.id, activeCategory.products);
   }, [activeCategory, subFilter]);
 
@@ -316,6 +339,35 @@ export function MenuPage() {
         </div>
       )}
 
+      {/* ===== RECOMMENDED CAROUSEL (Chef Recommendation) — landing view only ===== */}
+      {!isSearching && !isDrilledIn && recommendedProducts.length > 0 && (
+        <div className="px-3 sm:px-4 mt-3">
+          <div className="rounded-2xl shadow-card p-4 bg-black/60 dark:bg-black/10 backdrop-blur-md">
+            <h2 className="text-base font-bold mb-3 text-white flex items-center gap-2">
+              <span>✨</span>
+              <span>{t("menu.recommended")}</span>
+            </h2>
+            <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-fade-x pb-1 -mx-1 px-1">
+              {/* Render the theme's actual ProductCard so recommended
+               *  items match the cards in the drill-in grid below.
+               *  shrink-0 w-36 fixes each slot's width inside the
+               *  flex carousel. */}
+              {recommendedProducts.slice(0, 8).map((product) => (
+                <div key={`rec-${product.id}`} className="shrink-0 w-36">
+                  <ProductCard
+                    product={product}
+                    onSelect={handleSelectProduct}
+                    isSpecialPriceActive={restaurant.isSpecialPriceActive}
+                    specialPriceName={restaurant.specialPriceName}
+                    formatPrice={formatPrice}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== CATEGORY GRID (default landing view) ===== */}
       {!isSearching && !isDrilledIn && (
         <div className="px-3 sm:px-4 mt-3 pb-24">
@@ -324,10 +376,39 @@ export function MenuPage() {
               {t("menu.menuTitle", "Menü")}
             </h2>
             <div className="grid grid-cols-2 gap-3">
+              {/* Campaign pseudo-tile — appears only when campaign products
+               *  exist. Clicking drills into a synthetic "campaign" view
+               *  showing every campaign-flagged product in one place. */}
+              {campaignProducts.length > 0 && (
+                <button
+                  key={CAMPAIGN_CATEGORY_ID}
+                  onClick={() => {
+                    setSelectedCategoryId(CAMPAIGN_CATEGORY_ID);
+                    window.scrollTo({ top: 0, behavior: "auto" });
+                  }}
+                  className="flex flex-col rounded-t-2xl rounded-b-[4px] shadow-card hover:shadow-card-hover transition-shadow overflow-hidden text-left"
+                >
+                  <div className="relative w-full aspect-[4/3] bg-[hsl(var(--campaign))] flex items-center justify-center text-5xl">
+                    🔥
+                  </div>
+                  <div className="p-3 text-center bg-white dark:bg-[hsl(var(--anthracite))]">
+                    <h3 className="font-bold text-sm text-black dark:text-[hsl(var(--anthracite-foreground))] line-clamp-1">
+                      {t("menu.campaignProducts")}
+                    </h3>
+                  </div>
+                </button>
+              )}
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategoryId(cat.id)}
+                  onClick={() => {
+                    setSelectedCategoryId(cat.id);
+                    // Jump to the top so the user lands at the first
+                    // product of the category instead of staying parked
+                    // at whatever Y-offset the category card had on the
+                    // landing grid.
+                    window.scrollTo({ top: 0, behavior: "auto" });
+                  }}
                   className="flex flex-col rounded-t-2xl rounded-b-[4px] shadow-card hover:shadow-card-hover transition-shadow overflow-hidden text-left"
                 >
                   <div className="relative w-full aspect-[4/3] bg-muted overflow-hidden">
@@ -384,27 +465,26 @@ export function MenuPage() {
       {isDrilledIn && activeCategory && (
         <div className="px-3 sm:px-4 mt-3 pb-24">
           <div className="rounded-2xl shadow-card p-4 bg-black/60 dark:bg-black/10 backdrop-blur-md">
-            {/* Header row: back arrow + category title */}
-            <div className="flex items-center gap-3 mb-3">
-              <button
-                onClick={() => setSelectedCategoryId(null)}
-                aria-label={t("menu.backToCategories", "Geri")}
-                className="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-white" />
-              </button>
-              <h2 className="text-lg font-bold text-white flex-1">
+            {/* Category title — the previous top back-pill was removed
+             *  because the floating bottom back button (see below) makes
+             *  it redundant. Title now spans the full row. */}
+            <div className="flex items-center mb-3">
+              <h2 className="text-lg font-bold text-white">
                 {activeCategory.name}
               </h2>
             </div>
 
-            {/* Optional subcategory pills */}
-            <SubcategoryButtons
-              categoryId={activeCategory.id}
-              products={activeCategory.products}
-              activeSub={subFilter.getActive(activeCategory.id)}
-              onToggle={(subId) => subFilter.toggle(activeCategory.id, subId)}
-            />
+            {/* Optional subcategory pills — skipped for the synthetic
+             *  campaign view because its products span real categories
+             *  with mismatched subcategory taxonomy. */}
+            {activeCategory.id !== CAMPAIGN_CATEGORY_ID && (
+              <SubcategoryButtons
+                categoryId={activeCategory.id}
+                products={activeCategory.products}
+                activeSub={subFilter.getActive(activeCategory.id)}
+                onToggle={(subId) => subFilter.toggle(activeCategory.id, subId)}
+              />
+            )}
 
             {/* Products grid */}
             {activeCategoryProducts.length === 0 ? (
@@ -430,6 +510,22 @@ export function MenuPage() {
               </div>
             )}
           </div>
+
+          {/* Floating bottom back-to-categories pill.
+           *  Sits above the LiwaMenuFooter (z-30, well below modal z-50)
+           *  so users who scroll deep into a long category don't have to
+           *  scroll all the way back up just to find the header back
+           *  button. Centered horizontally so it's discoverable without
+           *  competing with the cart/scroll-to-top widgets. */}
+          <button
+            type="button"
+            onClick={() => setSelectedCategoryId(null)}
+            aria-label={t("menu.backToCategories", "Kategorilere Dön")}
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-11 px-5 rounded-full bg-[hsl(var(--brand-orange))] hover:bg-[hsl(var(--brand-orange-deep))] text-white text-sm font-semibold shadow-lg flex items-center gap-2 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>{t("menu.backToCategories", "Kategorilere Dön")}</span>
+          </button>
         </div>
       )}
 

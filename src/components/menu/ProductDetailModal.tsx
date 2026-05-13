@@ -79,7 +79,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     if (restaurant.isSpecialPriceActive && portion.specialPrice != null) {
       return portion.specialPrice;
     }
-    if (product.isCampaign && portion.campaignPrice != null) {
+    // Mirror the campaign-validity rule from useRestaurant + useCart:
+    // a campaign price applies only when it's strictly > 0 AND strictly
+    // less than the base price. Misconfigured entries fall through to
+    // the normal price so the modal can't show a bogus discount.
+    if (
+      product.isCampaign &&
+      portion.campaignPrice != null &&
+      portion.campaignPrice > 0 &&
+      portion.campaignPrice < portion.price
+    ) {
       return portion.campaignPrice;
     }
     return portion.price;
