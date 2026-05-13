@@ -1,4 +1,7 @@
 /* eslint-disable no-undef */
+// NOTE: Service workers cannot read Vite env vars (.env). When updating the
+// Firebase config here, mirror the same change into .env (VITE_FIREBASE_*)
+// so the main app and this SW stay in sync.
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 

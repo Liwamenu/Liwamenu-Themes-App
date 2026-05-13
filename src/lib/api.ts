@@ -1,8 +1,8 @@
-// Toggle: set to true to use dummy data from src/data/restaurant.ts, false to fetch from API
-export const USE_DUMMY_DATA = false;
+// Toggle: set VITE_USE_DUMMY_DATA=true in .env to use dummy data from src/data/restaurant.ts
+export const USE_DUMMY_DATA = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 
-// API base URL
-const API_BASE_URL = "https://liwamenu.pentegrasyon.net";
+// API base URL — configured via VITE_API_BASE_URL in .env / .env.local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // API Configuration - all endpoints centralized here
 export const API_URLS = {
@@ -108,7 +108,7 @@ export function getTenant(): string {
     hostname.endsWith(".lovableproject.com") ||
     hostname.endsWith(".lovable.app")
   ) {
-    return "demo";
+    return import.meta.env.VITE_FALLBACK_TENANT;
   }
 
   // Subdomain-based: addis.liwamenu.com → "addis"
@@ -123,7 +123,7 @@ export function getTenant(): string {
     return pathSegment;
   }
 
-  return "demo"; // fallback
+  return import.meta.env.VITE_FALLBACK_TENANT; // fallback
 }
 
 // Helper to check if phone is Turkish based on the phone number

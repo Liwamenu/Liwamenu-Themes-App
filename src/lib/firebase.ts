@@ -7,17 +7,19 @@ import {
   type Messaging,
 } from "firebase/messaging";
 
+// Configured via VITE_FIREBASE_* in .env / .env.local. When updating, also
+// mirror changes into public/firebase-messaging-sw.js — service workers can't
+// read Vite env vars at runtime.
 const firebaseConfig = {
-  apiKey: "AIzaSyCdz-noqvisJwszkQdrmA8LXLJ_FFE2jdY",
-  authDomain: "liwamenu-dca55.firebaseapp.com",
-  projectId: "liwamenu-dca55",
-  storageBucket: "liwamenu-dca55.firebasestorage.app",
-  messagingSenderId: "155320793490",
-  appId: "1:155320793490:web:2d375db48cd7dee2dca94b",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const VAPID_KEY =
-  "BI1qJ_oVpoZqvE10b1_8dd8mvdhbroqajMieGj71CXZrGiyKw5e1SNqnDNMK1nuKnKzFAlwvSUO2-xJ4akOQUyU";
+const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 let app: FirebaseApp | null = null;
 let messaging: Messaging | null = null;
