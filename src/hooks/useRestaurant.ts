@@ -362,7 +362,7 @@ export function useRestaurant() {
   }, [data, allowedCategoryIds]);
 
   const formatPrice = (price: number): string => {
-    const decimals = data.decimalPlaces ?? 2;
+    const decimals = data.decimalPoint ?? 2;
     const formatted = price.toFixed(decimals);
     if (data.moneySign) {
       return `${data.moneySign}${formatted}`;

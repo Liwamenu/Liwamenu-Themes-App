@@ -6,9 +6,9 @@ import { describe, it, expect } from "vitest";
 function formatPrice(
   price: number,
   moneySign?: string | null,
-  decimalPlaces?: number | null
+  decimalPoint?: number | null
 ): string {
-  const decimals = decimalPlaces ?? 2;
+  const decimals = decimalPoint ?? 2;
   const formatted = price.toFixed(decimals);
   if (moneySign) {
     return `${moneySign}${formatted}`;
@@ -17,7 +17,7 @@ function formatPrice(
 }
 
 describe("formatPrice", () => {
-  describe("decimalPlaces = null (default → 2)", () => {
+  describe("decimalPoint = null (default → 2)", () => {
     it("formats whole number with .00", () => {
       expect(formatPrice(10, "₺", null)).toBe("₺10.00");
     });
@@ -32,8 +32,8 @@ describe("formatPrice", () => {
     });
   });
 
-  describe("decimalPlaces = undefined (default → 2)", () => {
-    it("formats with .00 when decimalPlaces is undefined", () => {
+  describe("decimalPoint = undefined (default → 2)", () => {
+    it("formats with .00 when decimalPoint is undefined", () => {
       expect(formatPrice(10, "$", undefined)).toBe("$10.00");
     });
     it("works without moneySign", () => {
@@ -41,7 +41,7 @@ describe("formatPrice", () => {
     });
   });
 
-  describe("decimalPlaces = 0", () => {
+  describe("decimalPoint = 0", () => {
     it("formats whole number without decimals", () => {
       expect(formatPrice(10, "₺", 0)).toBe("₺10");
     });
@@ -53,7 +53,7 @@ describe("formatPrice", () => {
     });
   });
 
-  describe("decimalPlaces = 1", () => {
+  describe("decimalPoint = 1", () => {
     it("formats with one decimal place", () => {
       expect(formatPrice(10, "€", 1)).toBe("€10.0");
     });
@@ -65,7 +65,7 @@ describe("formatPrice", () => {
     });
   });
 
-  describe("decimalPlaces = 2", () => {
+  describe("decimalPoint = 2", () => {
     it("formats explicitly with two decimal places", () => {
       expect(formatPrice(10, "$", 2)).toBe("$10.00");
     });
