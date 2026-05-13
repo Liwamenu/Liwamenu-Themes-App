@@ -144,6 +144,28 @@
     @apply border-border;
   }
 
+  /* Belt + braces against horizontal page scroll. Some themes
+   * (theme-7's CategoryTabs row, theme-20's horizontal product
+   * carousel, etc.) put overflow-x:auto on a child so the user can
+   * sweep tabs sideways — but if anything OUTSIDE that child slips
+   * past 100vw (a wide product image, a min-w-XXX badge, a sticky
+   * search bar with badly-budgeted paddings) the document body
+   * itself becomes scrollable. Inside the admin's device-frame
+   * iframe the user can then drag the entire menu sideways,
+   * exposing a white strip on the right because the body's
+   * background only paints as wide as the body.
+   *
+   * `overflow-x: clip` is preferred over `hidden`: it clips the
+   * overflow without creating a new scroll container, so
+   * `position: sticky` on descendant elements (category tabs,
+   * search bars) still anchors to the viewport instead of the
+   * body. Supported in every browser shipped since ~2022. */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;

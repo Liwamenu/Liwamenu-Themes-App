@@ -205,7 +205,10 @@ export interface RestaurantData {
   checkTableOrderDistance: boolean;
   tableNumber?: string;
   moneySign?: string | null;
-  decimalPlaces?: number | null;
+  // Backend renamed `decimalPlaces` → `decimalPoint` (admin panel
+  // calls it "Kuruş Hanesi"). Read GET responses now return only
+  // `decimalPoint`; the old key was dropped.
+  decimalPoint?: number | null;
   heroImageUrl: string;
   logoImageUrl: string;
   /**
