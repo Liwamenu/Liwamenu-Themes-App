@@ -490,7 +490,7 @@ export function MenuPage() {
              *  category. z-30 keeps it under modals (z-50). */}
             <button
               type="button"
-              onClick={() => setSelectedCategoryId(null)}
+              onClick={() => { setSelectedCategoryId(null); window.scrollTo({ top: 0, behavior: "auto" }); }}
               aria-label={t("menu.backToCategories", "Kategorilere Dön")}
               className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-2 h-11 pl-3 pr-5 rounded-full text-white font-semibold text-sm shadow-lg hover:shadow-xl active:scale-95 transition-all"
               style={{ background: "linear-gradient(180deg, hsl(15, 80%, 38%) 0%, hsl(15, 85%, 30%) 100%)" }}

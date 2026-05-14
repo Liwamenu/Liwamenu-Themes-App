@@ -371,13 +371,13 @@ export function useRestaurant() {
   };
 
   const recommendedProducts = useMemo(() => {
-    const all = data.products.filter(p => p.recommendation && !p.hide);
-    if (allowedCategoryIds) {
-      const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
-      return filtered.length > 0 ? filtered : all;
-    }
-    return all;
-  }, [data, allowedCategoryIds]);
+    // Same cross-menu semantics as `campaignProducts` below: the
+    // recommended carousel is a virtual aggregated view, not bound to
+    // the active menu's category list. Restaurants flag individual
+    // products as "Chef recommends" and expect them to surface no
+    // matter which menu is currently active.
+    return data.products.filter(p => p.recommendation && !p.hide);
+  }, [data]);
 
   const campaignProducts = useMemo(() => {
     // A product is shown as a campaign ONLY when at least one of its
@@ -392,7 +392,15 @@ export function useRestaurant() {
     // Without this guard the carousel and per-card badge surfaced
     // bogus campaigns (e.g. portion with campaignPrice=0 looked free
     // while the real sale price was 0₺).
-    const all = data.products.filter(
+    //
+    // NOTE: we intentionally do NOT apply the `allowedCategoryIds`
+    // (active menu) filter here. "Kampanyalı Ürünler" is a virtual
+    // cross-category tab — restaurants commonly put campaign items in
+    // a dedicated "Kampanyalar" pseudo-category that isn't assigned to
+    // any menu's categoryIds list, so menu-scoped filtering would
+    // hide those exact products the user clicked the campaign tab to
+    // see. Aggregate every valid campaign product regardless of menu.
+    return data.products.filter(
       p =>
         !p.hide &&
         p.isCampaign &&
@@ -403,12 +411,7 @@ export function useRestaurant() {
             portion.campaignPrice < portion.price,
         ),
     );
-    if (allowedCategoryIds) {
-      const filtered = all.filter(p => allowedCategoryIds.has(p.categoryId));
-      return filtered.length > 0 ? filtered : all;
-    }
-    return all;
-  }, [data, allowedCategoryIds]);
+  }, [data]);
 
   const enabledPaymentMethods = useMemo(() => {
     return data.paymentMethods.filter(pm => pm.enabled);

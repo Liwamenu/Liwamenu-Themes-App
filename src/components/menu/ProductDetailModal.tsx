@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { toast } from 'sonner';
+import { getEffectiveTagBounds, shouldShowTagItemPrice } from "@/lib/orderTag";
 
 interface ProductDetailModalProps {
   product: Product;
@@ -48,7 +49,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         }));
       if (defaultItems.length === 0) return;
       // Respect group max — keep at most maxSelected (1 for single-select).
-      const cap = tag.maxSelected > 0 ? tag.maxSelected : defaultItems.length;
+      const cap = getEffectiveTagBounds(tag).max > 0 ? getEffectiveTagBounds(tag).max : defaultItems.length;
       defaults[tag.id] = defaultItems.slice(0, cap);
     });
     setSelectedTags(defaults);
@@ -114,7 +115,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           return prev;
         }
         // Remove if already selected (for single select) or toggle off
-        if (tag.maxSelected === 1) {
+        if (getEffectiveTagBounds(tag).max === 1) {
           return { ...prev, [tag.id]: [] };
         }
         return {
@@ -134,14 +135,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         quantity: startQty,
       };
 
-      if (tag.maxSelected === 1) {
+      if (getEffectiveTagBounds(tag).max === 1) {
         // Single select - replace
         return { ...prev, [tag.id]: [newItem] };
       }
 
       // Multi select - check max
-      if (currentTagItems.length >= tag.maxSelected) {
-        toast.error(t('product.maxSelectionError', { max: tag.maxSelected }));
+      if (currentTagItems.length >= getEffectiveTagBounds(tag).max) {
+        toast.error(t('product.maxSelectionError', { max: getEffectiveTagBounds(tag).max }));
         return prev;
       }
 
@@ -200,14 +201,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       const selectedCount = currentTagItems.length;
       
       // Check group-level minSelected
-      if (tag.minSelected > 0 && selectedCount < tag.minSelected) {
+      if (getEffectiveTagBounds(tag).min > 0 && selectedCount < getEffectiveTagBounds(tag).min) {
         const tagElement = tagRefs.current[tag.id];
         if (tagElement) {
           tagElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         setShakingTagId(tag.id);
         setTimeout(() => setShakingTagId(null), 1500);
-        toast.error(t('product.minSelectionError', { name: tag.name, min: tag.minSelected }));
+        toast.error(t('product.minSelectionError', { name: tag.name, min: getEffectiveTagBounds(tag).min }));
         return false;
       }
 
@@ -355,9 +356,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
           {/* Order Tags */}
           {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
-            const isRequired = tag.minSelected > 0;
+            const isRequired = getEffectiveTagBounds(tag).min > 0;
             const selectedCount = (selectedTags[tag.id] || []).length;
-            const isUnfulfilled = isRequired && selectedCount < tag.minSelected;
+            const isUnfulfilled = isRequired && selectedCount < getEffectiveTagBounds(tag).min;
             const isShaking = shakingTagId === tag.id;
             
             return (
@@ -384,9 +385,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                       {t('common.required')}
                     </span>
                   )}
-                  {tag.maxSelected > 1 && (
+                  {getEffectiveTagBounds(tag).max > 1 && (
                     <span className="text-xs text-muted-foreground">
-                      ({t('product.maxSelection', { max: tag.maxSelected })})
+                      ({t('product.maxSelection', { max: getEffectiveTagBounds(tag).max })})
                     </span>
                   )}
                 </div>
@@ -465,7 +466,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                               </button>
                             </div>
                           )}
-                          {item.price > 0 && (
+                          {shouldShowTagItemPrice(item) && (
                             <span className="text-sm text-muted-foreground dark:text-white whitespace-nowrap truncate min-w-0">
                               +{formatPrice(item.price * (qty || 1))}
                             </span>
