@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { toast } from "sonner";
+import { getEffectiveTagBounds, shouldShowTagItemPrice } from "@/lib/orderTag";
 
 interface ProductDetailModalProps {
   product: Product;
@@ -64,7 +65,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           quantity: Math.max(1, it.minQuantity || 1),
         }));
       if (defaultItems.length === 0) return;
-      const cap = tag.maxSelected > 0 ? tag.maxSelected : defaultItems.length;
+      const cap = getEffectiveTagBounds(tag).max > 0 ? getEffectiveTagBounds(tag).max : defaultItems.length;
       defaults[tag.id] = defaultItems.slice(0, cap);
     });
     setSelectedTags(defaults);
@@ -118,7 +119,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             toast.error(t("product.mandatoryTagItem", { name: item.name }));
             return prev;
           }
-          if (tag.maxSelected === 1) {
+          if (getEffectiveTagBounds(tag).max === 1) {
             return { ...prev, [tag.id]: [] };
           }
           return {
@@ -134,12 +135,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           price: item.price,
           quantity: Math.max(1, item.minQuantity || 1),
         };
-        if (tag.maxSelected === 1) {
+        if (getEffectiveTagBounds(tag).max === 1) {
           return { ...prev, [tag.id]: [newItem] };
         }
-        if (tag.maxSelected > 0 && currentTagItems.length >= tag.maxSelected) {
+        if (getEffectiveTagBounds(tag).max > 0 && currentTagItems.length >= getEffectiveTagBounds(tag).max) {
           // Use the same key the shared modal uses, so locales stay in sync.
-          toast.error(t("product.maxSelectionError", { max: tag.maxSelected }));
+          toast.error(t("product.maxSelectionError", { max: getEffectiveTagBounds(tag).max }));
           return prev;
         }
         return { ...prev, [tag.id]: [...currentTagItems, newItem] };
@@ -365,9 +366,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   <div key={tag.id}>
                     <p className="text-xs font-semibold text-foreground mb-1.5">
                       {tag.name}
-                      {tag.maxSelected > 0 && (
+                      {getEffectiveTagBounds(tag).max > 0 && (
                         <span className="text-muted-foreground font-normal ml-1">
-                          ({t("product.maxSelections", "En fazla")} {tag.maxSelected})
+                          ({t("product.maxSelections", "En fazla")} {getEffectiveTagBounds(tag).max})
                         </span>
                       )}
                     </p>
@@ -390,7 +391,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                           >
                             {isSelected && <Check className="w-3 h-3" />}
                             <span>{item.name}</span>
-                            {item.price > 0 && (
+                            {shouldShowTagItemPrice(item) && (
                               <span className="opacity-70">+{formatPrice(item.price)}</span>
                             )}
                           </button>

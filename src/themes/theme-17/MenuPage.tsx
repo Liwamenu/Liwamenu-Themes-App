@@ -607,7 +607,7 @@ export function MenuPage() {
              *  position within a long category. */}
             <button
               type="button"
-              onClick={() => setSelectedCategoryId(null)}
+              onClick={() => { setSelectedCategoryId(null); window.scrollTo({ top: 0, behavior: "auto" }); }}
               aria-label={t("menu.backToCategories", "Kategorilere Dön")}
               className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 h-11 px-5 rounded-full bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold shadow-lg flex items-center gap-2 transition-opacity"
             >
