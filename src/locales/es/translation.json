@@ -273,6 +273,15 @@
     "workingHours": "Horario de apertura",
     "opensAt": "Abre a las {{time}}"
   },
+  "locationPermission": {
+    "title": "Se requiere permiso de ubicación",
+    "reason_online": "Necesitamos verificar si te encuentras dentro del área de entrega del restaurante para realizar un pedido de entrega.",
+    "reason_inPerson": "Necesitamos verificar que te encuentras en el restaurante para realizar un pedido en mesa.",
+    "reason_callWaiter": "Necesitamos verificar que te encuentras en el restaurante para llamar a un camarero.",
+    "privacyNote": "Tu ubicación solo se utiliza para verificar la distancia y no se almacena ni se comparte con terceros.",
+    "allow": "Permitir",
+    "deny": "Cancelar"
+  },
   "sound": {
     "title": "Sonido de notificación",
     "description": "¿Deseas recibir notificaciones sonoras cuando cambie el estado de tu pedido?",

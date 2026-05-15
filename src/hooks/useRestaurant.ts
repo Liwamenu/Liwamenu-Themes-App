@@ -62,11 +62,15 @@ interface RestaurantStore {
   isLoading: boolean;
   error: string | null;
   isInitialized: boolean;
+  /** Monotonic counter bumped every 60 s to force time-dependent
+   *  useMemos (activeMenu, prices) to re-evaluate. */
+  menuTick: number;
   setRestaurantData: (data: RestaurantData) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setInitialized: (initialized: boolean) => void;
   setTableNumber: (tableNumber: string) => void;
+  bumpMenuTick: () => void;
 }
 
 function getInitialRestaurantData(): RestaurantData {
@@ -95,11 +99,13 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
       restaurantData: { ...state.restaurantData, tableNumber },
     }));
   },
+  menuTick: 0,
+  bumpMenuTick: () => set((state) => ({ menuTick: state.menuTick + 1 })),
 }));
 
 // Call this once at app startup (in MenuPage)
 export function useInitializeRestaurant() {
-  const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error, setTableNumber } =
+  const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error, setTableNumber, bumpMenuTick } =
     useRestaurantStore();
 
   // TTL eviction: clear persisted table after 2h and reflect in store
@@ -112,6 +118,14 @@ export function useInitializeRestaurant() {
     );
     return cleanup;
   }, [setTableNumber]);
+
+  // Menu time-window ticker: bumps menuTick every 60 s so activeMenu
+  // and all price-dependent useMemos re-evaluate. This is what makes
+  // Happy-Hour prices revert to normal once the menu window ends.
+  useEffect(() => {
+    const id = setInterval(bumpMenuTick, 60_000);
+    return () => clearInterval(id);
+  }, [bumpMenuTick]);
 
   useEffect(() => {
     if (USE_DUMMY_DATA || isInitialized) return;
@@ -254,7 +268,7 @@ export function useInitializeRestaurant() {
 }
 
 export function useRestaurant() {
-  const { restaurantData: data, setTableNumber } = useRestaurantStore();
+  const { restaurantData: data, setTableNumber, menuTick } = useRestaurantStore();
 
   const isRestaurantActive = useMemo(() => {
     return (
@@ -299,6 +313,9 @@ export function useRestaurant() {
     return false;
   }, [data, getCurrentWorkingHour]);
 
+  // menuTick in deps forces periodic re-evaluation (every 60 s) so
+  // activeMenu flips to null once the time window expires and prices
+  // revert from Happy-Hour back to normal automatically.
   const activeMenu = useMemo(() => {
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -314,7 +331,7 @@ export function useRestaurant() {
       }
     }
     return null;
-  }, [data]);
+  }, [data, menuTick]);
 
   const allowedCategoryIds = useMemo(() => {
     if (!activeMenu) return null;

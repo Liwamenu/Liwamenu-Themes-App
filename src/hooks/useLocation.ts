@@ -34,6 +34,23 @@ function deg2rad(deg: number): number {
   return deg * (Math.PI / 180);
 }
 
+/**
+ * Check whether the browser has already granted geolocation permission.
+ * Falls back to `false` when the Permissions API is unavailable (older Safari)
+ * — in that case the custom explainer modal will show to be safe.
+ */
+export async function isLocationPermissionGranted(): Promise<boolean> {
+  try {
+    if (navigator.permissions) {
+      const result = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+      return result.state === 'granted';
+    }
+  } catch {
+    // Permissions API not supported (e.g. older iOS Safari)
+  }
+  return false;
+}
+
 export function useLocation() {
   const [state, setState] = useState<LocationState>({
     latitude: null,

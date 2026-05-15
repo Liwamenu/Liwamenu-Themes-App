@@ -1,16 +1,49 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import type { Locale } from "date-fns";
+import { tr, enUS, de, fr, it, es, ar, az, ru, el, zhCN } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+/**
+ * Maps the app's i18n language codes (tr, en, de, fr, it, es, ar, az,
+ * ru, el, zh) to their date-fns Locale objects. Without a `locale`
+ * prop react-day-picker renders the calendar (month name + weekday
+ * headers + first-day-of-week) in English regardless of the UI
+ * language — the bug the user reported on the Reservation date picker.
+ */
+const DATE_FNS_LOCALES: Record<string, Locale> = {
+  tr,
+  en: enUS,
+  de,
+  fr,
+  it,
+  es,
+  ar,
+  az,
+  ru,
+  el,
+  zh: zhCN,
+};
+
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+  const { i18n } = useTranslation();
+  // i18n.language can be a regional code like "en-US" or "zh-CN" —
+  // collapse to the base language so it matches our locale map keys.
+  const baseLang = (i18n.language || "tr").split("-")[0].toLowerCase();
+  const resolvedLocale = DATE_FNS_LOCALES[baseLang] ?? DATE_FNS_LOCALES.tr;
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      // i18n-resolved locale first; a caller can still override by
+      // passing `locale` explicitly (it's spread in via `...props`).
+      locale={resolvedLocale}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",

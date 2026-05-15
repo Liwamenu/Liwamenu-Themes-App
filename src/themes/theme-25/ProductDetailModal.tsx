@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, Check } from "lucide-react";
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from "@/types/restaurant";
+import { resolveActiveBasePrice } from "@/lib/priceList";
 import { AllergensSection } from "@/components/menu/AllergensSection";
 import { useCart } from "@/hooks/useCart";
 import { useRestaurant } from "@/hooks/useRestaurant";
@@ -98,7 +99,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     ) {
       return selectedPortion.campaignPrice;
     }
-    return selectedPortion.price;
+    // Non-special, non-campaign → base price from the active menu's
+    // `priceListType` ("Happy Hour"), falling back to the normal price.
+    return resolveActiveBasePrice(selectedPortion);
   }, [restaurant.isSpecialPriceActive, product.isCampaign, selectedPortion]);
 
   const originalPrice =

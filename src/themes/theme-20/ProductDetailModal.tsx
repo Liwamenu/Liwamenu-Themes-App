@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Check, MessageSquare } from 'lucide-react';
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from '@/types/restaurant';
+import { resolveActiveBasePrice } from '@/lib/priceList';
 import { useCart } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { useFlyingEmoji } from '@/hooks/useFlyingEmoji';
@@ -66,7 +67,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const getDisplayPrice = (portion: Portion) => {
     if (restaurant.isSpecialPriceActive && portion.specialPrice != null) return portion.specialPrice;
     if (product.isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price) return portion.campaignPrice;
-    return portion.price;
+    return resolveActiveBasePrice(portion);
   };
 
   const displayPrice = getDisplayPrice(selectedPortion);

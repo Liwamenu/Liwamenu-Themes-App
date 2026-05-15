@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Star, Plus } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
+import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
@@ -18,7 +19,7 @@ function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCamp
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
   const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
-  let displayPrice = portion.price;
+  let displayPrice = resolveActiveBasePrice(portion);
   let originalPrice: number | null = null;
   let priceType: "normal" | "campaign" | "special" = "normal";
 

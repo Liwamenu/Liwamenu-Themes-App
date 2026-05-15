@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useRestaurant, useRestaurantStore } from '@/hooks/useRestaurant';
-import { useLocation } from '@/hooks/useLocation';
+import { useLocation, isLocationPermissionGranted } from '@/hooks/useLocation';
 import { apiCallWaiter } from '@/lib/api';
 import { WaiterSuccessAnimation } from './WaiterSuccessAnimation';
 import { ChangeTableModal } from './ChangeTableModal';
+import { LocationPermissionModal } from './LocationPermissionModal';
 
 interface CallWaiterModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showChangeTableModal, setShowChangeTableModal] = useState(false);
+  const [showLocationPermission, setShowLocationPermission] = useState(false);
 
   const handleTableChange = (newTable: string) => {
     setTableNumber(newTable);
@@ -88,60 +90,78 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
 
   const handleCallWaiter = async () => {
     // Defensive guard: refuse to send a call-waiter request without a
-    // table assignment. The callers (menu floating button, cart drawer,
-    // order receipt) are supposed to gate this with ChangeTableModal
-    // first — but if any new entry-point forgets to, this catch-all
-    // surfaces the prompt instead of letting the API reject it with a
-    // confusing error.
+    // table assignment.
     if (!restaurant.tableNumber || !String(restaurant.tableNumber).trim()) {
       toast.error(t('cart.tableRequired', 'Önce masanızın QR kodunu tarayın'));
       setShowChangeTableModal(true);
       return;
     }
 
+    // If distance check is enabled, decide whether to show the explainer
+    // modal or skip straight to the browser prompt (already granted).
+    if (restaurant.checkTableOrderDistance) {
+      if (await isLocationPermissionGranted()) {
+        // Permission already granted — skip the custom modal
+        handleLocationAllow();
+      } else {
+        setShowLocationPermission(true);
+      }
+      return;
+    }
+
+    // No distance check — submit directly
+    submitCallWaiter();
+  };
+
+  // Runs after user approves location in the custom modal.
+  const handleLocationAllow = async () => {
+    setShowLocationPermission(false);
     setIsSubmitting(true);
 
-    // Distance gate — parity with in-person ordering
-    if (restaurant.checkTableOrderDistance) {
-      try {
-        const coords = await getLocation();
-        const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
-        const withinRange = checkDistanceWithCoords(
+    try {
+      const coords = await getLocation();
+      const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
+      const withinRange = checkDistanceWithCoords(
+        coords.latitude,
+        coords.longitude,
+        restaurant.latitude,
+        restaurant.longitude,
+        maxDistanceKm,
+      );
+      if (!withinRange) {
+        const distanceKm = getDistanceWithCoords(
           coords.latitude,
           coords.longitude,
           restaurant.latitude,
           restaurant.longitude,
-          maxDistanceKm,
         );
-        if (!withinRange) {
-          const distanceKm = getDistanceWithCoords(
-            coords.latitude,
-            coords.longitude,
-            restaurant.latitude,
-            restaurant.longitude,
-          );
-          const distanceMeters = distanceKm * 1000;
-          const maxMeters = restaurant.maxTableOrderDistanceMeter;
-          const formatDistance = (meters: number) => {
-            if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
-            return `${Math.round(meters)} ${t('common.meters')}`;
-          };
-          toast.error(
-            t('order.tableOrderOutOfRangeDistance', {
-              distance: formatDistance(distanceMeters),
-              max: formatDistance(maxMeters),
-            }),
-          );
-          setIsSubmitting(false);
-          return;
-        }
-      } catch (error) {
-        toast.error(t('order.locationError'));
+        const distanceMeters = distanceKm * 1000;
+        const maxMeters = restaurant.maxTableOrderDistanceMeter;
+        const formatDistance = (meters: number) => {
+          if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
+          return `${Math.round(meters)} ${t('common.meters')}`;
+        };
+        toast.error(
+          t('order.tableOrderOutOfRangeDistance', {
+            distance: formatDistance(distanceMeters),
+            max: formatDistance(maxMeters),
+          }),
+        );
         setIsSubmitting(false);
         return;
       }
+    } catch (error) {
+      toast.error(t('order.locationError'));
+      setIsSubmitting(false);
+      return;
     }
 
+    // Distance OK — submit
+    submitCallWaiter();
+  };
+
+  const submitCallWaiter = async () => {
+    setIsSubmitting(true);
     try {
       await apiCallWaiter({
         restaurantId: restaurant.restaurantId,
@@ -303,6 +323,12 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
         onClose={() => setShowChangeTableModal(false)}
         onTableChange={handleTableChange}
         currentTable={restaurant.tableNumber}
+      />
+      <LocationPermissionModal
+        isOpen={showLocationPermission}
+        reason="callWaiter"
+        onAllow={handleLocationAllow}
+        onDeny={() => setShowLocationPermission(false)}
       />
     </AnimatePresence>
   );
