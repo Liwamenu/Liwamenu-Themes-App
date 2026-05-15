@@ -273,6 +273,15 @@
     "workingHours": "营业时间",
     "opensAt": "{{time}}开门"
   },
+  "locationPermission": {
+    "title": "需要位置权限",
+    "reason_online": "我们需要检查您是否在餐厅的配送范围内，以便下达配送订单。",
+    "reason_inPerson": "我们需要验证您是否在餐厅内，以便下达堂食订单。",
+    "reason_callWaiter": "我们需要验证您是否在餐厅内，以便呼叫服务员。",
+    "privacyNote": "您的位置仅用于距离验证，不会被存储或与第三方共享。",
+    "allow": "允许",
+    "deny": "取消"
+  },
   "sound": {
     "title": "通知声音",
     "description": "当您的订单状态变化时，是否要接收声音通知？",

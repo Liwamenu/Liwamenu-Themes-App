@@ -5,7 +5,7 @@ import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bel
 import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
-import { useLocation } from "@/hooks/useLocation";
+import { useLocation, isLocationPermissionGranted } from "@/hooks/useLocation";
 import { useOrder } from "@/hooks/useOrder";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +15,10 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
 import { createOnlineOrder, getResponseData } from "@/lib/api";
-import { useFirebaseMessagingStore } from "@/hooks/useFirebaseMessaging";
+import { useFirebaseMessagingStore, initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 import { initFirebaseMessaging } from "@/lib/firebase";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
+import { LocationPermissionModal, type LocationPermissionReason } from "@/components/menu/LocationPermissionModal";
 import confetti from "canvas-confetti";
 import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
@@ -86,6 +87,10 @@ export function CheckoutModal({
     errorType: "permission",
     orderTypeAttempted: null
   });
+  const [locationPermission, setLocationPermission] = useState<{
+    isOpen: boolean;
+    reason: LocationPermissionReason;
+  }>({ isOpen: false, reason: 'online' });
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
 
@@ -103,20 +108,10 @@ export function CheckoutModal({
   const deliveryFee = orderType === "online" ? restaurant.deliveryFee : 0;
   const coverCharge = orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
   const total = subtotal - discountAmount + deliveryFee + coverCharge;
-  const handleSelectOrderType = async (type: OrderType) => {
-    setOrderType(type);
+  // Shared geolocation + distance-check logic used by both the
+  // "first-time" explainer modal flow and the direct (already-granted) path.
+  const proceedWithLocationCheck = async (type: OrderType) => {
     if (type === "online") {
-      // Check minimum order amount
-      if (subtotal < restaurant.minOrderAmount) {
-        toast.error(
-          <Trans
-            i18nKey="order.minOrderError"
-            values={{ min: formatPrice(restaurant.minOrderAmount) }}
-            components={{ br: <br />, b: <b /> }}
-          />
-        );
-        return;
-      }
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
@@ -143,54 +138,87 @@ export function CheckoutModal({
           errorType: "permission",
           orderTypeAttempted: "online"
         });
-        return;
       }
     } else if (type === "inPerson") {
-      // Check table order distance if enabled
-      if (restaurant.checkTableOrderDistance) {
-        try {
-          const coords = await getLocation();
-          setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
-          // Convert maxTableOrderDistanceMeter from meters to kilometers
-          const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
-          const withinTableRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, maxDistanceKm);
-          if (!withinTableRange) {
-            // Calculate distance and format for display
-            const distanceKm = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
-            const distanceMeters = distanceKm * 1000;
-            const maxMeters = restaurant.maxTableOrderDistanceMeter;
-            
-            // Format distance: show in km if >= 1000m, otherwise in meters
-            const formatDistance = (meters: number) => {
-              if (meters >= 1000) {
-                return `${(meters / 1000).toFixed(1)} km`;
-              }
-              return `${Math.round(meters)} ${t("common.meters")}`;
-            };
-            
-            setLocationErrorModal({
-              isOpen: true,
-              message: t("order.tableOrderOutOfRangeDistance", {
-                distance: formatDistance(distanceMeters),
-                max: formatDistance(maxMeters)
-              }),
-              errorType: "tableOutOfRange",
-              orderTypeAttempted: "inPerson"
-            });
-            return;
-          }
-        } catch (error) {
+      try {
+        const coords = await getLocation();
+        setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        const maxDistanceKm = restaurant.maxTableOrderDistanceMeter / 1000;
+        const withinTableRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, maxDistanceKm);
+        if (!withinTableRange) {
+          const distanceKm = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
+          const distanceMeters = distanceKm * 1000;
+          const maxMeters = restaurant.maxTableOrderDistanceMeter;
+          const formatDistance = (meters: number) => {
+            if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
+            return `${Math.round(meters)} ${t("common.meters")}`;
+          };
           setLocationErrorModal({
             isOpen: true,
-            message: t("order.locationError"),
-            errorType: "permission",
+            message: t("order.tableOrderOutOfRangeDistance", {
+              distance: formatDistance(distanceMeters),
+              max: formatDistance(maxMeters)
+            }),
+            errorType: "tableOutOfRange",
             orderTypeAttempted: "inPerson"
           });
           return;
         }
+        setStep("details");
+      } catch (error) {
+        setLocationErrorModal({
+          isOpen: true,
+          message: t("order.locationError"),
+          errorType: "permission",
+          orderTypeAttempted: "inPerson"
+        });
       }
-      setStep("details");
     }
+  };
+
+  const handleSelectOrderType = async (type: OrderType) => {
+    setOrderType(type);
+    if (type === "online") {
+      // Check minimum order amount first
+      if (subtotal < restaurant.minOrderAmount) {
+        toast.error(
+          <Trans
+            i18nKey="order.minOrderError"
+            values={{ min: formatPrice(restaurant.minOrderAmount) }}
+            components={{ br: <br />, b: <b /> }}
+          />
+        );
+        return;
+      }
+      // If browser already granted location, skip the explainer modal
+      if (await isLocationPermissionGranted()) {
+        proceedWithLocationCheck(type);
+      } else {
+        setLocationPermission({ isOpen: true, reason: 'online' });
+      }
+    } else if (type === "inPerson") {
+      if (restaurant.checkTableOrderDistance) {
+        if (await isLocationPermissionGranted()) {
+          proceedWithLocationCheck(type);
+        } else {
+          setLocationPermission({ isOpen: true, reason: 'inPerson' });
+        }
+      } else {
+        setStep("details");
+      }
+    }
+  };
+
+  // Called when user taps "Allow" in the custom location-permission modal.
+  const handleLocationPermissionAllow = async () => {
+    setLocationPermission(prev => ({ ...prev, isOpen: false }));
+    if (orderType) {
+      await proceedWithLocationCheck(orderType);
+    }
+  };
+
+  const handleLocationPermissionDeny = () => {
+    setLocationPermission(prev => ({ ...prev, isOpen: false }));
   };
   const handleDetailsSubmit = () => {
     if (orderType === "inPerson") {
@@ -306,6 +334,12 @@ export function CheckoutModal({
 
       // Save order
       addOrder(order);
+
+      // Initialize Firebase push notifications now that the user placed
+      // an order — they'll benefit from status updates. We do this lazily
+      // instead of on app load so the notification permission prompt
+      // doesn't confuse users who are just browsing the menu.
+      initializeFirebaseMessaging();
 
       // Fire confetti!
       confetti({
@@ -693,7 +727,7 @@ export function CheckoutModal({
                     </div>}
                   
                   <div className="w-full flex flex-col gap-2">
-                    {/* Retry button */}
+                    {/* Retry button — goes straight to browser geolocation (skip the explainer modal) */}
                     <Button onClick={() => {
                   setLocationErrorModal({
                     isOpen: false,
@@ -701,9 +735,9 @@ export function CheckoutModal({
                     errorType: "permission",
                     orderTypeAttempted: null
                   });
-                  if (locationErrorModal.orderTypeAttempted) {
-                    handleSelectOrderType(locationErrorModal.orderTypeAttempted);
-                  }
+                  // User already understands why location is needed (they're
+                  // retrying), so call the geolocation flow directly.
+                  handleLocationPermissionAllow();
                 }} className="w-full h-12 rounded-xl">
                       {t("order.retryLocation")}
                     </Button>
@@ -722,5 +756,11 @@ export function CheckoutModal({
             </motion.div>
           </>}
       </AnimatePresence>
+      <LocationPermissionModal
+        isOpen={locationPermission.isOpen}
+        reason={locationPermission.reason}
+        onAllow={handleLocationPermissionAllow}
+        onDeny={handleLocationPermissionDeny}
+      />
     </>;
 }

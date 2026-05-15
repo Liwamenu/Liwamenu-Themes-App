@@ -273,6 +273,15 @@
     "workingHours": "Horaires d'ouverture",
     "opensAt": "Ouvre à {{time}}"
   },
+  "locationPermission": {
+    "title": "Autorisation de localisation requise",
+    "reason_online": "Nous devons vérifier que vous êtes dans la zone de livraison du restaurant pour passer une commande de livraison.",
+    "reason_inPerson": "Nous devons vérifier que vous êtes au restaurant pour passer une commande sur place.",
+    "reason_callWaiter": "Nous devons vérifier que vous êtes au restaurant pour appeler un serveur.",
+    "privacyNote": "Votre localisation est uniquement utilisée pour vérifier la distance et n'est ni stockée ni partagée avec des tiers.",
+    "allow": "Autoriser",
+    "deny": "Annuler"
+  },
   "sound": {
     "title": "Son de notification",
     "description": "Souhaitez-vous recevoir des notifications sonores lorsque le statut de votre commande change ?",

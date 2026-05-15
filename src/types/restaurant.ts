@@ -111,6 +111,16 @@ export interface Menu {
   name: string;
   plans: MenuPlan[];
   categoryIds: string[];
+  /**
+   * Which price column the theme should treat as the "base price"
+   * while this menu is active ("Happy Hour" pricing):
+   *   - "normal"   → portion.price
+   *   - "campaign" → portion.campaignPrice (falls back to price)
+   *   - "special"  → portion.specialPrice  (falls back to price)
+   * Campaign-flagged products keep their existing campaign display
+   * regardless. Missing / null → "normal" (backward compatible).
+   */
+  priceListType?: "normal" | "campaign" | "special" | string;
 }
 
 export interface PaymentMethod {

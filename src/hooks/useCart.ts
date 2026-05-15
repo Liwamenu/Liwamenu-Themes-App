@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Product, Portion, SelectedTagItem } from '@/types/restaurant';
 import { useRestaurantStore } from '@/hooks/useRestaurant';
 import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
+import { resolveActiveBasePrice } from '@/lib/priceList';
 
 // Shared helper to get the correct display price for a portion.
 // Campaign is gated by the product-level `isCampaign` flag.
@@ -28,7 +29,12 @@ export function getPortionDisplayPrice(
   ) {
     return portion.campaignPrice;
   }
-  return portion.price;
+  // Non-special, non-campaign → BASE price dictated by the active
+  // menu's `priceListType` ("Happy Hour" pricing). Falls back to the
+  // normal `portion.price` when no menu is active or the selected
+  // price column is empty, so the cart stays correct & backward
+  // compatible.
+  return resolveActiveBasePrice(portion);
 }
 
 export function getCartItemDisplayPrice(

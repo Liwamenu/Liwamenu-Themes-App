@@ -1,7 +1,8 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, Leaf } from "lucide-react";
+import { Flame, Leaf, Tag } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
+import { resolveActiveBasePrice } from "@/lib/priceList";
 import { useTranslation } from "react-i18next";
 
 interface ProductCardProps {
@@ -24,7 +25,7 @@ function getPriceDisplay(portion: Portion, isSpecialPriceActive: boolean, isCamp
   const hasSpecial = isSpecialPriceActive && portion.specialPrice != null;
   const hasCampaign = isCampaign && portion.campaignPrice != null && portion.campaignPrice > 0 && portion.campaignPrice < portion.price;
 
-  let displayPrice = portion.price;
+  let displayPrice = resolveActiveBasePrice(portion);
   let originalPrice: number | null = null;
   let priceType: "normal" | "campaign" | "special" = "normal";
 
@@ -159,7 +160,14 @@ export const ProductCard = memo(function ProductCard({
       className="menu-row"
       aria-label={product.name}
     >
-      {/* Name . . . dots . . . price */}
+      {/* Name {chips} . . . dots . . . price
+       *
+       *  The chips block is a SIBLING of the name span, not a child:
+       *  `.menu-row-name` truncates long titles with an ellipsis, and
+       *  anything nested inside it would get clipped too. Keeping the
+       *  chips outside (with `flex: 0 0 auto` in theme.css) guarantees
+       *  the campaign badge is always visible regardless of name
+       *  length — the original bug the user reported. */}
       <div className="menu-row-line">
         <span
           ref={nameRef}
@@ -175,43 +183,51 @@ export const ProductCard = memo(function ProductCard({
           }}
         >
           {product.name}
-          {(priceType !== "normal" || spicyLevel > 0 || isVegetarian) && (
-            <span className="menu-row-chips">
-              {priceType === "campaign" && (
-                <span className="menu-row-chip is-campaign">
-                  {t("productCard.campaign")}
-                </span>
-              )}
-              {priceType === "special" && (
-                <span className="menu-row-chip is-special">{specialPriceName}</span>
-              )}
-              {spicyLevel > 0 &&
-                [0, 1, 2].map((i) => (
-                  <Flame
-                    key={i}
-                    className="w-3 h-3 inline-block align-middle"
-                    style={{
-                      color:
-                        i < spicyLevel
-                          ? "hsl(var(--wax-red))"
-                          : "hsl(var(--muted-foreground))",
-                      fill: i < spicyLevel ? "hsl(var(--wax-red))" : "transparent",
-                      opacity: i < spicyLevel ? 1 : 0.35,
-                    }}
-                  />
-                ))}
-              {isVegetarian && (
-                <Leaf
+        </span>
+        {(priceType !== "normal" || spicyLevel > 0 || isVegetarian) && (
+          <span className="menu-row-chips">
+            {priceType === "campaign" && (
+              // Icon-only badge — a Tag glyph in a wax-red square.
+              // Fixed compact width, so it can't be pushed off-row by
+              // a long name. `title` keeps the textual meaning for
+              // hover/assistive tech.
+              <span
+                className="menu-row-chip is-campaign"
+                title={t("productCard.campaign")}
+                aria-label={t("productCard.campaign")}
+              >
+                <Tag className="w-2.5 h-2.5" aria-hidden="true" />
+              </span>
+            )}
+            {priceType === "special" && (
+              <span className="menu-row-chip is-special">{specialPriceName}</span>
+            )}
+            {spicyLevel > 0 &&
+              [0, 1, 2].map((i) => (
+                <Flame
+                  key={i}
                   className="w-3 h-3 inline-block align-middle"
                   style={{
-                    color: "hsl(var(--forest))",
-                    fill: "hsl(var(--forest))",
+                    color:
+                      i < spicyLevel
+                        ? "hsl(var(--wax-red))"
+                        : "hsl(var(--muted-foreground))",
+                    fill: i < spicyLevel ? "hsl(var(--wax-red))" : "transparent",
+                    opacity: i < spicyLevel ? 1 : 0.35,
                   }}
                 />
-              )}
-            </span>
-          )}
-        </span>
+              ))}
+            {isVegetarian && (
+              <Leaf
+                className="w-3 h-3 inline-block align-middle"
+                style={{
+                  color: "hsl(var(--forest))",
+                  fill: "hsl(var(--forest))",
+                }}
+              />
+            )}
+          </span>
+        )}
         <span className="menu-row-dots" aria-hidden="true" />
         <span className="menu-row-price">
           {formatPrice(displayPrice)}

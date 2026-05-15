@@ -273,6 +273,15 @@
     "workingHours": "Öffnungszeiten",
     "opensAt": "Öffnet um {{time}}"
   },
+  "locationPermission": {
+    "title": "Standortberechtigung erforderlich",
+    "reason_online": "Wir müssen prüfen, ob Sie sich im Liefergebiet des Restaurants befinden, um eine Lieferbestellung aufzugeben.",
+    "reason_inPerson": "Wir müssen überprüfen, ob Sie sich im Restaurant befinden, um eine Tischbestellung aufzugeben.",
+    "reason_callWaiter": "Wir müssen überprüfen, ob Sie sich im Restaurant befinden, um einen Kellner zu rufen.",
+    "privacyNote": "Ihr Standort wird nur zur Entfernungsüberprüfung verwendet und nicht gespeichert oder an Dritte weitergegeben.",
+    "allow": "Erlauben",
+    "deny": "Abbrechen"
+  },
   "sound": {
     "title": "Benachrichtigungston",
     "description": "Möchten Sie Tonbenachrichtigungen erhalten, wenn sich Ihr Bestellstatus ändert?",

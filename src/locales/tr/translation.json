@@ -275,6 +275,15 @@
     "workingHours": "Çalışma saatleri",
     "opensAt": "{{time}}'da açılacak"
   },
+  "locationPermission": {
+    "title": "Konum İzni Gerekli",
+    "reason_online": "Paket sipariş verebilmek için restoranın hizmet alanında olup olmadığınızı kontrol etmemiz gerekmektedir.",
+    "reason_inPerson": "Masa siparişi verebilmek için restoranda olup olmadığınızı doğrulamamız gerekmektedir.",
+    "reason_callWaiter": "Garson çağırabilmek için restoranda olup olmadığınızı doğrulamamız gerekmektedir.",
+    "privacyNote": "Konum bilginiz yalnızca mesafe kontrolü için kullanılır, saklanmaz veya üçüncü taraflarla paylaşılmaz.",
+    "allow": "İzin Ver",
+    "deny": "Vazgeç"
+  },
   "sound": {
     "title": "Bildirim Sesi",
     "description": "Sipariş durumunuz değiştiğinde sesli bildirim almak ister misiniz?",

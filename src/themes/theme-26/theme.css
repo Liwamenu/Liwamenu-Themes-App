@@ -177,11 +177,11 @@
 
 /* ---- Fonts: Cinzel for titles, Cormorant Garamond for body ---- */
 .theme-26 {
-  /* Slight bump in body size — Cormorant Garamond looks elegant
-   *  but small on screen at typical 14px, so we anchor at 95%
-   *  so default 16px → 15.2px, giving the menu rows breathing
-   *  room without busting layouts of borrowed shared components. */
-  font-size: 95%;
+  /* Body size anchored at 81% (was 95%, reduced 15% per user request —
+   *  long product names were crowding the campaign badge off the row).
+   *  Smaller base buys horizontal breathing room across the whole
+   *  theme without busting borrowed shared components. */
+  font-size: 81%;
 }
 .theme-26,
 .theme-26 * {
@@ -255,7 +255,7 @@
   font-family: 'Cinzel', serif;
   font-weight: 700;
   color: hsl(var(--walnut-warm));
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   line-height: 1.1;
   margin: 0;
   padding-bottom: 0.35rem;
@@ -313,7 +313,7 @@
 }
 .theme-26 .cat-banner .menu-section-title h2 {
   text-shadow: none;
-  font-size: 1.1rem;
+  font-size: 0.94rem;
   transition: color 200ms ease, border-bottom-color 200ms ease;
 }
 
@@ -366,7 +366,7 @@
   font-family: 'Birthstone', 'Cormorant Garamond', cursive, serif;
   font-weight: 400;
   color: hsl(var(--walnut));
-  font-size: 1.85rem;
+  font-size: 1.57rem;
   line-height: 1.0;
   letter-spacing: 0;
   white-space: nowrap;
@@ -442,7 +442,7 @@
    *  printing-press print run as the name beside it. Dark mode
    *  overrides below — pure black on mahogany would disappear. */
   color: #000;
-  font-size: 1.05rem;
+  font-size: 0.89rem;
   line-height: 1.3;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -459,7 +459,7 @@
   display: block;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   color: hsl(var(--walnut-mid));
   line-height: 1.4;
   margin-top: 0;
@@ -468,32 +468,44 @@
 .theme-26 .menu-row .menu-row-old-price {
   text-decoration: line-through;
   color: hsl(var(--muted-foreground));
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   margin-left: 0.4rem;
 }
 
-/* Campaign/special chip — kept very small so it doesn't break the
- *  printed-menu illusion. Wax-red for campaign, amber for special. */
+/* Campaign/special chips — rendered as a flex SIBLING of the name
+ *  span (not inside it). The name span truncates with an ellipsis on
+ *  long titles; keeping the chips outside + `flex: 0 0 auto` means the
+ *  campaign badge can never be clipped off the row no matter how long
+ *  the product name is. `align-self: center` keeps the row of glyphs
+ *  vertically centered despite the line's `last baseline` alignment. */
 .theme-26 .menu-row .menu-row-chips {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-left: 0.5rem;
-  vertical-align: middle;
+  gap: 0.3rem;
+  margin-left: 0.4rem;
+  flex: 0 0 auto;
+  align-self: center;
 }
 .theme-26 .menu-row .menu-row-chip {
-  display: inline-block;
-  padding: 0.05rem 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 4px;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   line-height: 1.5;
+  padding: 0.05rem 0.35rem;
 }
+/* Campaign badge is icon-only now — a compact wax-red rounded square
+ *  holding a Tag glyph. With no text it adds a fixed ~18px to the row
+ *  instead of a variable-width word, so it survives any name length. */
 .theme-26 .menu-row .menu-row-chip.is-campaign {
   background: hsl(var(--wax-red));
   color: #fff;
+  padding: 0.15rem;
+  border-radius: 5px;
 }
 .theme-26 .menu-row .menu-row-chip.is-special {
   background: hsl(var(--amber));

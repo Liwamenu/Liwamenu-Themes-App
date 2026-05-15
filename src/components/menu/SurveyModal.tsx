@@ -154,11 +154,21 @@ export function SurveyModal({
     }, 1500);
   };
   const handleRatingChange = (category: string, rating: number, event: React.MouseEvent) => {
+    // Tap-again-to-clear: if the user taps the star that's already the
+    // current rating for this category, reset it to 0 (unrated). This
+    // lets someone who tapped a star by accident "give up" on rating
+    // that category — 0 is the unrated sentinel and is excluded from
+    // both the `hasRating` submission gate and the payload.
+    const willClear = ratings[category] === rating;
     setRatings(prev => ({
       ...prev,
-      [category]: rating
+      [category]: willClear ? 0 : rating
     }));
-    spawnEmojis(rating, event);
+    // Only celebrate (flying emojis) when a rating is actually being
+    // SET — clearing a rating shouldn't trigger the reward animation.
+    if (!willClear) {
+      spawnEmojis(rating, event);
+    }
   };
   const handleSubmit = async () => {
     // Allow feedback if user has any order in local history (any status)

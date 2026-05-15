@@ -464,17 +464,17 @@
  *  • `:not(button *)`  — buttons set their own foreground via variants
  *    (text-white, bg-primary text-primary-foreground); don't override.
  *  • `:not(a *)`       — anchors style their own text (footer address).
- *  • `:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *)` — CheckoutModal's "Sipariş Özeti" card is
+ *  • `:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *)` — CheckoutModal's "Sipariş Özeti" card is
  *    bg-stone-100 + text-stone-800 by design, intentionally light in
  *    BOTH modes for readability. Without this exclusion the dark-mode
  *    --card-foreground (near-white) cascades onto product-name spans
  *    and makes them invisible on the off-white card. */
-:where(.theme-25 .bg-card) label:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-:where(.theme-25 .bg-card) h2:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-:where(.theme-25 .bg-card) h3:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-:where(.theme-25 .bg-card) h4:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-:where(.theme-25 .bg-card) p:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-:where(.theme-25 .bg-card) span:not(button *):not(a *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *) {
+:where(.theme-25 .bg-card) label:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+:where(.theme-25 .bg-card) h2:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+:where(.theme-25 .bg-card) h3:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+:where(.theme-25 .bg-card) h4:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+:where(.theme-25 .bg-card) p:not(button *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+:where(.theme-25 .bg-card) span:not(button *):not(a *):not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *) {
   color: hsl(var(--card-foreground));
 }
 
@@ -484,20 +484,20 @@
  *  Radix's default `bg-background` (white in this theme), and its
  *  children inherit the standard --foreground, which is already dark
  *  and readable — no override needed.
- *  `:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *)` carves out the CheckoutModal "Sipariş
+ *  `:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *)` carves out the CheckoutModal "Sipariş
  *  Özeti" card, which is intentionally off-white in both modes. */
-.dark :where(.theme-25 [role="dialog"]) label:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark :where(.theme-25 [role="dialog"]) h2:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark :where(.theme-25 [role="dialog"]) h3:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark :where(.theme-25 [role="dialog"]) h4:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark :where(.theme-25 [role="dialog"]) p:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark :where(.theme-25 [role="dialog"]) span:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] label:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] h2:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] h3:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] h4:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] p:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *),
-.dark.theme-25 [role="dialog"] span:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *) {
+.dark :where(.theme-25 [role="dialog"]) label:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark :where(.theme-25 [role="dialog"]) h2:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark :where(.theme-25 [role="dialog"]) h3:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark :where(.theme-25 [role="dialog"]) h4:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark :where(.theme-25 [role="dialog"]) p:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark :where(.theme-25 [role="dialog"]) span:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] label:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] h2:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] h3:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] h4:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] p:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *),
+.dark.theme-25 [role="dialog"] span:not(.bg-stone-100 *):not([class*="dark:bg-white"] *):not(.bg-white *):not([class*="bg-amber"] *) {
   color: hsl(var(--anthracite-foreground));
 }
 

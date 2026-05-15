@@ -273,6 +273,15 @@
     "workingHours": "İş saatları",
     "opensAt": "{{time}}-da açılacaq"
   },
+  "locationPermission": {
+    "title": "Məkan icazəsi tələb olunur",
+    "reason_online": "Çatdırılma sifarişi vermək üçün restoranın çatdırılma zonasında olub-olmadığınızı yoxlamalıyıq.",
+    "reason_inPerson": "Masa sifarişi vermək üçün restoranda olduğunuzu təsdiqləməliyik.",
+    "reason_callWaiter": "Ofisiant çağırmaq üçün restoranda olduğunuzu təsdiqləməliyik.",
+    "privacyNote": "Məkanınız yalnız məsafə yoxlaması üçün istifadə olunur və saxlanmır və ya üçüncü tərəflərlə paylaşılmır.",
+    "allow": "İcazə ver",
+    "deny": "Ləğv et"
+  },
   "sound": {
     "title": "Bildiriş səsi",
     "description": "Sifariş statusunuz dəyişəndə səsli bildiriş almaq istəyirsiniz?",
