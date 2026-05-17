@@ -335,5 +335,23 @@
     "sulphites": "Sulfitlər",
     "lupin": "Acı paxla",
     "molluscs": "Mollyusklar"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Hələ buradasınız?",
+    "idleWarningMessage": "{{seconds}} saniyə ərzində əməliyyat aparılmazsa sifariş ləğv ediləcək.",
+    "continueOrder": "Davam et",
+    "touchToStart": "Sifariş üçün toxunun",
+    "startOrder": "Sifarişə başla",
+    "selectOrderType": "Sifariş növünü seçin",
+    "takeaway": "Özünüz götürün",
+    "takeawayDesc": "Sifariş verin, piştaxtadan götürün",
+    "package": "Paket",
+    "packageDesc": "Paketlənsin, yanınıza götürün",
+    "dineIn": "Masada",
+    "dineInDesc": "Masanıza servis edilsin",
+    "restaurantClosed": "Restoran hazırda bağlıdır",
+    "restaurantNotActive": "Restoran hazırda xidmət göstərmir",
+    "restart": "Yenidən başla",
+    "selectLanguage": "Dil seçin"
   }
 }

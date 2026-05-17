@@ -335,5 +335,23 @@
     "sulphites": "Сульфиты",
     "lupin": "Люпин",
     "molluscs": "Моллюски"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Вы ещё здесь?",
+    "idleWarningMessage": "Ваш заказ будет отменён через {{seconds}} секунд.",
+    "continueOrder": "Продолжить",
+    "touchToStart": "Нажмите для заказа",
+    "startOrder": "Начать заказ",
+    "selectOrderType": "Выберите тип заказа",
+    "takeaway": "С собой",
+    "takeawayDesc": "Закажите и заберите на кассе",
+    "package": "Упаковка",
+    "packageDesc": "Упаковано с собой",
+    "dineIn": "В зале",
+    "dineInDesc": "Подадим к вашему столу",
+    "restaurantClosed": "Ресторан сейчас закрыт",
+    "restaurantNotActive": "Ресторан недоступен",
+    "restart": "Начать заново",
+    "selectLanguage": "Выберите язык"
   }
 }

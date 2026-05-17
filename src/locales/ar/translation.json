@@ -335,5 +335,23 @@
     "sulphites": "الكبريتات",
     "lupin": "الترمس",
     "molluscs": "الرخويات"
+  },
+  "kiosk": {
+    "idleWarningTitle": "هل ما زلت هنا؟",
+    "idleWarningMessage": "سيتم إلغاء طلبك خلال {{seconds}} ثانية.",
+    "continueOrder": "متابعة",
+    "touchToStart": "المس للطلب",
+    "startOrder": "ابدأ الطلب",
+    "selectOrderType": "اختر نوع الطلب",
+    "takeaway": "استلام",
+    "takeawayDesc": "اطلب واستلم من الكاونتر",
+    "package": "تغليف",
+    "packageDesc": "مغلف للأخذ",
+    "dineIn": "في المكان",
+    "dineInDesc": "يُقدم على طاولتك",
+    "restaurantClosed": "المطعم مغلق حالياً",
+    "restaurantNotActive": "المطعم غير متاح",
+    "restart": "إعادة البدء",
+    "selectLanguage": "اختر اللغة"
   }
 }

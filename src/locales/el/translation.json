@@ -335,5 +335,23 @@
     "sulphites": "Θειώδη",
     "lupin": "Λούπινο",
     "molluscs": "Μαλάκια"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Είστε ακόμα εδώ;",
+    "idleWarningMessage": "Η παραγγελία σας θα ακυρωθεί σε {{seconds}} δευτερόλεπτα.",
+    "continueOrder": "Συνέχεια",
+    "touchToStart": "Αγγίξτε για παραγγελία",
+    "startOrder": "Έναρξη παραγγελίας",
+    "selectOrderType": "Επιλέξτε τύπο παραγγελίας",
+    "takeaway": "Take θway",
+    "takeawayDesc": "Παραγγείλτε και παραλάβετε",
+    "package": "Πακέτο",
+    "packageDesc": "Συσκευασμένο για take away",
+    "dineIn": "Στο τραπέζι",
+    "dineInDesc": "Σερβίρεται στο τραπέζι σας",
+    "restaurantClosed": "Το εστιατόριο είναι κλειστό",
+    "restaurantNotActive": "Το εστιατόριο δεν είναι διαθέσιμο",
+    "restart": "Επανεκκίνηση",
+    "selectLanguage": "Επιλέξτε γλώσσα"
   }
 }

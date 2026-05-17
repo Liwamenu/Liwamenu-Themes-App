@@ -337,5 +337,23 @@
     "sulphites": "Kükürt dioksit / Sülfitler",
     "lupin": "Acı bakla",
     "molluscs": "Yumuşakçalar"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Hala burada mısınız?",
+    "idleWarningMessage": "{{seconds}} saniye içinde işlem yapılmazsa sipariş iptal edilecek.",
+    "continueOrder": "Devam Et",
+    "touchToStart": "Sipariş vermek için dokunun",
+    "startOrder": "Siparişe Başla",
+    "selectOrderType": "Sipariş Türünü Seçin",
+    "takeaway": "Gel Al",
+    "takeawayDesc": "Sipariş ver, tezgahtan al",
+    "package": "Paket",
+    "packageDesc": "Paketlensin, yanınıza alın",
+    "dineIn": "Masada",
+    "dineInDesc": "Masanıza servis edilsin",
+    "restaurantClosed": "Restoran şu an kapalıdır",
+    "restaurantNotActive": "Restoran şu an hizmet vermiyor",
+    "restart": "Yeniden Başla",
+    "selectLanguage": "Dil Seçin"
   }
 }

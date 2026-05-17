@@ -335,5 +335,23 @@
     "sulphites": "Sulfites",
     "lupin": "Lupin",
     "molluscs": "Mollusques"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Êtes-vous toujours là ?",
+    "idleWarningMessage": "Votre commande sera annulée dans {{seconds}} secondes.",
+    "continueOrder": "Continuer",
+    "touchToStart": "Touchez pour commander",
+    "startOrder": "Commencer la commande",
+    "selectOrderType": "Choisir le type de commande",
+    "takeaway": "À emporter",
+    "takeawayDesc": "Commander et récupérer au comptoir",
+    "package": "Emballé",
+    "packageDesc": "Emballé à emporter",
+    "dineIn": "Sur place",
+    "dineInDesc": "Servi à votre table",
+    "restaurantClosed": "Le restaurant est actuellement fermé",
+    "restaurantNotActive": "Le restaurant n'est pas disponible",
+    "restart": "Recommencer",
+    "selectLanguage": "Choisir la langue"
   }
 }

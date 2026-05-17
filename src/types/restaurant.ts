@@ -58,6 +58,25 @@ export interface Portion {
   orderTags: OrderTag[];
 }
 
+/**
+ * One (category, sub-category) placement for a product. The backend
+ * returns these in `Product.categories[]`. A product may appear in
+ * multiple categories — each entry carries its own sortOrder within
+ * that category, plus optional subCategory metadata.
+ */
+export interface ProductCategoryRef {
+  categoryId: string;
+  categoryName: string;
+  categoryImage: string;
+  categorySortOrder: number;
+  subCategoryId: string | null;
+  subCategoryName: string | null;
+  subCategoryImage: string | null;
+  subCategorySortOrder: number | null;
+  /** Sort order of the product WITHIN this category. */
+  sortOrder: number;
+}
+
 export interface Product {
   id: string;
   sortOrder: number;
@@ -76,6 +95,13 @@ export interface Product {
   subCategoryName: string | null;
   subCategoryImage: string | null;
   subCategorySortOrder: number;
+  /**
+   * NEW (multi-category support): a product can belong to more than
+   * one category. Each entry has its own sortOrder + subCategory.
+   * The legacy `categoryId`/`subCategoryId` flat fields above mirror
+   * the FIRST entry for backward compatibility.
+   */
+  categories?: ProductCategoryRef[];
   isNoteAllowed?: boolean;
   isCampaign?: boolean;
   /** EU 14 major allergens declared for this product (Annex II / Türk Gıda Kodeksi). */

@@ -335,5 +335,23 @@
     "sulphites": "亚硫酸盐",
     "lupin": "羽扇豆",
     "molluscs": "软体动物"
+  },
+  "kiosk": {
+    "idleWarningTitle": "您还在吗？",
+    "idleWarningMessage": "{{seconds}}秒内无操作将取消订单。",
+    "continueOrder": "继续",
+    "touchToStart": "点击下单",
+    "startOrder": "开始点餐",
+    "selectOrderType": "选择订单类型",
+    "takeaway": "自取",
+    "takeawayDesc": "下单后到柜台取餐",
+    "package": "打包",
+    "packageDesc": "打包带走",
+    "dineIn": "堂食",
+    "dineInDesc": "送到您的餐桌",
+    "restaurantClosed": "餐厅目前已关闭",
+    "restaurantNotActive": "餐厅暂不可用",
+    "restart": "重新开始",
+    "selectLanguage": "选择语言"
   }
 }
