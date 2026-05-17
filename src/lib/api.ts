@@ -1,8 +1,10 @@
 // Toggle: set VITE_USE_DUMMY_DATA=true in .env to use dummy data from src/data/restaurant.ts
 export const USE_DUMMY_DATA = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 
-// API base URL — configured via VITE_API_BASE_URL in .env / .env.local
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// API base URL — configured via VITE_API_BASE_URL in .env / .env.local.
+// In dev (incl. ngrok tunnels), use a relative path so requests go through
+// the Vite dev-server proxy and avoid CORS preflight failures.
+const API_BASE_URL = import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE_URL;
 
 // API Configuration - all endpoints centralized here
 export const API_URLS = {
@@ -99,25 +101,35 @@ export async function resendReservationVerification(payload: { reservationId: st
 
 // Resolve tenant from URL
 export function getTenant(): string {
+  // 1) Explicit ?tenant=xxx URL param always wins (handy for ngrok testing).
+  const tenantParam = new URLSearchParams(window.location.search).get("tenant");
+  if (tenantParam) return tenantParam;
+
   const hostname = window.location.hostname;
 
-  // Local development or Lovable preview → default tenant
+  // 2) Local development, Lovable preview, or tunneling services
+  //    (ngrok, cloudflared, etc.) → default tenant.
   if (
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname.endsWith(".lovableproject.com") ||
-    hostname.endsWith(".lovable.app")
+    hostname.endsWith(".lovable.app") ||
+    hostname.endsWith(".ngrok-free.app") ||
+    hostname.endsWith(".ngrok-free.dev") ||
+    hostname.endsWith(".ngrok.io") ||
+    hostname.endsWith(".ngrok.app") ||
+    hostname.endsWith(".trycloudflare.com")
   ) {
     return import.meta.env.VITE_FALLBACK_TENANT;
   }
 
-  // Subdomain-based: addis.liwamenu.com → "addis"
+  // 3) Subdomain-based: addis.liwamenu.com → "addis"
   const parts = hostname.split(".");
   if (parts.length > 2) {
     return parts[0];
   }
 
-  // Path-based: liwamenu.com/addis → "addis"
+  // 4) Path-based: liwamenu.com/addis → "addis"
   const pathSegment = window.location.pathname.split("/")[1];
   if (pathSegment) {
     return pathSegment;

@@ -335,5 +335,23 @@
     "sulphites": "Sulfite",
     "lupin": "Lupinen",
     "molluscs": "Weichtiere"
+  },
+  "kiosk": {
+    "idleWarningTitle": "Sind Sie noch da?",
+    "idleWarningMessage": "Ihre Bestellung wird in {{seconds}} Sekunden storniert.",
+    "continueOrder": "Weiter",
+    "touchToStart": "Zum Bestellen berühren",
+    "startOrder": "Bestellung starten",
+    "selectOrderType": "Bestellart wählen",
+    "takeaway": "Mitnehmen",
+    "takeawayDesc": "Bestellen und an der Theke abholen",
+    "package": "Verpackt",
+    "packageDesc": "Zum Mitnehmen verpackt",
+    "dineIn": "Vor Ort",
+    "dineInDesc": "An Ihrem Tisch serviert",
+    "restaurantClosed": "Restaurant ist derzeit geschlossen",
+    "restaurantNotActive": "Restaurant ist nicht verfügbar",
+    "restart": "Neu starten",
+    "selectLanguage": "Sprache wählen"
   }
 }

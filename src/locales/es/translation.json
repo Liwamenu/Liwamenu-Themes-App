@@ -335,5 +335,23 @@
     "sulphites": "Sulfitos",
     "lupin": "Altramuces",
     "molluscs": "Moluscos"
+  },
+  "kiosk": {
+    "idleWarningTitle": "¿Sigues ahí?",
+    "idleWarningMessage": "Tu pedido será cancelado en {{seconds}} segundos.",
+    "continueOrder": "Continuar",
+    "touchToStart": "Toca para pedir",
+    "startOrder": "Iniciar pedido",
+    "selectOrderType": "Seleccionar tipo de pedido",
+    "takeaway": "Para llevar",
+    "takeawayDesc": "Pide y recoge en el mostrador",
+    "package": "Empaquetado",
+    "packageDesc": "Empaquetado para llevar",
+    "dineIn": "En mesa",
+    "dineInDesc": "Servido en tu mesa",
+    "restaurantClosed": "El restaurante está cerrado",
+    "restaurantNotActive": "El restaurante no está disponible",
+    "restart": "Reiniciar",
+    "selectLanguage": "Seleccionar idioma"
   }
 }

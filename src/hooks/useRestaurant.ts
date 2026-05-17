@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { create } from 'zustand';
 import { restaurantData as initialRestaurantData } from '@/data/restaurant';
-import { RestaurantData, Product, WorkingHour } from '@/types/restaurant';
+import { RestaurantData, Product, ProductCategoryRef, WorkingHour } from '@/types/restaurant';
 import { changeLanguage } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
 import { TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
@@ -83,6 +83,38 @@ function getInitialRestaurantData(): RestaurantData {
   }
 }
 
+/**
+ * Normalize API response to the shape the rest of the app expects.
+ *
+ * The backend has migrated `categoryId`/`categoryName`/etc. from top-level
+ * product fields into a nested `categories[]` array. The frontend (types,
+ * grouping helpers, 26 theme components) still reads the flat fields, so
+ * we flatten the first category back to top-level on ingestion. The
+ * `categories` array is preserved untouched in case future code wants it.
+ */
+function normalizeRestaurantData(raw: any): any {
+  if (!raw || !Array.isArray(raw.products)) return raw;
+  raw.products = raw.products.map((p: any) => {
+    // Already in old shape: don't overwrite
+    if (p.categoryId) return p;
+    const first = Array.isArray(p.categories) ? p.categories[0] : null;
+    if (!first) return p;
+    return {
+      ...p,
+      categoryId: first.categoryId ?? "",
+      categoryName: first.categoryName ?? "",
+      categoryImage: first.categoryImage ?? "",
+      categorySortOrder: first.categorySortOrder ?? 0,
+      subCategoryId: first.subCategoryId ?? null,
+      subCategoryName: first.subCategoryName ?? null,
+      subCategoryImage: first.subCategoryImage ?? null,
+      subCategorySortOrder: first.subCategorySortOrder ?? null,
+      sortOrder: first.sortOrder ?? 0,
+    };
+  });
+  return raw;
+}
+
 export const useRestaurantStore = create<RestaurantStore>((set) => ({
   restaurantData: getInitialRestaurantData(),
   isLoading: !USE_DUMMY_DATA,
@@ -140,7 +172,9 @@ export function useInitializeRestaurant() {
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         const json = await res.json();
         if (!cancelled) {
-          const restaurantData = json.data?.restaurantData ?? json.restaurantData ?? json;
+          const restaurantData = normalizeRestaurantData(
+            json.data?.restaurantData ?? json.restaurantData ?? json,
+          );
 
           // Validate that we got meaningful data back (invalid tenant returns empty/null)
           if (!restaurantData || !restaurantData.restaurantId) {
@@ -212,7 +246,9 @@ export function useInitializeRestaurant() {
         const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
         if (!res.ok) return;
         const json = await res.json();
-        const fresh = json.data?.restaurantData ?? json.restaurantData ?? json;
+        const fresh = normalizeRestaurantData(
+          json.data?.restaurantData ?? json.restaurantData ?? json,
+        );
         if (!fresh || !fresh.restaurantId) return;
 
         const current = useRestaurantStore.getState().restaurantData;
@@ -347,28 +383,84 @@ export function useRestaurant() {
     // belt-and-braces guard in case a legacy endpoint or staging
     // tenant leaks a hidden row.
     const allVisible = data.products.filter(p => !p.hide);
-    let visibleProducts = allVisible;
 
+    // Each product may belong to MULTIPLE categories (new API shape).
+    // Build a list of every (product, category-placement) pair so the
+    // product appears once under EACH of its categories. Older flat
+    // payloads fall back to a single placement built from the legacy
+    // top-level categoryId / subCategoryId fields.
+    const placements = (p: Product): ProductCategoryRef[] => {
+      if (Array.isArray(p.categories) && p.categories.length > 0) return p.categories;
+      // Legacy flat shape — wrap in a single-element array
+      return [{
+        categoryId: p.categoryId,
+        categoryName: p.categoryName,
+        categoryImage: p.categoryImage,
+        categorySortOrder: p.categorySortOrder,
+        subCategoryId: p.subCategoryId,
+        subCategoryName: p.subCategoryName,
+        subCategoryImage: p.subCategoryImage,
+        subCategorySortOrder: p.subCategorySortOrder,
+        sortOrder: p.sortOrder,
+      }];
+    };
+
+    // Filter by active menu's allowed categories: keep a product if
+    // ANY of its placements falls inside the allowed set. If the
+    // menu's categoryIds match NO product (e.g. stale/empty menu
+    // config), fall back to showing every product under its actual
+    // categories — mirrors the legacy behavior.
+    let visibleProducts = allVisible;
+    let enforceAllowedFilter = !!allowedCategoryIds;
     if (allowedCategoryIds) {
-      const filtered = allVisible.filter(p => allowedCategoryIds.has(p.categoryId));
+      const filtered = allVisible.filter(p =>
+        placements(p).some(c => allowedCategoryIds.has(c.categoryId)),
+      );
       if (filtered.length > 0) {
         visibleProducts = filtered;
+      } else {
+        // No product matches the menu's allowed list — disable the
+        // per-placement filter below so we still render something.
+        enforceAllowedFilter = false;
       }
     }
 
     const categoryMap = new Map<string, Category>();
 
     visibleProducts.forEach(product => {
-      if (!categoryMap.has(product.categoryId)) {
-        categoryMap.set(product.categoryId, {
-          id: product.categoryId,
-          name: product.categoryName,
-          image: product.categoryImage,
-          sortOrder: product.categorySortOrder,
-          products: [],
-        });
+      for (const c of placements(product)) {
+        // If the active menu restricts categories, skip placements
+        // outside that set (a product can still appear in other allowed
+        // categories from the same placements array).
+        if (enforceAllowedFilter && !allowedCategoryIds!.has(c.categoryId)) continue;
+
+        if (!categoryMap.has(c.categoryId)) {
+          categoryMap.set(c.categoryId, {
+            id: c.categoryId,
+            name: c.categoryName,
+            image: c.categoryImage,
+            sortOrder: c.categorySortOrder,
+            products: [],
+          });
+        }
+
+        // "Shadow" product: clone with this placement's category +
+        // subcategory fields overlaid so groupBySubcategory and
+        // per-category sort use the right values for THIS section.
+        const shadow: Product = {
+          ...product,
+          categoryId: c.categoryId,
+          categoryName: c.categoryName,
+          categoryImage: c.categoryImage,
+          categorySortOrder: c.categorySortOrder,
+          subCategoryId: c.subCategoryId,
+          subCategoryName: c.subCategoryName,
+          subCategoryImage: c.subCategoryImage,
+          subCategorySortOrder: c.subCategorySortOrder ?? 0,
+          sortOrder: c.sortOrder,
+        };
+        categoryMap.get(c.categoryId)!.products.push(shadow);
       }
-      categoryMap.get(product.categoryId)!.products.push(product);
     });
 
     categoryMap.forEach(category => {
