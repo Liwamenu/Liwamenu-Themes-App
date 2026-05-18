@@ -33,6 +33,27 @@ function normalizePriceListType(raw: unknown): PriceListType {
 }
 
 /**
+ * Convert a JS `Date.getDay()` (Sunday-first: Sun=0..Sat=6) to the
+ * backend's plan-day numbering (Monday-first: Mon=0..Sun=6).
+ *
+ * The admin panel writes plan.days as a Monday-first 0-indexed list
+ * (e.g. unchecking Pazartesi/Monday on a menu produces `[1,2,3,4,5,6]`
+ * = Tue..Sun). JS's `Date.getDay()` returns Sunday-first numbering, so
+ * we need this conversion to compare correctly. Without it, every day
+ * gets shifted by one and the menu activates on the wrong day.
+ *
+ * Mapping:
+ *   JS Sun(0) → backend 6 (Sun)
+ *   JS Mon(1) → backend 0 (Mon)
+ *   JS Tue(2) → backend 1 (Tue)
+ *   ...
+ *   JS Sat(6) → backend 5 (Sat)
+ */
+export function jsDayToPlanDay(jsDay: number): number {
+  return (jsDay + 6) % 7;
+}
+
+/**
  * Find the menu whose plan window covers `now`. Standalone twin of the
  * `activeMenu` useMemo in useRestaurant — kept here so non-hook code
  * (cart helpers, ProductCard price math) can resolve the active menu
@@ -42,7 +63,7 @@ function normalizePriceListType(raw: unknown): PriceListType {
 export function findActiveMenu(menus: Menu[] | undefined | null): Menu | null {
   if (!menus || menus.length === 0) return null;
   const now = new Date();
-  const day = now.getDay();
+  const day = jsDayToPlanDay(now.getDay());
   const time = `${String(now.getHours()).padStart(2, "0")}:${String(
     now.getMinutes(),
   ).padStart(2, "0")}`;

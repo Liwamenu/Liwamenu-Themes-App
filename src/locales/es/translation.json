@@ -353,5 +353,13 @@
     "restaurantNotActive": "El restaurante no está disponible",
     "restart": "Reiniciar",
     "selectLanguage": "Seleccionar idioma"
+  },
+  "priceLock": {
+    "title": "Los precios han cambiado",
+    "subtitle": "Algunos precios de tu carrito se actualizaron. Revisa los nuevos precios y confirma de nuevo.",
+    "refreshAndRetry": "Actualizar carrito y reintentar",
+    "cancel": "Cancelar",
+    "unavailableTitle": "Algunos artículos ya no están disponibles",
+    "removeAndContinue": "Quitar y continuar"
   }
 }

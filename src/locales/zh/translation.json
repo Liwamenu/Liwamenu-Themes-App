@@ -353,5 +353,13 @@
     "restaurantNotActive": "餐厅暂不可用",
     "restart": "重新开始",
     "selectLanguage": "选择语言"
+  },
+  "priceLock": {
+    "title": "价格已变更",
+    "subtitle": "您购物车中的部分价格已更新。请核对新价格并再次确认。",
+    "refreshAndRetry": "刷新购物车并重试",
+    "cancel": "取消",
+    "unavailableTitle": "部分商品已不可用",
+    "removeAndContinue": "移除并继续"
   }
 }

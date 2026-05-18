@@ -33,7 +33,28 @@ export const API_URLS = {
 } as const;
 
 /**
+ * Error thrown by `apiFetch` when the response is non-2xx. Exposes the
+ * HTTP status and the parsed response body so callers can detect
+ * specific error shapes (e.g. 409 PRICE_MISMATCH on order submit) and
+ * react with a tailored UI instead of a generic toast.
+ */
+export class ApiError extends Error {
+  status: number;
+  data: any;
+  constructor(message: string, status: number, data: any) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.data = data;
+  }
+}
+
+/**
  * Generic API fetch helper with JSON support.
+ *
+ * Resolves with the parsed body on 2xx. On non-2xx, throws `ApiError`
+ * carrying the status + parsed body (or the raw text response) so the
+ * caller can branch on `error.status` / `error.data.code` etc.
  */
 export async function apiFetch<T = any>(url: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(url, {
@@ -48,8 +69,17 @@ export async function apiFetch<T = any>(url: string, options: RequestInit = {}):
   const data = isJson ? await res.json() : await res.text();
 
   if (!res.ok) {
-    const msg = typeof data === "string" ? data : data?.message || data?.Message || `Request failed (${res.status})`;
-    throw new Error(msg);
+    // Prefer the localized Turkish message when the backend supplies one
+    // (ResponsBase shape: { message_TR, message_EN, statusCode, data }),
+    // falling back to legacy `message` / `Message` / a generic string.
+    const msg =
+      typeof data === "string"
+        ? data
+        : data?.message_TR ||
+          data?.message ||
+          data?.Message ||
+          `Request failed (${res.status})`;
+    throw new ApiError(msg, res.status, data);
   }
 
   return data as T;
