@@ -227,13 +227,15 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   return (
     <>
     <AnimatePresence>
-      {/* Backdrop — NO onClick, clicking outside does NOT close */}
+      {/* Backdrop — NO onClick, clicking outside does NOT close.
+          touch-none: drag on the dim layer must not bleed to the
+          page below (kiosk runs on a touchscreen). */}
       <motion.div
         key="product-backdrop"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm touch-none"
       />
 
       {/* Centered modal wrapper */}
@@ -246,8 +248,10 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         className="kiosk-product-modal-center"
       >
         <div className="w-[90vw] max-h-[90dvh] bg-card rounded-3xl flex flex-col shadow-2xl overflow-hidden">
-          {/* Header Image */}
-          <div className="relative h-52 shrink-0 overflow-hidden">
+          {/* Header Image — touch-none so drag on the photo doesn't
+              bubble out as a background-page pan on iOS Safari. The
+              image sits OUTSIDE the modal's scroll container. */}
+          <div className="relative h-52 shrink-0 overflow-hidden touch-none">
             <img
               src={getProductImageSrc(product.imageURL)}
               onError={handleProductImageError}

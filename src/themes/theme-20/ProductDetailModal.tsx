@@ -171,13 +171,13 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm" />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm touch-none" />
       <motion.div
         initial={{ opacity: 0, y: '100%' }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-background rounded-3xl flex flex-col"
       >
-        <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden">
+        <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden touch-none">
           <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
           <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
           <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-secondary backdrop-blur flex items-center justify-center shadow-lg">

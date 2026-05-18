@@ -222,7 +222,8 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+        // touch-none: drag on backdrop must not scroll the page below.
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm touch-none"
       />
       <motion.div
         initial={{ opacity: 0, y: "100%" }}
@@ -234,8 +235,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         {/* Close — red circle with white X (replaces the back-arrow
          *  affordance; universal close vocabulary reads instantly on
          *  any card background and gives a stronger visual exit cue
-         *  than a thin arrow icon). */}
-        <div className="px-5 pt-4 shrink-0">
+         *  than a thin arrow icon).
+         *
+         *  touch-none: this non-scrollable header strip is OUTSIDE the
+         *  scroll container below, so drags here would otherwise bleed
+         *  out as page scrolls on iOS Safari. */}
+        <div className="px-5 pt-4 shrink-0 touch-none">
           <button
             onClick={onClose}
             aria-label="Close"

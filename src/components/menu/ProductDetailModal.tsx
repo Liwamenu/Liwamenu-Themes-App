@@ -275,7 +275,11 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm"
+        // touch-none: drag-attempts on the dim backdrop must NOT scroll
+        // the underlying page (iOS rubber-band leak). Taps still close
+        // the modal because touch-action: none only blocks gestures,
+        // not click events.
+        className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm touch-none"
       />
       <motion.div
         initial={{ opacity: 0, y: '100%' }}
@@ -284,8 +288,11 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-card rounded-3xl flex flex-col"
       >
-        {/* Header Image */}
-        <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden">
+        {/* Header Image — touch-none so dragging on the photo doesn't
+            bubble out as a page scroll on iOS Safari. The image isn't
+            inside the overflow-y-auto scroll container, so without
+            this drags here cause background bleed. */}
+        <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden touch-none">
           <img
             src={getProductImageSrc(product.imageURL)}
             onError={handleProductImageError}
