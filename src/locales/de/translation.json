@@ -316,7 +316,7 @@
     "noOrderError": "Sie müssen eine Bestellung aufgeben, bevor Sie eine Bewertung abgeben können."
   },
   "allergens": {
-    "title": "Allergene",
+    "title": "Allergenhinweis",
     "contains": "Enthält",
     "mayContain": "Kann enthalten",
     "none": "Für dieses Produkt sind keine Allergene angegeben.",

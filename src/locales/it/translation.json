@@ -316,7 +316,7 @@
     "noOrderError": "Devi effettuare un ordine prima di inviare una recensione."
   },
   "allergens": {
-    "title": "Allergeni",
+    "title": "Avviso allergeni",
     "contains": "Contiene",
     "mayContain": "Può contenere",
     "none": "Nessun allergene dichiarato per questo prodotto.",
