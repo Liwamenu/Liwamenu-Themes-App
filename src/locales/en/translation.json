@@ -319,7 +319,7 @@
     "noOrderError": "You must place an order before submitting a review."
   },
   "allergens": {
-    "title": "Allergens",
+    "title": "Allergen Notice",
     "contains": "Contains",
     "mayContain": "May contain",
     "none": "No allergens declared for this product.",

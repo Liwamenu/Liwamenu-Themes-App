@@ -316,7 +316,7 @@
     "noOrderError": "Rəy göndərmək üçün əvvəlcə sifariş verməlisiniz."
   },
   "allergens": {
-    "title": "Allergenlər",
+    "title": "Allergen Bildirişi",
     "contains": "Tərkibində var",
     "mayContain": "Tərkibində ola bilər",
     "none": "Bu məhsul üçün allergen məlumatı bildirilməyib.",

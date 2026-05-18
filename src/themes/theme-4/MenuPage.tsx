@@ -20,6 +20,7 @@ import { ChangeTableModal } from "./ChangeTableModal";
 import { AnnouncementModal } from "./AnnouncementModal";
 import { FlyingEmoji } from "./FlyingEmoji";
 import { ExternalPageView } from "@/components/menu/ExternalPageView";
+import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useOrder } from "@/hooks/useOrder";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -382,6 +383,44 @@ export function MenuPage() {
             </div>
           );
         })()}
+
+      {/* Recommended Products — compact horizontal strip above the
+          campaign hero. Mirrors the theme-2/7 pattern: small image
+          cards with the product name overlaid; tap opens detail. */}
+      {!searchQuery && recommendedProducts.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 py-6">
+          <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">⭐</span>
+            {t("menu.recommended")}
+          </h2>
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
+            {recommendedProducts.slice(0, 5).map((product) => (
+              <motion.div
+                key={product.id}
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ y: -4 }}
+                onClick={() => handleSelectProduct(product)}
+                className="flex-shrink-0 w-36 cursor-pointer group"
+              >
+                <div className="relative aspect-square rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
+                  <img
+                    src={getProductImageSrc(product.imageURL)}
+                    onError={handleProductImageError}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="text-white text-sm font-medium line-clamp-2 drop-shadow-md">{product.name}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="pb-8">
         {!searchQuery && campaignProducts.length > 0 && activeCategory === CAMPAIGN_CATEGORY_ID && (

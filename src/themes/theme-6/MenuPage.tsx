@@ -329,6 +329,44 @@ export function MenuPage() {
         </div>
       </div>
 
+      {/* Recommended Products — always-visible horizontal strip on top
+          of the accordion list. Not a category so it doesn't get the
+          expand/collapse treatment; the whole point is to surface
+          curated products immediately. */}
+      {!searchQuery && recommendedProducts.length > 0 && (
+        <section className="max-w-[600px] mx-auto px-4 pt-4">
+          <h2 className="font-display text-base font-bold mb-3 flex items-center gap-2">
+            <span className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm">⭐</span>
+            {t("menu.recommended")}
+          </h2>
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar scroll-fade-x pb-2">
+            {recommendedProducts.slice(0, 5).map((product) => (
+              <motion.div
+                key={product.id}
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ y: -4 }}
+                onClick={() => handleSelectProduct(product)}
+                className="flex-shrink-0 w-32 cursor-pointer group"
+              >
+                <div className="relative aspect-square rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
+                  <img
+                    src={getProductImageSrc(product.imageURL)}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="text-white text-xs font-medium line-clamp-2 drop-shadow-md">{product.name}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Accordion Categories */}
       <div className="max-w-[600px] mx-auto px-4 py-4 pb-24 space-y-3">
         {/* Campaign */}

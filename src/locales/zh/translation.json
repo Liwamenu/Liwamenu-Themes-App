@@ -316,7 +316,7 @@
     "noOrderError": "您必须先下单才能提交评价。"
   },
   "allergens": {
-    "title": "过敏原",
+    "title": "过敏原提示",
     "contains": "含有",
     "mayContain": "可能含有",
     "none": "本产品未声明任何过敏原。",

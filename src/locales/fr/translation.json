@@ -316,7 +316,7 @@
     "noOrderError": "Vous devez passer une commande avant de soumettre un avis."
   },
   "allergens": {
-    "title": "Allergènes",
+    "title": "Avis sur les allergènes",
     "contains": "Contient",
     "mayContain": "Peut contenir",
     "none": "Aucun allergène déclaré pour ce produit.",

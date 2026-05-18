@@ -318,7 +318,7 @@
     "noOrderError": "Değerlendirme yapabilmek için önce sipariş vermeniz gerekmektedir."
   },
   "allergens": {
-    "title": "Alerjenler",
+    "title": "Alerjen Bildirimi",
     "contains": "İçerir",
     "mayContain": "İçerebilir",
     "none": "Bu üründe bildirilen alerjen bulunmamaktadır.",
