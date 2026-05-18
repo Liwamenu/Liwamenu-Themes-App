@@ -22,12 +22,12 @@ export function AllergensSection({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
 
   return (
-    // Fixed light tint across every theme/mode so customers don't
-    // mistake the allergen notice for a selectable add-on group. The
-    // 8-digit hex is RGBA — rgba(255, 227, 227, ~0.89) — a soft
-    // translucent pink that reads as "info card" on light AND dark
-    // theme backgrounds without overpowering them.
-    <div className="mb-4 bg-[#FFE3E3E3] rounded-xl px-3 py-1">
+    // Fixed off-white card across every theme/mode so customers
+    // don't mistake the allergen notice for a selectable add-on
+    // group. A neutral light gray reads as "info card" on light AND
+    // dark theme backgrounds without competing for attention with
+    // the surrounding interactive controls.
+    <div className="mb-4 bg-[#F0F0F0] rounded-xl px-3 py-1">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -92,7 +92,7 @@ export function AllergensSection({ product }: { product: Product }) {
                       return (
                         <span
                           key={a.code}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/70 text-slate-700 border border-slate-300 rounded-full text-[11px]"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-white text-slate-700 border border-slate-300 rounded-full text-[11px]"
                         >
                           <span className="text-xs">{info.icon}</span>
                           <span>{t(info.i18nKey)}</span>
