@@ -22,36 +22,35 @@ export function AllergensSection({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
 
   return (
-    // Fixed off-white card across every theme/mode so customers
-    // don't mistake the allergen notice for a selectable add-on
-    // group. A neutral light gray reads as "info card" on light AND
-    // dark theme backgrounds without competing for attention with
-    // the surrounding interactive controls.
-    <div className="mb-4 bg-[#F0F0F0] rounded-xl px-3 py-1">
+    <div className="mb-4">
+      {/* Header keeps the theme-aware foreground colors so the
+          collapsed state blends with the rest of the modal. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="w-full flex items-center justify-between gap-2 py-2 text-left"
       >
-        {/* Header text fixed to slate-900 so it reads on the light-pink
-            card in BOTH light AND dark mode (text-foreground flips to
-            white in dark mode, which would disappear here). */}
-        <span className="flex items-center gap-2 font-semibold text-slate-900">
+        <span className="flex items-center gap-2 font-semibold text-foreground">
           {t("allergens.title")}
           {list.length > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-100 text-red-700 text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold">
               {list.length}
             </span>
           )}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-slate-600 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
-        <div className="mt-2 pb-2">
+        // Expanded content sits on a fixed off-white card across
+        // every theme/mode so customers don't mistake the allergen
+        // chips for a selectable add-on group. Slate / red text
+        // tokens below are theme-independent on purpose because they
+        // need to stay readable on this #F0F0F0 background.
+        <div className="mt-2 bg-[#F0F0F0] rounded-xl p-3">
           {list.length === 0 ? (
             <p className="text-xs text-slate-600 italic">
               {t("allergens.none")}
