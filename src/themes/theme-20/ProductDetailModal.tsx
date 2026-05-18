@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { getEffectiveTagBounds, shouldShowTagItemPrice } from "@/lib/orderTag";
+import { AllergensSection } from '@/components/menu/AllergensSection';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -279,6 +280,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               <Textarea placeholder={t('product.notePlaceholder')} value={productNote} onChange={(e) => setProductNote(e.target.value)} className="rounded-xl resize-none" rows={2} />
             </div>
           )}
+          <AllergensSection product={product} />
 
         </div>
 
