@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { CartItem, Product, Portion, SelectedTagItem } from '@/types/restaurant';
+import { CartItem, Product, Portion, SelectedTagItem, OrderTagItem } from '@/types/restaurant';
 import { useRestaurantStore } from '@/hooks/useRestaurant';
 import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 import { resolveActiveBasePrice } from '@/lib/priceList';
@@ -57,10 +57,22 @@ interface CartState {
   items: CartItem[];
   addItem: (product: Product, portion: Portion, selectedTags: SelectedTagItem[], quantity?: number, note?: string) => void;
   removeItem: (itemId: string) => void;
+  removeItems: (itemIds: string[]) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
+  /**
+   * Re-sync every cart item's stored snapshot (portion + selected tag
+   * prices) from the LIVE restaurant store. Call this after a backend
+   * 409 PRICE_MISMATCH so the next order submission quotes the current
+   * menu prices.
+   *
+   * The portion display price is already read live via
+   * `getCartItemDisplayPrice`, but `item.portion` and `selectedTags[].price`
+   * are stored snapshots — those are what we refresh here.
+   */
+  syncPricesFromLiveMenu: () => void;
 }
 
 // Helper to compare selected tags
@@ -124,6 +136,13 @@ export const useCart = create<CartState>()(
         }));
       },
 
+      removeItems: (itemIds) => {
+        const ids = new Set(itemIds);
+        set((state) => ({
+          items: state.items.filter((item) => !ids.has(item.id)),
+        }));
+      },
+
       updateQuantity: (itemId, quantity) => {
         // Don't allow quantity below 1 - deletion should only happen via removeItem
         if (quantity < 1) {
@@ -152,6 +171,37 @@ export const useCart = create<CartState>()(
 
       getItemCount: () => {
         return get().items.reduce((count, item) => count + item.quantity, 0);
+      },
+
+      syncPricesFromLiveMenu: () => {
+        const liveProducts = useRestaurantStore.getState().restaurantData.products;
+        set((state) => ({
+          items: state.items.map((item) => {
+            const liveProduct = liveProducts.find((p) => p.id === item.product.id);
+            if (!liveProduct) return item;
+            const livePortion = liveProduct.portions.find(
+              (p) => p.id === item.portion.id,
+            );
+            // Flatten every tag option on the live portion so we can
+            // look up the customer's selected options by itemId.
+            const liveTagOptionsById = new Map<string, OrderTagItem>();
+            (livePortion?.orderTags || []).forEach((tag) => {
+              (tag.orderTagItems || []).forEach((opt) => {
+                liveTagOptionsById.set(opt.id, opt);
+              });
+            });
+            const refreshedTags = item.selectedTags.map((st) => {
+              const liveOpt = liveTagOptionsById.get(st.itemId);
+              return liveOpt ? { ...st, price: liveOpt.price } : st;
+            });
+            return {
+              ...item,
+              product: liveProduct,
+              portion: livePortion ?? item.portion,
+              selectedTags: refreshedTags,
+            };
+          }),
+        }));
       },
     }),
     {

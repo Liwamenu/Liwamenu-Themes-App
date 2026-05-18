@@ -4,6 +4,7 @@ import { restaurantData as initialRestaurantData } from '@/data/restaurant';
 import { RestaurantData, Product, ProductCategoryRef, WorkingHour } from '@/types/restaurant';
 import { changeLanguage } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
+import { jsDayToPlanDay } from '@/lib/priceList';
 import { TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 
 const tableStorageKey = (): string => {
@@ -113,6 +114,36 @@ function normalizeRestaurantData(raw: any): any {
     };
   });
   return raw;
+}
+
+/**
+ * Force a fresh fetch of restaurant data and update the store. Unlike
+ * the silent refetch in `useInitializeRestaurant`, this always writes
+ * to the store (even if nothing seemed to change) and is callable
+ * imperatively. Used by the checkout flow after a 409 PRICE_MISMATCH
+ * so the cart re-quotes prices against the latest menu before retry.
+ *
+ * Returns true on success, false on any error (caller decides UX).
+ */
+export async function refreshRestaurantData(): Promise<boolean> {
+  if (USE_DUMMY_DATA) return true;
+  try {
+    const tenant = getTenant();
+    const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
+    if (!res.ok) return false;
+    const json = await res.json();
+    const fresh = normalizeRestaurantData(
+      json.data?.restaurantData ?? json.restaurantData ?? json,
+    );
+    if (!fresh || !fresh.restaurantId) return false;
+    // Preserve the user's table selection across refresh
+    const current = useRestaurantStore.getState().restaurantData;
+    fresh.tableNumber = current.tableNumber;
+    useRestaurantStore.getState().setRestaurantData(fresh);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export const useRestaurantStore = create<RestaurantStore>((set) => ({
@@ -354,7 +385,10 @@ export function useRestaurant() {
   // revert from Happy-Hour back to normal automatically.
   const activeMenu = useMemo(() => {
     const now = new Date();
-    const dayOfWeek = now.getDay();
+    // Backend stores plan.days as Monday-first 0-indexed (Mon=0..Sun=6).
+    // JS Date.getDay() is Sunday-first (Sun=0..Sat=6) — convert via the
+    // shared helper so both code paths agree.
+    const dayOfWeek = jsDayToPlanDay(now.getDay());
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
     for (const menu of data.menus) {

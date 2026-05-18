@@ -3,7 +3,7 @@ import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
-import { useRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
+import { useRestaurant, useRestaurantStore, refreshRestaurantData } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
 import { useLocation, isLocationPermissionGranted } from "@/hooks/useLocation";
 import { useOrder } from "@/hooks/useOrder";
@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
-import { createOnlineOrder, getResponseData } from "@/lib/api";
+import { createOnlineOrder, getResponseData, ApiError } from "@/lib/api";
 import { useFirebaseMessagingStore, initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 import { initFirebaseMessaging } from "@/lib/firebase";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
@@ -48,7 +48,9 @@ export function CheckoutModal({
   const {
     items,
     getTotal,
-    clearCart
+    clearCart,
+    removeItems,
+    syncPricesFromLiveMenu,
   } = useCart();
   const {
     getLocation,
@@ -91,6 +93,23 @@ export function CheckoutModal({
     isOpen: boolean;
     reason: LocationPermissionReason;
   }>({ isOpen: false, reason: 'online' });
+
+  // Backend 409 PRICE_MISMATCH: a structured list of every cart line
+  // (or tag option) whose live price doesn't match what the customer
+  // saw at add-time. Rendering this puts the checkout into a
+  // "re-confirm" state where we show the differences, refresh prices
+  // from the live menu, and let the customer retry the same submit.
+  type PriceMismatchItem = {
+    itemIndex: number;
+    productId: string;
+    portionId: string;
+    tagItemId: string | null;
+    label: string;
+    expected: number;
+    received: number;
+  };
+  const [priceMismatch, setPriceMismatch] = useState<PriceMismatchItem[] | null>(null);
+  const [unavailableMessage, setUnavailableMessage] = useState<string | null>(null);
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
 
@@ -359,11 +378,81 @@ export function CheckoutModal({
         }, 1000);
       }
       onOrderComplete(order, orderType!);
-    } catch (error) {
+    } catch (error: any) {
+      // 409 PRICE_MISMATCH — quoted prices don't match the live menu.
+      // Don't toast; surface a re-confirm UI listing every change.
+      if (
+        error instanceof ApiError &&
+        error.status === 409 &&
+        error.data?.data?.code === "PRICE_MISMATCH"
+      ) {
+        const mismatches = Array.isArray(error.data.data.items) ? error.data.data.items : [];
+        setPriceMismatch(mismatches);
+        return;
+      }
+      // 400 with the "products not found / inactive" backend message —
+      // the affected items have been deleted or hidden; show a
+      // dedicated prompt so the customer can drop them from the cart.
+      if (
+        error instanceof ApiError &&
+        error.status === 400 &&
+        typeof error.message === "string" &&
+        /bulunamadı|pasif|not\s*found|inactive/i.test(error.message)
+      ) {
+        setUnavailableMessage(error.message);
+        return;
+      }
+      // Anything else falls through to the generic error toast.
       toast.error(t("order.orderError"));
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  /** "Sepeti yenile ve tekrar dene": re-fetch menu, sync cart prices,
+   *  clear the mismatch UI, and re-submit the same order. */
+  const handlePriceMismatchRetry = async () => {
+    setIsSubmitting(true);
+    try {
+      await refreshRestaurantData();
+      syncPricesFromLiveMenu();
+      setPriceMismatch(null);
+      // Wait one tick so the cart's new state is observable before
+      // building the next payload.
+      await new Promise((r) => setTimeout(r, 0));
+      await handleConfirmOrder();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /** "Vazgeç": leave the cart untouched, close the checkout modal so
+   *  the customer can decide later. */
+  const handlePriceMismatchCancel = () => {
+    setPriceMismatch(null);
+    onClose();
+  };
+
+  /** Remove every cart line that the backend flagged as deleted/
+   *  inactive, then close — the customer can re-checkout when ready. */
+  const handleUnavailableAcknowledge = () => {
+    // We don't get a structured list for 400; the safest action is to
+    // refresh the menu so the cart drops stale rows, then keep what's
+    // still valid in the cart for the customer to review.
+    refreshRestaurantData().finally(() => {
+      const liveProducts = useRestaurantStore.getState().restaurantData.products;
+      const removeIds = items
+        .filter((it) => {
+          const live = liveProducts.find((p) => p.id === it.product.id);
+          if (!live) return true; // product gone
+          const livePortion = live.portions.find((p) => p.id === it.portion.id);
+          return !livePortion; // portion gone
+        })
+        .map((it) => it.id);
+      if (removeIds.length > 0) removeItems(removeIds);
+      setUnavailableMessage(null);
+      onClose();
+    });
   };
   const handleTableChange = (newTableNumber: string) => {
     setTableNumber(newTableNumber);
@@ -762,5 +851,122 @@ export function CheckoutModal({
         onAllow={handleLocationPermissionAllow}
         onDeny={handleLocationPermissionDeny}
       />
+
+      {/* Price-mismatch (409) re-confirm modal */}
+      <AnimatePresence>
+        {priceMismatch && (
+          <>
+            <div
+              className="fixed inset-0 z-[70] bg-foreground/60"
+              onClick={handlePriceMismatchCancel}
+              style={{ WebkitBackdropFilter: "blur(4px)", backdropFilter: "blur(4px)" }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
+            >
+              <div className="bg-card rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] flex flex-col pointer-events-auto">
+                <div className="px-6 pt-6 pb-4 text-center">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
+                    <AlertCircle className="w-7 h-7 text-amber-500" />
+                  </div>
+                  <h3 className="text-lg font-bold">{t("priceLock.title")}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t("priceLock.subtitle")}
+                  </p>
+                </div>
+                <div className="px-6 overflow-y-auto flex-1">
+                  <ul className="space-y-2 mb-4">
+                    {priceMismatch.map((m, idx) => {
+                      const dir = m.expected > m.received ? "up" : "down";
+                      return (
+                        <li
+                          key={`${m.itemIndex}-${m.tagItemId ?? "portion"}-${idx}`}
+                          className="flex items-start justify-between gap-3 p-3 rounded-xl bg-secondary"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium break-words">{m.label}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">
+                              <span className="line-through opacity-70">
+                                {formatPrice(m.received)}
+                              </span>
+                              {"  →  "}
+                              <span
+                                className={cn(
+                                  "font-semibold",
+                                  dir === "up" ? "text-destructive" : "text-success",
+                                )}
+                              >
+                                {formatPrice(m.expected)}
+                              </span>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+                <div className="px-6 pb-6 pt-2 space-y-2 border-t border-border">
+                  <Button
+                    onClick={handlePriceMismatchRetry}
+                    disabled={isSubmitting}
+                    size="lg"
+                    className="w-full h-12 text-base font-semibold rounded-xl"
+                  >
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+                    {t("priceLock.refreshAndRetry")}
+                  </Button>
+                  <Button
+                    onClick={handlePriceMismatchCancel}
+                    variant="outline"
+                    size="lg"
+                    className="w-full h-12 text-base rounded-xl"
+                  >
+                    {t("priceLock.cancel")}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Item-unavailable (400 product not found / inactive) modal */}
+      <AnimatePresence>
+        {unavailableMessage && (
+          <>
+            <div
+              className="fixed inset-0 z-[70] bg-foreground/60"
+              onClick={() => setUnavailableMessage(null)}
+              style={{ WebkitBackdropFilter: "blur(4px)", backdropFilter: "blur(4px)" }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
+            >
+              <div className="bg-card rounded-2xl shadow-xl w-full max-w-md pointer-events-auto p-6">
+                <div className="flex flex-col items-center text-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-destructive/15 flex items-center justify-center">
+                    <AlertCircle className="w-7 h-7 text-destructive" />
+                  </div>
+                  <h3 className="text-lg font-bold">{t("priceLock.unavailableTitle")}</h3>
+                  <p className="text-sm text-muted-foreground">{unavailableMessage}</p>
+                  <Button
+                    onClick={handleUnavailableAcknowledge}
+                    size="lg"
+                    className="w-full h-12 text-base font-semibold rounded-xl mt-2"
+                  >
+                    {t("priceLock.removeAndContinue")}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>;
 }

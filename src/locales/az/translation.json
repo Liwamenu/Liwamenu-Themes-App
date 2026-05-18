@@ -353,5 +353,13 @@
     "restaurantNotActive": "Restoran hazırda xidmət göstərmir",
     "restart": "Yenidən başla",
     "selectLanguage": "Dil seçin"
+  },
+  "priceLock": {
+    "title": "Qiymətlər dəyişdi",
+    "subtitle": "Səbətinizdəki bəzi qiymətlər yeniləndi. Lütfən, yeni qiymətləri yoxlayın və yenidən təsdiqləyin.",
+    "refreshAndRetry": "Səbəti yenilə və yenidən cəhd et",
+    "cancel": "İmtina et",
+    "unavailableTitle": "Bəzi məhsullar artıq mövcud deyil",
+    "removeAndContinue": "Sil və davam et"
   }
 }

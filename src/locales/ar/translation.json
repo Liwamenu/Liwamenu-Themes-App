@@ -353,5 +353,13 @@
     "restaurantNotActive": "المطعم غير متاح",
     "restart": "إعادة البدء",
     "selectLanguage": "اختر اللغة"
+  },
+  "priceLock": {
+    "title": "تغيرت الأسعار",
+    "subtitle": "تم تحديث بعض الأسعار في سلتك. يرجى مراجعة الأسعار الجديدة والتأكيد مرة أخرى.",
+    "refreshAndRetry": "تحديث السلة والمحاولة مرة أخرى",
+    "cancel": "إلغاء",
+    "unavailableTitle": "بعض المنتجات لم تعد متوفرة",
+    "removeAndContinue": "إزالة ومتابعة"
   }
 }
