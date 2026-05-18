@@ -22,37 +22,45 @@ export function AllergensSection({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="mb-4">
+    // Fixed light tint across every theme/mode so customers don't
+    // mistake the allergen notice for a selectable add-on group. The
+    // 8-digit hex is RGBA — rgba(255, 227, 227, ~0.89) — a soft
+    // translucent pink that reads as "info card" on light AND dark
+    // theme backgrounds without overpowering them.
+    <div className="mb-4 bg-[#FFE3E3E3] rounded-xl px-3 py-1">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="w-full flex items-center justify-between gap-2 py-2 text-left"
       >
-        <span className="flex items-center gap-2 font-semibold text-foreground">
+        {/* Header text fixed to slate-900 so it reads on the light-pink
+            card in BOTH light AND dark mode (text-foreground flips to
+            white in dark mode, which would disappear here). */}
+        <span className="flex items-center gap-2 font-semibold text-slate-900">
           {t("allergens.title")}
           {list.length > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-100 text-red-700 text-[10px] font-bold">
               {list.length}
             </span>
           )}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-slate-600 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
-        <div className="mt-2">
+        <div className="mt-2 pb-2">
           {list.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">
+            <p className="text-xs text-slate-600 italic">
               {t("allergens.none")}
             </p>
           ) : (
             <div className="space-y-3">
               {contains.length > 0 && (
                 <div>
-                  <div className="text-[10px] font-medium text-destructive uppercase tracking-wide mb-1.5">
+                  <div className="text-[10px] font-medium text-red-700 uppercase tracking-wide mb-1.5">
                     {t("allergens.contains")}
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -62,7 +70,7 @@ export function AllergensSection({ product }: { product: Product }) {
                       return (
                         <span
                           key={a.code}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-destructive/10 text-destructive border border-destructive/30 rounded-full text-[11px] font-medium"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full text-[11px] font-medium"
                         >
                           <span className="text-xs">{info.icon}</span>
                           <span>{t(info.i18nKey)}</span>
@@ -74,7 +82,7 @@ export function AllergensSection({ product }: { product: Product }) {
               )}
               {mayContain.length > 0 && (
                 <div>
-                  <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
+                  <div className="text-[10px] font-medium text-slate-600 uppercase tracking-wide mb-1.5">
                     {t("allergens.mayContain")}
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -84,7 +92,7 @@ export function AllergensSection({ product }: { product: Product }) {
                       return (
                         <span
                           key={a.code}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary text-secondary-foreground border border-border rounded-full text-[11px]"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/70 text-slate-700 border border-slate-300 rounded-full text-[11px]"
                         >
                           <span className="text-xs">{info.icon}</span>
                           <span>{t(info.i18nKey)}</span>
@@ -94,7 +102,7 @@ export function AllergensSection({ product }: { product: Product }) {
                   </div>
                 </div>
               )}
-              <p className="text-[10px] text-muted-foreground/70 italic mt-2">
+              <p className="text-[10px] text-slate-600 italic mt-2">
                 {t("allergens.disclaimer")}
               </p>
             </div>
