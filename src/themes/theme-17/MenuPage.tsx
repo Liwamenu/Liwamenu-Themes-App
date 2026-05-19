@@ -57,6 +57,7 @@ export function MenuPage() {
     isCurrentlyOpen,
     restaurant,
     formatPrice,
+    formatPriceWithSign,
     setTableNumber,
     getCurrentWorkingHour,
   } = useRestaurant();

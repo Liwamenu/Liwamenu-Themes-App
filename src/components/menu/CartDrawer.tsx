@@ -30,7 +30,8 @@ interface CartDrawerProps {
 export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableRequired, waiterCooldown = 0 }: CartDrawerProps) {
   const { t } = useTranslation();
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
-  const { formatPrice, restaurant, canOrderOnline, canOrderInPerson } = useRestaurant();
+  const { formatPrice,
+    formatPriceWithSign, restaurant, canOrderOnline, canOrderInPerson } = useRestaurant();
   const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -185,7 +186,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                                     className="px-2 py-0.5 bg-accent text-accent-foreground text-xs rounded-full"
                                   >
                                     {tag.itemName}
-                                    {tag.price > 0 && ` +${formatPrice(tag.price)}`}
+                                    {tag.price !== 0 && ` ${formatPriceWithSign(tag.price)}`}
                                   </span>
                                 ))}
                               </div>

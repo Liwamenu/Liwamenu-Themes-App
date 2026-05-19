@@ -29,7 +29,8 @@ interface CartDrawerProps {
 export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableRequired, waiterCooldown = 0 }: CartDrawerProps) {
   const { t } = useTranslation();
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
-  const { formatPrice, restaurant } = useRestaurant();
+  const { formatPrice,
+    formatPriceWithSign, restaurant } = useRestaurant();
   const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -121,7 +122,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {item.selectedTags.map((tag) => (
                                   <span key={tag.itemId} className="px-2 py-0.5 bg-accent text-accent-foreground text-xs rounded-full">
-                                    {tag.itemName}{tag.price > 0 && ` +${formatPrice(tag.price)}`}
+                                    {tag.itemName}{tag.price !== 0 && ` ${formatPriceWithSign(tag.price)}`}
                                   </span>
                                 ))}
                               </div>

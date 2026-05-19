@@ -513,6 +513,19 @@ export function useRestaurant() {
     return formatted;
   };
 
+  /**
+   * Like formatPrice but prefixes a leading +/- so order-tag deltas
+   * read naturally. Use this for tag option labels and surcharge /
+   * discount line items (e.g. "Salata Yok" priced at -25 should show
+   * as "-₺25.00", NOT "+₺-25.00"). Zero values fall back to plain
+   * formatPrice (callers usually skip these via shouldShowTagItemPrice).
+   */
+  const formatPriceWithSign = (price: number): string => {
+    if (price === 0) return formatPrice(price);
+    const sign = price > 0 ? "+" : "-";
+    return `${sign}${formatPrice(Math.abs(price))}`;
+  };
+
   const recommendedProducts = useMemo(() => {
     // Same cross-menu semantics as `campaignProducts` below: the
     // recommended carousel is a virtual aggregated view, not bound to
@@ -576,6 +589,7 @@ export function useRestaurant() {
     canOrderInPerson,
     setTableNumber,
     formatPrice,
+    formatPriceWithSign,
     activeMenu,
   };
 }

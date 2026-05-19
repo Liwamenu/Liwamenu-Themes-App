@@ -22,7 +22,8 @@ interface ProductDetailModalProps {
 
 export function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
   const { t } = useTranslation();
-  const { restaurant, formatPrice, isRestaurantActive, isCurrentlyOpen } = useRestaurant();
+  const { restaurant, formatPrice,
+    formatPriceWithSign, isRestaurantActive, isCurrentlyOpen } = useRestaurant();
   const { addItem } = useCart();
   const { triggerFlyingEmoji } = useFlyingEmoji();
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -268,7 +269,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                               <button onClick={() => handleTagItemQuantity(tag.id, item.id, 1)} className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Plus className="w-3 h-3" /></button>
                             </div>
                           )}
-                          {shouldShowTagItemPrice(item) && <span className="text-sm text-muted-foreground dark:text-white whitespace-nowrap truncate min-w-0">+{formatPrice(item.price * (qty || 1))}</span>}
+                          {shouldShowTagItemPrice(item) && <span className="text-sm text-muted-foreground dark:text-white whitespace-nowrap truncate min-w-0">{formatPriceWithSign(item.price * (qty || 1))}</span>}
                         </div>
                       </div>
                     );
