@@ -380,7 +380,13 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                         </span>
                       )}
                     </p>
-                    <div className="flex gap-1.5 flex-wrap">
+                    {/* Bigger pill targets — old px-2.5 py-1 text-[11px]
+                        chips were ~24 px tall, which on a touchscreen
+                        made it easy to miss the second tap and look
+                        like the tag was single-select. Now ~36 px and
+                        with extra gap so neighbouring pills are
+                        distinguishable. */}
+                    <div className="flex gap-2 flex-wrap">
                       {tag.orderTagItems.map((item) => {
                         const isSelected = (selectedTags[tag.id] || []).some(
                           (s) => s.itemId === item.id,
@@ -390,14 +396,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                             key={item.id}
                             onClick={() => handleTagSelect(tag, item)}
                             className={cn(
-                              "flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors",
+                              "flex items-center gap-1.5 px-3.5 py-2 min-h-[36px] rounded-full text-sm font-medium transition-colors",
                               isSelected
                                 ? "bg-[hsl(var(--brand-orange))] text-white"
                                 : "bg-[hsl(var(--brand-orange-soft))] text-[hsl(var(--brand-orange))]",
                               item.isMandatory && "ring-1 ring-[hsl(var(--brand-orange))]/40",
                             )}
                           >
-                            {isSelected && <Check className="w-3 h-3" />}
+                            {isSelected && <Check className="w-4 h-4" />}
                             <span>{item.name}</span>
                             {shouldShowTagItemPrice(item) && (
                               <span className="opacity-70">+{formatPrice(item.price)}</span>
