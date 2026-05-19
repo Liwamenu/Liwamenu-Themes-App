@@ -152,6 +152,35 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     [t],
   );
 
+  /* Adjust quantity for a selected tag item (when item.maxQuantity > 1).
+   * Mirrors handleTagItemQuantity in the shared modal: clamps to
+   * [1, maxQuantity]; deselect happens via the outer chip click. */
+  const handleTagItemQuantity = useCallback(
+    (tag: OrderTag, item: OrderTagItem, delta: number) => {
+      setSelectedTags((prev) => {
+        const currentTagItems = prev[tag.id] || [];
+        const idx = currentTagItems.findIndex((s) => s.itemId === item.id);
+        if (idx < 0) return prev;
+        const current = currentTagItems[idx];
+        const minQty = item.minQuantity || 1;
+        const maxQty = item.maxQuantity || 99;
+        const newQty = current.quantity + delta;
+        if (newQty < Math.max(1, minQty)) return prev;
+        if (newQty > maxQty) {
+          toast.error(t("product.maxQuantityError", { name: current.itemName, max: maxQty }));
+          return prev;
+        }
+        return {
+          ...prev,
+          [tag.id]: currentTagItems.map((s, i) =>
+            i === idx ? { ...s, quantity: newQty } : s,
+          ),
+        };
+      });
+    },
+    [t],
+  );
+
   const validateMandatoryTags = useCallback((): { ok: boolean; missing?: string } => {
     for (const tag of selectedPortion.orderTags) {
       if (tag.freeTagging) continue;
@@ -380,29 +409,73 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                         </span>
                       )}
                     </p>
-                    <div className="flex gap-1.5 flex-wrap">
+                    {/* Touch-friendly pills (~36 px tall) + inline qty
+                        stepper for items whose maxQuantity > 1, so a
+                        customer can pick e.g. "Extra Şiş ×3". Tapping
+                        the name region toggles select; ± stop
+                        propagation so they only adjust the quantity. */}
+                    <div className="flex gap-2 flex-wrap">
                       {tag.orderTagItems.map((item) => {
-                        const isSelected = (selectedTags[tag.id] || []).some(
+                        const selectedItem = (selectedTags[tag.id] || []).find(
                           (s) => s.itemId === item.id,
                         );
+                        const isSelected = !!selectedItem;
+                        const qty = selectedItem?.quantity ?? 0;
+                        const showStepper = isSelected && item.maxQuantity > 1;
                         return (
-                          <button
+                          <div
                             key={item.id}
-                            onClick={() => handleTagSelect(tag, item)}
                             className={cn(
-                              "flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors",
+                              "inline-flex items-center rounded-full text-sm font-medium transition-colors overflow-hidden",
                               isSelected
                                 ? "bg-[hsl(var(--brand-orange))] text-white"
                                 : "bg-[hsl(var(--brand-orange-soft))] text-[hsl(var(--brand-orange))]",
                               item.isMandatory && "ring-1 ring-[hsl(var(--brand-orange))]/40",
                             )}
                           >
-                            {isSelected && <Check className="w-3 h-3" />}
-                            <span>{item.name}</span>
-                            {shouldShowTagItemPrice(item) && (
-                              <span className="opacity-70">+{formatPrice(item.price)}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleTagSelect(tag, item)}
+                              className="flex items-center gap-1.5 px-3.5 py-2 min-h-[36px]"
+                            >
+                              {isSelected && !showStepper && <Check className="w-4 h-4" />}
+                              <span>{item.name}</span>
+                              {shouldShowTagItemPrice(item) && (
+                                <span className="opacity-70">
+                                  +{formatPrice(item.price * (qty || 1))}
+                                </span>
+                              )}
+                            </button>
+                            {showStepper && (
+                              <div className="flex items-center gap-1.5 pr-1.5 pl-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleTagItemQuantity(tag, item, -1);
+                                  }}
+                                  className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"
+                                  aria-label="decrease quantity"
+                                >
+                                  <Minus className="w-3.5 h-3.5" />
+                                </button>
+                                <span className="font-bold min-w-[14px] text-center">
+                                  {qty}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleTagItemQuantity(tag, item, 1);
+                                  }}
+                                  className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center"
+                                  aria-label="increase quantity"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             )}
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
