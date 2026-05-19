@@ -148,7 +148,8 @@ function StatusZigzag({
 
 export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess }: OrderReceiptProps) {
   const { t } = useTranslation();
-  const { restaurant, formatPrice, isCurrentlyOpen, setTableNumber } = useRestaurant();
+  const { restaurant, formatPrice,
+    formatPriceWithSign, isCurrentlyOpen, setTableNumber } = useRestaurant();
   const [showCallWaiterModal, setShowCallWaiterModal] = useState(false);
   const [showTableSelection, setShowTableSelection] = useState(false);
 
@@ -360,7 +361,7 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                           <span className="min-w-0 break-words">
                             + {tag.itemName} {tag.quantity > 1 ? `x${tag.quantity}` : ""}
                           </span>
-                          {tag.price > 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
+                          {tag.price !== 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPriceWithSign(tag.price * tag.quantity * item.quantity)}</span>}
                         </div>
                       ))}
                     </div>

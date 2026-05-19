@@ -56,6 +56,7 @@ export function MenuPage() {
     isCurrentlyOpen,
     restaurant,
     formatPrice,
+    formatPriceWithSign,
     setTableNumber,
   } = useRestaurant();
   const { currentOrder, orders, setCurrentOrder } = useOrder();

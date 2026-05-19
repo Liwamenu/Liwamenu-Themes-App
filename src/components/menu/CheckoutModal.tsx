@@ -43,7 +43,8 @@ export function CheckoutModal({
     canOrderOnline,
     canOrderInPerson,
     setTableNumber,
-    formatPrice
+    formatPrice,
+    formatPriceWithSign
   } = useRestaurant();
   const {
     items,
@@ -708,7 +709,7 @@ export function CheckoutModal({
                                 <span className="min-w-0 break-words">
                                   + {tag.itemName} {tag.quantity > 1 ? `x${tag.quantity}` : ""}
                                 </span>
-                                {tag.price > 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPrice(tag.price * tag.quantity * item.quantity)}</span>}
+                                {tag.price !== 0 && <span className="whitespace-nowrap truncate min-w-0 shrink-0">{formatPriceWithSign(tag.price * tag.quantity * item.quantity)}</span>}
                               </div>)}
                           </div>}
 

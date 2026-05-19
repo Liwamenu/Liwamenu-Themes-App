@@ -39,7 +39,8 @@ interface ProductDetailModalProps {
  */
 export function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
   const { t } = useTranslation();
-  const { restaurant, formatPrice, isRestaurantActive, isCurrentlyOpen } = useRestaurant();
+  const { restaurant, formatPrice,
+    formatPriceWithSign, isRestaurantActive, isCurrentlyOpen } = useRestaurant();
   const { addItem } = useCart();
   const { triggerFlyingEmoji } = useFlyingEmoji();
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -442,7 +443,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                               <span>{item.name}</span>
                               {shouldShowTagItemPrice(item) && (
                                 <span className="opacity-70">
-                                  +{formatPrice(item.price * (qty || 1))}
+                                  {formatPriceWithSign(item.price * (qty || 1))}
                                 </span>
                               )}
                             </button>
