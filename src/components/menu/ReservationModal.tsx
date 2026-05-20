@@ -182,10 +182,18 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       toast.success(t(isTurkish ? "reservation.codeSentSMS" : "reservation.codeSentEmail"));
       setStep("code");
     } catch (error: any) {
-      // Extract localized error message from backend response
-      const errorMessage = i18n.language === "tr" 
-        ? error?.message_TR || error?.message_EN || t("reservation.codeSendError")
-        : error?.message_EN || t("reservation.codeSendError");
+      // apiFetch throws ApiError carrying the parsed ResponsBase body in
+      // `error.data` ({ message_TR, message_EN, statusCode, data }) and
+      // promotes message_TR to `error.message`. Read the locale field
+      // from the body, then fall back to the other locale, then the
+      // promoted message, then a generic string.
+      const body = error?.data ?? {};
+      const errorMessage =
+        (i18n.language === "tr" ? body.message_TR : body.message_EN) ||
+        body.message_TR ||
+        body.message_EN ||
+        error?.message ||
+        t("reservation.codeSendError");
       toast.error(errorMessage);
     } finally {
       setIsSendingCode(false);
@@ -233,10 +241,20 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       toast.success(t("reservation.success"));
       navigateToReceipt(code);
     } catch (error: any) {
-      // Extract localized error message from backend response
-      const errorMessage = i18n.language === "tr" 
-        ? error?.message_TR || error?.message_EN || (error?.message?.includes("INVALID_CODE") ? t("reservation.invalidCode") : t("reservation.error"))
-        : error?.message_EN || (error?.message?.includes("INVALID_CODE") ? t("reservation.invalidCode") : t("reservation.error"));
+      // Same shape as handleSendCode: prefer the backend's localized
+      // message (error.data.message_TR / _EN), else map the legacy
+      // INVALID_CODE sentinel, else a generic error.
+      const body = error?.data ?? {};
+      const localized =
+        (i18n.language === "tr" ? body.message_TR : body.message_EN) ||
+        body.message_TR ||
+        body.message_EN;
+      const isInvalidCode =
+        (typeof error?.message === "string" && error.message.includes("INVALID_CODE")) ||
+        JSON.stringify(body).includes("INVALID_CODE");
+      const errorMessage =
+        localized ||
+        (isInvalidCode ? t("reservation.invalidCode") : error?.message || t("reservation.error"));
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
