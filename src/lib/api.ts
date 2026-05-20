@@ -2,9 +2,18 @@
 export const USE_DUMMY_DATA = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 
 // API base URL — configured via VITE_API_BASE_URL in .env / .env.local.
-// In dev (incl. ngrok tunnels), use a relative path so requests go through
-// the Vite dev-server proxy and avoid CORS preflight failures.
-const API_BASE_URL = import.meta.env.DEV ? "" : import.meta.env.VITE_API_BASE_URL;
+//
+// Only use a relative path (so requests go through the Vite dev-server
+// proxy and dodge CORS, incl. over ngrok tunnels) when we're actually
+// running UNDER the dev server. `import.meta.hot` is truthy only during
+// `vite dev`; in every build output — including `build:dev`
+// (`vite build --mode development`, which keeps import.meta.env.DEV
+// true) — it is statically replaced with undefined. Keying on it
+// instead of `import.meta.env.DEV` prevents a dev-mode build deployed
+// to a real domain (e.g. demo.liwamenu.com) from firing relative
+// `/api` calls that hit the SPA's own index.html and return
+// "<!doctype …>" instead of JSON.
+const API_BASE_URL = import.meta.hot ? "" : (import.meta.env.VITE_API_BASE_URL || "");
 
 // API Configuration - all endpoints centralized here
 export const API_URLS = {
