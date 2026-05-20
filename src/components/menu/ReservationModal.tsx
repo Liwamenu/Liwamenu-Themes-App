@@ -405,7 +405,16 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                           handleInputChange("date", date);
                           setDatePickerOpen(false);
                         }}
-                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        disabled={(date) => {
+                          // Past dates are never bookable.
+                          if (date < new Date(new Date().setHours(0, 0, 0, 0))) return true;
+                          // Disable weekdays the restaurant is closed.
+                          // workingHours[].day is ISO-numbered (Mon=1..Sun=7);
+                          // JS getDay() is Sun=0..Sat=6, so map Sunday 0 -> 7.
+                          const iso = date.getDay() === 0 ? 7 : date.getDay();
+                          const wh = restaurant.workingHours?.find((w) => w.day === iso);
+                          return wh?.isClosed ?? false;
+                        }}
                         initialFocus
                         className="pointer-events-auto"
                       />
