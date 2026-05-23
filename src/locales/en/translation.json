@@ -241,6 +241,8 @@
     "codePlaceholder": "000000",
     "resendCode": "Didn't receive the code? Resend",
     "invalidCode": "Invalid verification code. Please try again.",
+    "dateFull": "{{date}} is now full",
+    "dateFullDesc": "Another guest filled the capacity for this date while you were verifying. Please pick a different date.",
     "submitting": "Submitting...",
     "success": "Reservation received!",
     "error": "Could not create reservation",

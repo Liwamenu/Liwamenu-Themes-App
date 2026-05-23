@@ -238,6 +238,8 @@
     "codePlaceholder": "000000",
     "resendCode": "Code nicht erhalten? Erneut senden",
     "invalidCode": "Ungültiger Bestätigungscode.",
+    "dateFull": "{{date}} ist jetzt voll",
+    "dateFullDesc": "Während Sie den Code bestätigt haben, hat ein anderer Gast die Kapazität für dieses Datum gefüllt. Bitte wählen Sie ein anderes Datum.",
     "submitting": "Wird gesendet...",
     "success": "Reservierung empfangen!",
     "error": "Reservierung konnte nicht erstellt werden",

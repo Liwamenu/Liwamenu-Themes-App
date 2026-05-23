@@ -238,6 +238,8 @@
     "codePlaceholder": "000000",
     "resendCode": "¿No recibiste el código? Reenviar",
     "invalidCode": "Código de verificación no válido.",
+    "dateFull": "{{date}} ya está completo",
+    "dateFullDesc": "Mientras verificabas, otro cliente completó la capacidad para esta fecha. Por favor, elige otra fecha.",
     "submitting": "Enviando...",
     "success": "¡Reserva recibida!",
     "error": "No se pudo crear la reserva",

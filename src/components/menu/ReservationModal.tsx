@@ -35,6 +35,30 @@ interface ReservationFormData {
 
 type Step = "form" | "verify" | "code";
 
+/**
+ * Detect the verify-time capacity-race error: between create (SMS sent) and
+ * verify, another booking consumed the day's remaining MaxGuests, so the
+ * backend rejects the verify call and marks the reservation Expired.
+ *
+ * Backend signals (in priority order):
+ *   1. A structured `code` / `errorCode` containing "CAPACITY" — preferred.
+ *   2. HTTP 409 Conflict — typical REST signal for this kind of race.
+ *   3. Substring match on the localized message ("kapasite" / "capacity") —
+ *      this catch path only runs on verify failures, and the only verify
+ *      error mentioning kapasite is the race scenario (create-time capacity
+ *      errors never reach the verify endpoint).
+ */
+const isCapacityRaceError = (error: unknown): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const err = error as any;
+  const body = err?.data ?? {};
+  const code = body.code || body.errorCode || body.Code;
+  if (typeof code === "string" && /CAPACITY/i.test(code)) return true;
+  if (err?.status === 409) return true;
+  const haystack = `${body.message_TR ?? ""} ${body.message_EN ?? ""} ${err?.message ?? ""}`.toLowerCase();
+  return haystack.includes("kapasite") || haystack.includes("capacity");
+};
+
 // Generate time slots based on settings
 const generateTimeSlots = (startTime: string, endTime: string, intervalMinutes: number) => {
   const slots: string[] = [];
@@ -77,6 +101,11 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   const [verificationCode, setVerificationCode] = useState("");
   const [reservationId, setReservationId] = useState<string>("");
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  // Set when verify-time capacity race rejects this reservation (the day's
+  // MaxGuests was consumed by another booking between create+verify). We
+  // bounce the user back to the form, clear the date, and surface an inline
+  // banner so they pick a different day instead of just seeing a toast.
+  const [capacityFullForDate, setCapacityFullForDate] = useState<Date | null>(null);
 
   // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
@@ -241,6 +270,20 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       toast.success(t("reservation.success"));
       navigateToReceipt(code);
     } catch (error: any) {
+      // Capacity-race: the day's MaxGuests filled up between create and
+      // verify. Bounce back to the form with the date cleared and an
+      // inline banner — much clearer than a toast disappearing while the
+      // user stares at a now-meaningless code input.
+      if (isCapacityRaceError(error)) {
+        const fullDate = formData.date ?? null;
+        setStep("form");
+        setVerificationCode("");
+        setReservationId("");
+        setFormData((prev) => ({ ...prev, date: undefined }));
+        setCapacityFullForDate(fullDate);
+        return;
+      }
+
       // Same shape as handleSendCode: prefer the backend's localized
       // message (error.data.message_TR / _EN), else map the legacy
       // INVALID_CODE sentinel, else a generic error.
@@ -267,6 +310,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
     setReservationId("");
     setPhoneCountry("TR");
     setPhoneSubscriber("");
+    setCapacityFullForDate(null);
     setFormData({
       fullName: "",
       phone: "",
@@ -378,6 +422,21 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                 </p>
               </div>
 
+              {capacityFullForDate && (
+                <div
+                  role="alert"
+                  className="rounded-md border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40 p-3 space-y-1"
+                >
+                  <p className="text-sm font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    {t("reservation.dateFull", { date: formatDisplayDate(capacityFullForDate) })}
+                  </p>
+                  <p className="text-xs text-amber-800 dark:text-amber-300">
+                    {t("reservation.dateFullDesc")}
+                  </p>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-2">
@@ -403,6 +462,9 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
                         selected={formData.date}
                         onSelect={(date) => {
                           handleInputChange("date", date);
+                          // Picking any new date clears the capacity-full
+                          // warning — the user has acknowledged it by acting.
+                          setCapacityFullForDate(null);
                           setDatePickerOpen(false);
                         }}
                         disabled={(date) => {
