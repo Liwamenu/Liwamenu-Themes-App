@@ -240,6 +240,8 @@
     "codePlaceholder": "000000",
     "resendCode": "Kod gelmedi mi? Tekrar gönder",
     "invalidCode": "Geçersiz doğrulama kodu. Lütfen tekrar deneyin.",
+    "dateFull": "{{date}} tarihi doldu",
+    "dateFullDesc": "Siz doğrulama kodunu girerken başka bir misafir bu tarihin kapasitesini doldurdu. Lütfen başka bir tarih seçin.",
     "submitting": "Gönderiliyor...",
     "success": "Rezervasyonunuz alındı!",
     "error": "Rezervasyon oluşturulamadı",

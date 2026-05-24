@@ -238,6 +238,8 @@
     "codePlaceholder": "000000",
     "resendCode": "Codice non ricevuto? Reinvia",
     "invalidCode": "Codice di verifica non valido.",
+    "dateFull": "{{date}} è ora al completo",
+    "dateFullDesc": "Mentre stavi verificando, un altro ospite ha esaurito la capacità per questa data. Seleziona un'altra data.",
     "submitting": "Invio in corso...",
     "success": "Prenotazione ricevuta!",
     "error": "Impossibile creare la prenotazione",

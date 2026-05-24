@@ -238,6 +238,8 @@
     "codePlaceholder": "000000",
     "resendCode": "Kod gəlmədi? Yenidən göndər",
     "invalidCode": "Yanlış təsdiq kodu.",
+    "dateFull": "{{date}} tarixi doldu",
+    "dateFullDesc": "Siz doğrulama kodunu daxil edərkən başqa bir qonaq bu tarixin tutumunu doldurdu. Zəhmət olmasa başqa bir tarix seçin.",
     "submitting": "Göndərilir...",
     "success": "Rezervasiyanız qəbul edildi!",
     "error": "Rezervasiya yaradıla bilmədi",

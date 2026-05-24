@@ -238,6 +238,8 @@
     "codePlaceholder": "000000",
     "resendCode": "没收到验证码？重新发送",
     "invalidCode": "验证码无效。",
+    "dateFull": "{{date}} 已满",
+    "dateFullDesc": "在您验证期间，另一位客人已订满该日期的容量。请选择其他日期。",
     "submitting": "提交中...",
     "success": "预订已收到！",
     "error": "无法创建预订",
