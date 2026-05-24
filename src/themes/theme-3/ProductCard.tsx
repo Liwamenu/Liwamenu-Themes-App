@@ -71,7 +71,8 @@ export const ProductCard = memo(function ProductCard({
       {priceType !== "normal" && (
         <div
           className={cn(
-            "absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full text-xs font-bold shadow-md",
+            "absolute right-3 z-10 px-2.5 py-1 rounded-full text-xs font-bold shadow-md",
+            product.recommendation ? "bottom-3" : "top-3",
             priceType === "campaign" ? "bg-campaign text-campaign-foreground" : "bg-special text-special-foreground",
           )}
         >
