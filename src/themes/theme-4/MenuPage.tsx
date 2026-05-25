@@ -327,7 +327,8 @@ export function MenuPage() {
         <div className="sticky top-0 z-40 bg-background border-b border-border">
           <div className="max-w-5xl mx-auto px-4 py-2">
             <div className="flex gap-3 items-center">
-              <button
+              {restaurant.showWaiterCallButton !== false && (
+                <button
                 onClick={handleOpenCallWaiterFloating}
                 disabled={waiterCooldown > 0}
                 className={`shrink-0 h-10 px-3 rounded-full shadow-md flex items-center gap-2 text-sm font-medium transition-all ${
@@ -340,6 +341,7 @@ export function MenuPage() {
                 <Bell className="w-4 h-4 shrink-0" />
                 <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
               </button>
+              )}
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input

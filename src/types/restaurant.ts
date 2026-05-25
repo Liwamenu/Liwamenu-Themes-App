@@ -236,7 +236,19 @@ export interface RestaurantData {
   isSpecialPriceActive: boolean;
   specialPriceName: string;
   googleAnalytics: string;
-  licenseIsActive: boolean;
+  /**
+   * Whether the restaurant's QR-menu license is currently active.
+   * Backend renamed the previous `licenseIsActive` field to this in
+   * the May 2026 license rework (alongside new `tvLicenseIsActive`
+   * and `kioskLicenseIsActive` siblings the QR menu doesn't read).
+   */
+  qrLicenseIsActive: boolean;
+  /**
+   * Whether to render the floating "Garson Çağır" button. Default
+   * true on the backend side, so we treat missing/undefined as
+   * enabled to keep older restaurant payloads working.
+   */
+  showWaiterCallButton?: boolean;
   maxTableOrderDistanceMeter: number;
   checkTableOrderDistance: boolean;
   tableNumber?: string;

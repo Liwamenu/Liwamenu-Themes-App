@@ -94,13 +94,19 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         {priceType === "campaign" && (
-          <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-campaign text-campaign-foreground rounded-full text-[9px] font-bold shadow-sm">
+          <div className={cn(
+            "absolute right-1 px-1.5 py-0.5 bg-campaign text-campaign-foreground rounded-full text-[9px] font-bold shadow-sm",
+            product.recommendation ? "bottom-1" : "top-1",
+          )}>
             %
           </div>
         )}
 
         {priceType === "special" && (
-          <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-special text-special-foreground rounded-full text-[9px] font-bold shadow-sm">
+          <div className={cn(
+            "absolute right-1 px-1.5 py-0.5 bg-special text-special-foreground rounded-full text-[9px] font-bold shadow-sm",
+            product.recommendation ? "bottom-1" : "top-1",
+          )}>
             ★
           </div>
         )}

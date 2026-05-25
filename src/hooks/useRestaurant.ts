@@ -286,14 +286,14 @@ export function useInitializeRestaurant() {
 
         // Equality check on the fields that actually drive UI:
         // - themeId (theme switch)
-        // - hide / isActive / licenseIsActive / userIsActive (block screen)
+        // - hide / isActive / qrLicenseIsActive / userIsActive (block screen)
         // - menuLang (language switch)
         // - product count (rough "menu changed" proxy)
         const themeChanged = fresh.themeId !== current.themeId;
         const visibilityChanged =
           fresh.hide !== current.hide ||
           fresh.isActive !== current.isActive ||
-          fresh.licenseIsActive !== current.licenseIsActive ||
+          fresh.qrLicenseIsActive !== current.qrLicenseIsActive ||
           fresh.userIsActive !== current.userIsActive;
         const menuLangChanged = fresh.menuLang !== current.menuLang;
         const productCountChanged =
@@ -340,7 +340,7 @@ export function useRestaurant() {
   const isRestaurantActive = useMemo(() => {
     return (
       data.isActive &&
-      data.licenseIsActive &&
+      data.qrLicenseIsActive &&
       data.userIsActive !== false &&
       !data.hide
     );

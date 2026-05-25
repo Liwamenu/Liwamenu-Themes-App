@@ -143,7 +143,7 @@ function EmptyMenuFallback() {
 
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
-  const { themeId, products, hide, menuLang, isActive, licenseIsActive, userIsActive } =
+  const { themeId, products, hide, menuLang, isActive, qrLicenseIsActive, userIsActive } =
     useRestaurantStore(
       useShallow((s) => ({
         themeId: s.restaurantData.themeId,
@@ -151,7 +151,7 @@ export function ThemeRouter() {
         hide: s.restaurantData.hide,
         menuLang: s.restaurantData.menuLang,
         isActive: s.restaurantData.isActive,
-        licenseIsActive: s.restaurantData.licenseIsActive,
+        qrLicenseIsActive: s.restaurantData.qrLicenseIsActive,
         userIsActive: s.restaurantData.userIsActive,
       }))
     );
@@ -161,7 +161,7 @@ export function ThemeRouter() {
   const isBlocked =
     hide ||
     isActive === false ||
-    licenseIsActive === false ||
+    qrLicenseIsActive === false ||
     userIsActive === false;
   if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} />;
   if (!products || products.length === 0) return <EmptyMenuFallback />;

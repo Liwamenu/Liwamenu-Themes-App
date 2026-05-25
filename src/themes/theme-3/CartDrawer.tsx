@@ -153,7 +153,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button
+                    {restaurant.showWaiterCallButton !== false && (
+                      <button
                       onClick={() => { if (!restaurant.tableNumber) { onTableRequired?.(); return; } onCallWaiter?.(); }}
                       disabled={waiterCooldown > 0}
                       className={`h-12 px-4 rounded-xl flex items-center gap-2 text-sm font-medium transition-all ${waiterCooldown > 0 ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-sky-500 text-white hover:bg-sky-600"}`}
@@ -161,6 +162,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                       <Bell className="w-4 h-4" />
                       <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t('waiter.button')}</span>
                     </button>
+                    )}
                     {canOrder ? (
                       <Button onClick={onCheckout} size="lg" className="flex-1 h-12 text-base font-semibold rounded-xl shadow-glow">
                         {t('cart.checkout')}
