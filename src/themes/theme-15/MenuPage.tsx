@@ -328,7 +328,8 @@ export function MenuPage() {
       <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container px-4 py-3">
           <div className="flex gap-3 items-center">
-            <button
+            {restaurant.showWaiterCallButton !== false && (
+              <button
               onClick={handleOpenCallWaiterFloating}
               disabled={waiterCooldown > 0}
               aria-label={t("waiter.title")}
@@ -341,6 +342,7 @@ export function MenuPage() {
               <Bell className="w-4 h-4 shrink-0" />
               <span className="whitespace-nowrap">{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
             </button>
+            )}
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input

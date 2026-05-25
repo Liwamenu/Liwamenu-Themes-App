@@ -478,7 +478,7 @@ export function MenuPage() {
       </AnimatePresence>
 
       {/* Call Waiter FAB — fixed bottom-left */}
-      {isCurrentlyOpen && restaurant.tableNumber && (
+      {isCurrentlyOpen && restaurant.tableNumber && restaurant.showWaiterCallButton !== false && (
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}

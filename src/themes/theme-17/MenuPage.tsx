@@ -268,7 +268,8 @@ export function MenuPage() {
               <LanguageSwitcher />
             </div>
             <div className="flex gap-2 items-center">
-              <button
+              {restaurant.showWaiterCallButton !== false && (
+                <button
                 onClick={handleOpenCallWaiterFloating}
                 disabled={waiterCooldown > 0}
                 className="cafe-pill"
@@ -276,6 +277,7 @@ export function MenuPage() {
                 <Bell className="w-3.5 h-3.5" />
                 <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t("waiter.button")}</span>
               </button>
+              )}
               <button
                 onClick={() => setIsSearchOpen((v) => !v)}
                 className="cafe-pill cafe-pill-icon"

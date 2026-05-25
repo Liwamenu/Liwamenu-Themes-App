@@ -243,26 +243,28 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
 
                   <div className="flex gap-2">
                     {/* Call Waiter Button in Cart */}
-                    <button
-                      onClick={() => {
-                        if (!restaurant.tableNumber) {
-                          onTableRequired?.();
-                          return;
-                        }
-                        onCallWaiter?.();
-                      }}
-                      disabled={waiterCooldown > 0}
-                      className={`h-10 px-3 rounded-xl flex items-center gap-1.5 text-sm font-medium transition-all ${
-                        waiterCooldown > 0
-                          ? "bg-muted text-muted-foreground cursor-not-allowed"
-                          : "bg-sky-400 text-white hover:bg-sky-500"
-                      }`}
-                    >
-                      <Bell className="w-4 h-4" />
-                      <span>
-                        {waiterCooldown > 0 ? `${waiterCooldown}s` : t('waiter.button')}
-                      </span>
-                    </button>
+                    {restaurant.showWaiterCallButton !== false && (
+                      <button
+                        onClick={() => {
+                          if (!restaurant.tableNumber) {
+                            onTableRequired?.();
+                            return;
+                          }
+                          onCallWaiter?.();
+                        }}
+                        disabled={waiterCooldown > 0}
+                        className={`h-10 px-3 rounded-xl flex items-center gap-1.5 text-sm font-medium transition-all ${
+                          waiterCooldown > 0
+                            ? "bg-muted text-muted-foreground cursor-not-allowed"
+                            : "bg-sky-400 text-white hover:bg-sky-500"
+                        }`}
+                      >
+                        <Bell className="w-4 h-4" />
+                        <span>
+                          {waiterCooldown > 0 ? `${waiterCooldown}s` : t('waiter.button')}
+                        </span>
+                      </button>
+                    )}
 
                     {canOrder ? (
                       <Button
