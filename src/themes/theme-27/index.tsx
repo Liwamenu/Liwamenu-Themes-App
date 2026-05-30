@@ -1,11 +1,11 @@
 /**
- * Theme 27 — Kiosk Order (Dark Glass)
+ * Theme 27 — Pastel Meals (Warung-style dark product rows)
  *
- * Full-screen dark-slate kiosk ordering interface. Restaurant logo +
- * welcome banner at the top, categories as large section headings with
- * horizontally-scrolling product rows. Glass-effect cards with square
- * product images, name, and price. Optimised for large touch-screen
- * kiosks — big fonts, generous tap targets, no hamburger drawer.
+ * Light pink canvas. Categories render as alternating full-width
+ * colored bands (green / yellow / pink / orange) with the photo
+ * swapping left/right between rows. Products inside each band are
+ * dark cards: lime category label on top, bold white name, small
+ * meta line, and a square product photo on the trailing edge.
  */
 
 import "./theme.css";
