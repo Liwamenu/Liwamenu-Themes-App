@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, X, Plus, Minus, Trash2 } from 'lucide-react';
+import { ShoppingCart, X, Plus, Minus, Trash2, Bell } from 'lucide-react';
 import { useCart, getCartItemDisplayPrice } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
@@ -30,11 +30,12 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
   const { t } = useTranslation();
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
   const { formatPrice,
-    formatPriceWithSign, restaurant } = useRestaurant();
+    formatPriceWithSign, restaurant, canOrderOnline, canOrderInPerson } = useRestaurant();
   const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const total = getTotal();
+  const canOrder = canOrderOnline || canOrderInPerson;
 
   useEffect(() => {
     if (isOpen) {
@@ -65,7 +66,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 right-0 z-50 w-[70vw] bg-card shadow-xl flex flex-col rounded-l-3xl"
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-card shadow-xl flex flex-col rounded-l-3xl"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
@@ -114,8 +115,8 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                                 <h4 className="font-semibold text-sm line-clamp-1">{item.product.name}</h4>
                                 {item.portion.name?.trim().toLowerCase() !== "normal" && <p className="text-xs text-muted-foreground">{item.portion.name}</p>}
                               </div>
-                              <button onClick={() => handleRemoveItem(item.id, item.product.name)} className="p-2 bg-destructive/15 text-destructive hover:bg-destructive hover:text-white transition-colors rounded-full">
-                                <Trash2 className="w-5 h-5" />
+                              <button onClick={() => handleRemoveItem(item.id, item.product.name)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10">
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                             {item.selectedTags.length > 0 && (
@@ -155,9 +156,33 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                     <span className="text-lg font-medium shrink-0">{t('common.total')}</span>
                     <span className="text-2xl font-body font-bold text-primary whitespace-nowrap truncate min-w-0">{formatPrice(total)}</span>
                   </div>
-                  <Button onClick={onCheckout} size="lg" className="w-full h-12 text-base font-semibold rounded-full shadow-glow">
-                    {t('cart.checkout')}
-                  </Button>
+                  <div className="flex gap-2">
+                    {restaurant.showWaiterCallButton !== false && (
+                      <button
+                      onClick={() => { if (!restaurant.tableNumber) { onTableRequired?.(); return; } onCallWaiter?.(); }}
+                      disabled={waiterCooldown > 0}
+                      className={`h-12 px-4 rounded-full flex items-center gap-2 text-sm font-medium transition-all ${waiterCooldown > 0 ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-accent text-accent-foreground hover:bg-accent/80"}`}
+                    >
+                      <Bell className="w-4 h-4" />
+                      <span>{waiterCooldown > 0 ? `${waiterCooldown}s` : t('waiter.button')}</span>
+                    </button>
+                    )}
+                    {canOrder ? (
+                      <Button onClick={onCheckout} size="lg" className="flex-1 h-12 text-base font-semibold rounded-full shadow-glow">
+                        {t('cart.checkout')}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => { if (!restaurant.tableNumber) { onTableRequired?.(); return; } onCallWaiter?.(); }}
+                        disabled={waiterCooldown > 0}
+                        size="lg"
+                        className="flex-1 h-12 text-base font-semibold rounded-full bg-campaign hover:bg-campaign/90"
+                      >
+                        <Bell className="w-4 h-4 mr-2" />
+                        {t('waiter.button')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -220,7 +245,7 @@ export function CartButton({ onClick }: { onClick: () => void }) {
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       data-cart-button
-      className={`kiosk-cart-fab ${shouldShake ? 'animate-shake' : ''}`}
+      className={`w-14 h-14 rounded-full bg-cart text-cart-foreground shadow-glow flex items-center justify-center ${shouldShake ? 'animate-shake' : ''}`}
     >
       <div className="relative">
         <ShoppingCart className="w-6 h-6" />

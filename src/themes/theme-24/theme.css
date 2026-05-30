@@ -7,7 +7,11 @@
  * photo on top (10px ring) — bold name + indigo price underneath.
  * ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+/* Michroma stays for display/header text (theme's signature look).
+ * Inter handles body + prices — Michroma's geometric Euro/Turkish
+ * glyphs (€, ₺, Ş, ç, İ…) read poorly at body sizes; €397.50 was
+ * rendering as "0 397.50" because the squared-off Euro looks like a 0. */
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ---- Light palette (soft pink canvas, leaf-green primary, indigo accent) ---- */
 .theme-24 {
@@ -129,14 +133,20 @@
    *  in the rules below. */
   font-size: 80%;
 }
+/* Base body font — Inter has full Euro/Turkish/punctuation coverage,
+ * so prices and labels render cleanly. Themed headers keep Michroma
+ * via the `.font-display` opt-in class. */
 .theme-24,
 .theme-24 * {
-  font-family: 'Michroma', 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.theme-24 .font-body {
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .theme-24 .font-display,
-.theme-24 .font-script,
-.theme-24 .font-body {
+.theme-24 .font-script {
   font-family: 'Michroma', 'Inter', system-ui, sans-serif;
 }
 
@@ -176,7 +186,7 @@
   margin: 1.5rem 0 1rem;
 }
 .theme-24 .menu-section-title h2 {
-  font-family: 'Michroma', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-weight: 900;
   color: hsl(var(--foreground));
   font-size: 1.4rem;                    /* was 1.75rem — 20% smaller */
@@ -299,7 +309,7 @@
 }
 
 .theme-24 .menu-row .product-name {
-  font-family: 'Michroma', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-weight: 700;
   /* Light text against the dark-gray card body */
   color: hsl(0 0% 96%);
@@ -316,7 +326,7 @@
   overflow: hidden;
 }
 .theme-24 .menu-row .product-desc {
-  font-family: 'Michroma', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.65rem;                   /* was 0.8125rem — 20% smaller */
   /* Lighter mid-gray for description against dark card */
   color: hsl(0 0% 72%);
@@ -335,7 +345,7 @@
   margin: 0.875rem 0 0.625rem;
 }
 .theme-24 .menu-row .product-price {
-  font-family: 'Michroma', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-weight: 700;
   /* Light mode: warm yellow against the dark-gray card (high contrast). */
   color: hsl(48 95% 55%);
