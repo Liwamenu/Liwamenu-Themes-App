@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Order } from '@/types/restaurant';
-import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
+import { createTTLStorage, THREE_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 
 interface OrderState {
   orders: Order[];
@@ -52,11 +52,11 @@ export const useOrder = create<OrderState>()(
     }),
     {
       name: STORAGE_KEY,
-      storage: createJSONStorage(() => createTTLStorage(TWO_HOURS_MS)),
+      storage: createJSONStorage(() => createTTLStorage(THREE_HOURS_MS)),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
-        const fresh = (state.orders || []).filter((o) => isFresh(o, TWO_HOURS_MS));
-        const current = state.currentOrder && isFresh(state.currentOrder, TWO_HOURS_MS)
+        const fresh = (state.orders || []).filter((o) => isFresh(o, THREE_HOURS_MS));
+        const current = state.currentOrder && isFresh(state.currentOrder, THREE_HOURS_MS)
           ? state.currentOrder
           : null;
         if (fresh.length !== state.orders.length || current !== state.currentOrder) {
@@ -69,13 +69,13 @@ export const useOrder = create<OrderState>()(
 
 // Periodically evict expired persisted state and prune stale orders by their own createdAt
 if (typeof window !== 'undefined') {
-  startTTLEvictionTimer(STORAGE_KEY, TWO_HOURS_MS, 60_000, () => {
+  startTTLEvictionTimer(STORAGE_KEY, THREE_HOURS_MS, 60_000, () => {
     useOrder.setState({ orders: [], currentOrder: null });
   });
   setInterval(() => {
     const { orders, currentOrder } = useOrder.getState();
-    const fresh = orders.filter((o) => isFresh(o, TWO_HOURS_MS));
-    const current = currentOrder && isFresh(currentOrder, TWO_HOURS_MS) ? currentOrder : null;
+    const fresh = orders.filter((o) => isFresh(o, THREE_HOURS_MS));
+    const current = currentOrder && isFresh(currentOrder, THREE_HOURS_MS) ? currentOrder : null;
     if (fresh.length !== orders.length || current !== currentOrder) {
       useOrder.setState({ orders: fresh, currentOrder: current });
     }

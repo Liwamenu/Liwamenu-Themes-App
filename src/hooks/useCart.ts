@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Product, Portion, SelectedTagItem, OrderTagItem } from '@/types/restaurant';
 import { useRestaurantStore } from '@/hooks/useRestaurant';
-import { createTTLStorage, TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
+import { createTTLStorage, THREE_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 import { resolveActiveBasePrice } from '@/lib/priceList';
 
 // Shared helper to get the correct display price for a portion.
@@ -206,7 +206,7 @@ export const useCart = create<CartState>()(
     }),
     {
       name: STORAGE_KEY,
-      storage: createJSONStorage(() => createTTLStorage(TWO_HOURS_MS)),
+      storage: createJSONStorage(() => createTTLStorage(THREE_HOURS_MS)),
       partialize: (state) => ({ items: state.items }),
     }
   )
@@ -214,7 +214,7 @@ export const useCart = create<CartState>()(
 
 // Periodically evict expired cart and reset in-memory store
 if (typeof window !== 'undefined') {
-  startTTLEvictionTimer(STORAGE_KEY, TWO_HOURS_MS, 60_000, () => {
+  startTTLEvictionTimer(STORAGE_KEY, THREE_HOURS_MS, 60_000, () => {
     useCart.setState({ items: [] });
   });
 }

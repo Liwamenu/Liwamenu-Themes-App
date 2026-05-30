@@ -276,6 +276,71 @@ export function CheckoutModal({
   };
   const handleConfirmOrder = async () => {
     setIsSubmitting(true);
+
+    // Re-verify location at submit time. proceedWithLocationCheck ran
+    // when the user first picked an order type, but multiple steps
+    // (details, payment, confirm) sit between that and the final tap
+    // on this button — long enough for the customer to leave the
+    // restaurant with a still-valid in-range result cached on screen.
+    // We re-fetch geolocation right before posting the order so a
+    // customer who walked away can't push a stale order through.
+    const needsLocationRecheck =
+      orderType === "online" ||
+      (orderType === "inPerson" && restaurant.checkTableOrderDistance);
+    if (needsLocationRecheck) {
+      try {
+        const coords = await getLocation();
+        const maxKm =
+          orderType === "online"
+            ? restaurant.maxDistance
+            : restaurant.maxTableOrderDistanceMeter / 1000;
+        const inRange = checkDistanceWithCoords(
+          coords.latitude,
+          coords.longitude,
+          restaurant.latitude,
+          restaurant.longitude,
+          maxKm,
+        );
+        if (!inRange) {
+          const distance = getDistanceWithCoords(
+            coords.latitude,
+            coords.longitude,
+            restaurant.latitude,
+            restaurant.longitude,
+          );
+          if (orderType === "online") {
+            toast.error(
+              t("order.outOfRange", {
+                distance: distance.toFixed(1),
+                max: restaurant.maxDistance,
+              }),
+            );
+          } else {
+            const meters = distance * 1000;
+            const maxMeters = restaurant.maxTableOrderDistanceMeter;
+            const fmt = (m: number) =>
+              m >= 1000
+                ? `${(m / 1000).toFixed(1)} km`
+                : `${Math.round(m)} ${t("common.meters")}`;
+            toast.error(
+              t("order.tableOrderOutOfRangeDistance", {
+                distance: fmt(meters),
+                max: fmt(maxMeters),
+              }),
+            );
+          }
+          setIsSubmitting(false);
+          return;
+        }
+        // Refresh the stored snapshot used in the order payload below
+        setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      } catch {
+        toast.error(t("order.locationError"));
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     const selectedPayment = enabledPaymentMethods.find(pm => pm.id === selectedPaymentMethod);
     const orderPayload: OrderPayload = {
       restaurantId: restaurant.restaurantId,

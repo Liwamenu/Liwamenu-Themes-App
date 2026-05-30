@@ -37,7 +37,13 @@ export function createTTLStorage(ttlMs: number): StateStorage {
   };
 }
 
-export const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+/**
+ * Default TTL for persisted customer state (cart, current order,
+ * selected table number, restaurant snapshot). 3 hours — long
+ * enough for a leisurely meal, short enough that a stale
+ * yesterday-session can't keep ordering after the customer left.
+ */
+export const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
 
 /**
  * Starts a periodic timer that removes the given localStorage key

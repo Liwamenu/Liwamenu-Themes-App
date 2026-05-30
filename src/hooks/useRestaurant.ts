@@ -5,7 +5,7 @@ import { RestaurantData, Product, ProductCategoryRef, WorkingHour } from '@/type
 import { changeLanguage } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
 import { jsDayToPlanDay } from '@/lib/priceList';
-import { TWO_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
+import { THREE_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
 
 const tableStorageKey = (): string => {
   try {
@@ -22,7 +22,7 @@ function readPersistedTable(): string | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const savedAt: number | undefined = parsed?.__savedAt;
-    if (typeof savedAt !== 'number' || Date.now() - savedAt > TWO_HOURS_MS) {
+    if (typeof savedAt !== 'number' || Date.now() - savedAt > THREE_HOURS_MS) {
       localStorage.removeItem(tableStorageKey());
       return null;
     }
@@ -171,11 +171,11 @@ export function useInitializeRestaurant() {
   const { isInitialized, setRestaurantData, setLoading, setError, isLoading, error, setTableNumber, bumpMenuTick } =
     useRestaurantStore();
 
-  // TTL eviction: clear persisted table after 2h and reflect in store
+  // TTL eviction: clear persisted table after 3h and reflect in store
   useEffect(() => {
     const cleanup = startTTLEvictionTimer(
       tableStorageKey(),
-      TWO_HOURS_MS,
+      THREE_HOURS_MS,
       60_000,
       () => setTableNumber(''),
     );
