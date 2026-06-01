@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { useInitializeRestaurant, useRestaurantStore } from "@/hooks/useRestaurant";
+import { useGoogleAnalytics } from "@/hooks/useGoogleAnalytics";
 /**
  * Theme Registry
  * 
@@ -143,7 +144,7 @@ function EmptyMenuFallback() {
 
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
-  const { themeId, products, hide, menuLang, isActive, qrLicenseIsActive, userIsActive } =
+  const { themeId, products, hide, menuLang, isActive, qrLicenseIsActive, userIsActive, googleAnalytics } =
     useRestaurantStore(
       useShallow((s) => ({
         themeId: s.restaurantData.themeId,
@@ -153,8 +154,17 @@ export function ThemeRouter() {
         isActive: s.restaurantData.isActive,
         qrLicenseIsActive: s.restaurantData.qrLicenseIsActive,
         userIsActive: s.restaurantData.userIsActive,
+        googleAnalytics: s.restaurantData.googleAnalytics,
       }))
     );
+
+  // Inject this restaurant's own Google Analytics (gtag.js) into the
+  // customer page + track SPA route changes. No-op until a valid GA4
+  // Measurement ID arrives on the DTO; safe to call on every render,
+  // including the loading/blocked branches below (a hook must run
+  // unconditionally — it self-guards on the id). See
+  // useGoogleAnalytics for why this lives here and not the admin panel.
+  useGoogleAnalytics(googleAnalytics);
 
   if (isLoading) return <LoadingFallback />;
   if (error) return <ErrorFallback error={error} />;
