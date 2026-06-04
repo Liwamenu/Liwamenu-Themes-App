@@ -9,6 +9,7 @@ import i18n from "@/lib/i18n";
 import { ThemeRouter } from "@/themes/ThemeRouter";
 import NotFound from "./pages/NotFound";
 import ReservationReceipt from "./pages/ReservationReceipt";
+import ReservationEmbed from "./pages/ReservationEmbed";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,9 @@ const App = () => (
             <Routes>
               <Route path="/" element={<ThemeRouter />} />
               <Route path="/reservation-receipt" element={<ReservationReceipt />} />
+              {/* Standalone, iframe-embeddable reservation form (form only,
+                  no menu). Restaurants embed this on their own websites. */}
+              <Route path="/reservation" element={<ReservationEmbed />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -247,7 +247,9 @@
     "confirmationCode": "Təsdiq kodu",
     "receiptFooter": "Rezervasiyanız qəbul edilmişdir",
     "goBack": "Geri qayıt",
-    "newReservation": "YENİ RƏZERVASİYA"
+    "newReservation": "YENİ RƏZERVASİYA",
+    "embedUnavailable": "Rezervasiya forması hazırda yüklənə bilmədi.",
+    "embedNotActive": "Bu müəssisə üçün rezervasiya hazırda bağlıdır."
   },
   "validation": {
     "enterName": "Zəhmət olmasa adınızı daxil edin",

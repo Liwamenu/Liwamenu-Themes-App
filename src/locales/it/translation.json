@@ -247,7 +247,9 @@
     "confirmationCode": "Conferma",
     "receiptFooter": "La tua prenotazione è stata ricevuta",
     "goBack": "Indietro",
-    "newReservation": "NUOVA PRENOTAZIONE"
+    "newReservation": "NUOVA PRENOTAZIONE",
+    "embedUnavailable": "Impossibile caricare il modulo di prenotazione in questo momento.",
+    "embedNotActive": "Le prenotazioni sono attualmente chiuse per questa attività."
   },
   "validation": {
     "enterName": "Inserisci il tuo nome",

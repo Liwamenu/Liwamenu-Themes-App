@@ -247,7 +247,9 @@
     "confirmationCode": "确认码",
     "receiptFooter": "您的预订已收到",
     "goBack": "返回",
-    "newReservation": "新预订"
+    "newReservation": "新预订",
+    "embedUnavailable": "目前无法加载预订表单。",
+    "embedNotActive": "该商家目前暂不接受预订。"
   },
   "validation": {
     "enterName": "请输入您的姓名",

@@ -247,7 +247,9 @@
     "confirmationCode": "Confirmation",
     "receiptFooter": "Votre réservation a été reçue",
     "goBack": "Retour",
-    "newReservation": "NOUVELLE RÉSERVATION"
+    "newReservation": "NOUVELLE RÉSERVATION",
+    "embedUnavailable": "Le formulaire de réservation n'a pas pu être chargé pour le moment.",
+    "embedNotActive": "Les réservations sont actuellement fermées pour cet établissement."
   },
   "validation": {
     "enterName": "Veuillez entrer votre nom",
