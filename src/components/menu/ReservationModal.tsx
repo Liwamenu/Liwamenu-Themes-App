@@ -14,6 +14,7 @@ import { useRestaurant } from "@/hooks/useRestaurant";
 import { toast } from "sonner";
 import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservation as apiVerifyReservation, getResponseData } from "@/lib/api";
 import { format } from "date-fns";
+import { tr, enUS, de, fr, it, es, ar, az, ru, el, zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
@@ -292,14 +293,24 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
     onClose();
   };
 
+  // Map the active UI language to a date-fns locale so the day name
+  // (and English month abbrev.) render in the menu language instead of
+  // always defaulting to English. Turkish is the app fallback.
+  const dfLocale =
+    ({ tr, en: enUS, de, fr, it, es, ar, az, ru, el, zh: zhCN } as Record<string, typeof tr>)[
+      i18n.language
+    ] || tr;
+
   const formatDisplayDate = (date: Date | undefined): string => {
     if (!date) return "";
-    return format(date, i18n.language === "en" ? "MMM dd, yyyy" : "dd.MM.yyyy");
+    return format(date, i18n.language === "en" ? "MMM dd, yyyy" : "dd.MM.yyyy", {
+      locale: dfLocale,
+    });
   };
 
   const getDayName = (date: Date | undefined): string => {
     if (!date) return "";
-    return format(date, i18n.language === "en" ? "EEEE" : "EEEE");
+    return format(date, "EEEE", { locale: dfLocale });
   };
 
   if (!isOpen) return null;
