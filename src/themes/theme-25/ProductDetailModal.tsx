@@ -376,10 +376,16 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             </>
           )}
 
-          {/* Order tag groups (mandatory + optional + freeTagging) */}
-          {canOrderAtAll && selectedPortion.orderTags.length > 0 && (
+          {/* Order tag groups (mandatory + optional + freeTagging).
+              Regular tag groups are product INFO and always show (so the
+              options + prices are visible even when ordering is off);
+              free-text note fields only make sense when ordering is
+              possible. Mirrors the shared ProductDetailModal. */}
+          {selectedPortion.orderTags.some((tag) => !tag.freeTagging || canOrderAtAll) && (
             <div className="mt-6 space-y-4">
-              {selectedPortion.orderTags.map((tag) => {
+              {selectedPortion.orderTags
+                .filter((tag) => !tag.freeTagging || canOrderAtAll)
+                .map((tag) => {
                 if (tag.freeTagging) {
                   return (
                     <div key={tag.id}>
