@@ -252,7 +252,9 @@
     "confirmationCode": "Confirmation",
     "receiptFooter": "Your reservation has been received",
     "goBack": "Go Back",
-    "newReservation": "NEW RESERVATION"
+    "newReservation": "NEW RESERVATION",
+    "embedUnavailable": "The reservation form could not be loaded right now.",
+    "embedNotActive": "Reservations are currently closed for this business."
   },
   "validation": {
     "enterName": "Please enter your name",

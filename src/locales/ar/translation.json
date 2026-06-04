@@ -249,7 +249,9 @@
     "confirmationCode": "رمز التأكيد",
     "receiptFooter": "تم استلام حجزك",
     "goBack": "رجوع",
-    "newReservation": "حجز جديد"
+    "newReservation": "حجز جديد",
+    "embedUnavailable": "تعذّر تحميل نموذج الحجز في الوقت الحالي.",
+    "embedNotActive": "الحجوزات مغلقة حاليًا لدى هذا المكان."
   },
   "validation": {
     "enterName": "يرجى إدخال اسمك",

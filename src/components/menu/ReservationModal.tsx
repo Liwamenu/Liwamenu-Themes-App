@@ -21,6 +21,10 @@ import { Phone10Field } from "@/components/phone/Phone10Field";
 interface ReservationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Inline/iframe mode: render the form WITHOUT the modal overlay,
+   *  backdrop, body scroll-lock, or close button. Used by the standalone
+   *  /reservation page that restaurants embed on their own websites. */
+  embedded?: boolean;
 }
 
 interface ReservationFormData {
@@ -77,7 +81,7 @@ const generateTimeSlots = (startTime: string, endTime: string, intervalMinutes: 
   return slots;
 };
 
-export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
+export function ReservationModal({ isOpen, onClose, embedded = false }: ReservationModalProps) {
   const { t, i18n } = useTranslation();
   const { restaurant } = useRestaurant();
   
@@ -124,6 +128,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
   // Lock body + html scroll when modal is open (html-level lock is needed because
   // body{overflow:hidden} alone doesn't prevent the viewport from scrolling on modern browsers)
   useEffect(() => {
+    // Inline embed must NOT lock the host page's scroll.
+    if (embedded) return;
     if (isOpen) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
@@ -135,7 +141,7 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, embedded]);
 
   // Only Turkish phone numbers (+90) can receive SMS
   const isTurkish = phoneCountry === "TR";
@@ -342,22 +348,8 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
 
   if (!isOpen) return null;
 
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto"
-        onClick={handleClose}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-card rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
-        >
+  const inner = (
+    <>
           {/* Header */}
           <div className="sticky top-0 bg-card z-10 flex items-center justify-between p-4 border-b border-border">
             <h2 className="text-lg font-semibold">
@@ -365,9 +357,11 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
               {step === "verify" && t("reservation.verifyTitle")}
               {step === "code" && t("reservation.enterCodeTitle")}
             </h2>
-            <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
-              <X className="w-5 h-5" />
-            </button>
+            {!embedded && (
+              <button onClick={handleClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Form Step */}
@@ -666,6 +660,39 @@ export function ReservationModal({ isOpen, onClose }: ReservationModalProps) {
               </Button>
             </div>
           )}
+    </>
+  );
+
+  // Embedded (iframe) mode: render the card inline — no overlay, no
+  // backdrop, no animation, no close button. The standalone /reservation
+  // page (which restaurants iframe-embed on their own sites) uses this.
+  if (embedded) {
+    return (
+      <div className="w-full">
+        <div className="relative w-full max-w-md mx-auto bg-card rounded-2xl border border-border shadow-sm">
+          {inner}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto"
+        onClick={handleClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-md bg-card rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
+        >
+          {inner}
         </motion.div>
       </motion.div>
     </AnimatePresence>

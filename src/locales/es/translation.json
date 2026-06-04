@@ -249,7 +249,9 @@
     "confirmationCode": "Confirmación",
     "receiptFooter": "Tu reserva ha sido recibida",
     "goBack": "Atrás",
-    "newReservation": "NUEVA RESERVA"
+    "newReservation": "NUEVA RESERVA",
+    "embedUnavailable": "No se pudo cargar el formulario de reserva en este momento.",
+    "embedNotActive": "Las reservas están cerradas actualmente para este negocio."
   },
   "validation": {
     "enterName": "Por favor, introduce tu nombre",

@@ -249,7 +249,9 @@
     "confirmationCode": "Подтверждение",
     "receiptFooter": "Ваше бронирование получено",
     "goBack": "Назад",
-    "newReservation": "НОВОЕ БРОНИРОВАНИЕ"
+    "newReservation": "НОВОЕ БРОНИРОВАНИЕ",
+    "embedUnavailable": "Не удалось загрузить форму бронирования.",
+    "embedNotActive": "Бронирование для этого заведения сейчас недоступно."
   },
   "validation": {
     "enterName": "Пожалуйста, введите ваше имя",

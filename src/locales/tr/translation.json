@@ -251,7 +251,9 @@
     "confirmationCode": "Onay Kodu",
     "receiptFooter": "Rezervasyonunuz alınmıştır",
     "goBack": "Geri Dön",
-    "newReservation": "YENİ REZERVASYON"
+    "newReservation": "YENİ REZERVASYON",
+    "embedUnavailable": "Rezervasyon formu şu anda yüklenemedi.",
+    "embedNotActive": "Bu işletme için rezervasyon şu anda kapalı."
   },
   "validation": {
     "enterName": "Lütfen adınızı giriniz",

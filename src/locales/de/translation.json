@@ -249,7 +249,9 @@
     "confirmationCode": "Bestätigung",
     "receiptFooter": "Ihre Reservierung wurde empfangen",
     "goBack": "Zurück",
-    "newReservation": "NEUE RESERVIERUNG"
+    "newReservation": "NEUE RESERVIERUNG",
+    "embedUnavailable": "Das Reservierungsformular konnte derzeit nicht geladen werden.",
+    "embedNotActive": "Reservierungen sind für diesen Betrieb derzeit geschlossen."
   },
   "validation": {
     "enterName": "Bitte geben Sie Ihren Namen ein",

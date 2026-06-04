@@ -249,7 +249,9 @@
     "confirmationCode": "Επιβεβαίωση",
     "receiptFooter": "Η κράτησή σας ελήφθη",
     "goBack": "Πίσω",
-    "newReservation": "ΝΕΑ ΚΡΑΤΗΣΗ"
+    "newReservation": "ΝΕΑ ΚΡΑΤΗΣΗ",
+    "embedUnavailable": "Δεν ήταν δυνατή η φόρτωση της φόρμας κράτησης αυτή τη στιγμή.",
+    "embedNotActive": "Οι κρατήσεις είναι προς το παρόν κλειστές για αυτήν την επιχείρηση."
   },
   "validation": {
     "enterName": "Εισάγετε το όνομά σας",
