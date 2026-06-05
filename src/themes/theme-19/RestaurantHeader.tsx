@@ -133,8 +133,8 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
         </motion.div>
       </div>
 
-      <ReservationModal isOpen={isReservationOpen} onClose={() => setIsReservationOpen(false)} />
-      <SurveyModal isOpen={isSurveyOpen} onClose={() => setIsSurveyOpen(false)} />
+      <div className="pdm-light"><ReservationModal isOpen={isReservationOpen} onClose={() => setIsReservationOpen(false)} /></div>
+      <div className="pdm-light"><SurveyModal isOpen={isSurveyOpen} onClose={() => setIsSurveyOpen(false)} /></div>
     </header>
   );
 }

@@ -177,7 +177,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
       <motion.div
         initial={{ opacity: 0, y: '100%' }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-background rounded-3xl flex flex-col"
+        className="pdm-light fixed left-[3px] right-[3px] bottom-[3px] z-50 max-h-[calc(100dvh-6px)] bg-background rounded-3xl flex flex-col"
       >
         <div className="relative h-56 shrink-0 rounded-t-[15px] overflow-hidden touch-none">
           <img src={getProductImageSrc(product.imageURL)} onError={handleProductImageError} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
@@ -222,12 +222,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               : t('common.required');
             return (
               <div key={tag.id} ref={(el) => (tagRefs.current[tag.id] = el)}
-                className={cn("mb-4 p-3 rounded-xl transition-all", isShaking && "animate-shake bg-secondary/10 ring-2 ring-secondary")}>
+                className={cn("mb-4 p-3 rounded-xl transition-all", isShaking && "animate-shake bg-primary/5 ring-2 ring-primary")}>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className={cn("font-semibold", isShaking ? "text-secondary" : "text-foreground")}>{tag.name}</h3>
+                  <h3 className={cn("font-semibold", isShaking ? "text-primary" : "text-foreground")}>{tag.name}</h3>
                   {isUnfulfilled && (
                     <span className={cn("px-2 py-0.5 text-xs rounded-full transition-all",
-                      isShaking ? "bg-secondary text-secondary-foreground animate-pulse" : "bg-secondary/10 text-secondary")}>{requirementLabel}</span>
+                      isShaking ? "bg-primary text-primary-foreground animate-pulse" : "bg-primary/10 text-primary")}>{requirementLabel}</span>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -247,11 +247,11 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                     return (
                       <div key={item.id} className={cn('w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all',
                         selected ? 'bg-primary/10 border-2 border-primary'
-                          : isShaking && isUnfulfilled ? 'bg-card border-2 border-secondary/50 animate-pulse' : 'bg-card border-2 border-transparent')}>
+                          : isShaking && isUnfulfilled ? 'bg-card border-2 border-primary/50 animate-pulse' : 'bg-card border-2 border-transparent')}>
                         <button onClick={() => handleTagSelect(tag, item)} className="flex items-center gap-3 flex-1">
                           <div className={cn('w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
                             selected ? 'bg-primary border-primary'
-                              : isShaking && isUnfulfilled ? 'border-secondary' : 'border-muted-foreground/30')}>
+                              : isShaking && isUnfulfilled ? 'border-primary' : 'border-muted-foreground/30')}>
                             {selected && <Check className="w-3 h-3 text-primary-foreground" />}
                           </div>
                           <span className="font-light text-[11px] tracking-wide leading-snug">{item.name}</span>
@@ -264,7 +264,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                               <button onClick={() => handleTagItemQuantity(tag.id, item.id, 1)} className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Plus className="w-3 h-3" /></button>
                             </div>
                           )}
-                          {shouldShowTagItemPrice(item) && <span className="text-sm text-muted-foreground dark:text-white whitespace-nowrap truncate min-w-0">{formatPriceWithSign(item.price * (qty || 1))}</span>}
+                          {shouldShowTagItemPrice(item) && <span className="text-sm text-muted-foreground whitespace-nowrap truncate min-w-0">{formatPriceWithSign(item.price * (qty || 1))}</span>}
                         </div>
                       </div>
                     );

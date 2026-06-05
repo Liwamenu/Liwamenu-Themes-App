@@ -63,7 +63,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-background shadow-2xl flex flex-col"
+              className="pdm-light fixed inset-y-0 right-0 z-50 w-full max-w-md bg-background shadow-2xl flex flex-col"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-card">
@@ -74,7 +74,7 @@ export function CartDrawer({ isOpen, onClose, onCheckout, onCallWaiter, onTableR
                 </div>
                 <div className="flex items-center gap-2">
                   {items.length > 0 && (
-                    <button onClick={() => setShowClearConfirm(true)} className="text-sm text-white hover:text-white/80 bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg transition-colors font-medium">
+                    <button onClick={() => setShowClearConfirm(true)} className="text-sm text-foreground hover:text-foreground/80 bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-lg transition-colors font-medium">
                       {t('cart.clearCart')}
                     </button>
                   )}
