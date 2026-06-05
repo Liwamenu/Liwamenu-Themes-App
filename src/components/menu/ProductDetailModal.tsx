@@ -388,19 +388,14 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                     "font-semibold",
                     isShaking ? "text-destructive" : "text-foreground"
                   )}>{tag.name}</h3>
-                  {isRequired && (
+                  {isUnfulfilled && (
                     <span className={cn(
                       "px-2 py-0.5 text-xs rounded-full transition-all",
-                      isShaking 
-                        ? "bg-destructive text-destructive-foreground animate-pulse" 
+                      isShaking
+                        ? "bg-destructive text-destructive-foreground animate-pulse"
                         : "bg-destructive/10 text-destructive"
                     )}>
                       {t('common.required')}
-                    </span>
-                  )}
-                  {getEffectiveTagBounds(tag).max > 1 && (
-                    <span className="text-xs text-muted-foreground">
-                      ({t('product.maxSelection', { max: getEffectiveTagBounds(tag).max })})
                     </span>
                   )}
                 </div>

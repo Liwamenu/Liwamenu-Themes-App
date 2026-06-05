@@ -4,15 +4,20 @@ import type { OrderTag, OrderTagItem } from "@/types/restaurant";
  * Effective minimum and maximum selection bounds for an OrderTag.
  *
  * SambaPOS convention (the upstream POS this menu syncs from):
- *   `min=0, max=0` is the default and means **"exactly one selection is
- *   allowed"** — identical to `min=1, max=1`. Treating those two
- *   configurations identically in the UI avoids the awkward fallback
- *   where unset tags ended up allowing zero selections or were treated
- *   as unlimited multi-select.
+ *   - `min=0, max=0` is the DEFAULT and means **"exactly one selection
+ *     is allowed"** — identical to `min=1, max=1`. Treating those two
+ *     configurations identically avoids unset tags allowing zero
+ *     selections or being treated as unlimited multi-select.
+ *   - `max=0` WITH an explicit `min > 0` means **"no upper limit"** —
+ *     the customer may pick as many as the group has items. Previously
+ *     this leaked through as a literal max of 0, so the UI blocked all
+ *     selection and showed a "En fazla 0 seçim yapabilirsiniz" toast.
+ *     We now resolve such a max to the number of items in the group, so
+ *     the selection is effectively unlimited (capped at all items).
  *
  * Returns the effective bounds the UI should enforce. Callers should
  * use these instead of reading `tag.minSelected` / `tag.maxSelected`
- * directly so the SambaPOS default is honored uniformly.
+ * directly so the SambaPOS conventions are honored uniformly.
  */
 export function getEffectiveTagBounds(tag: OrderTag): {
   min: number;
@@ -21,7 +26,10 @@ export function getEffectiveTagBounds(tag: OrderTag): {
   if (tag.minSelected === 0 && tag.maxSelected === 0) {
     return { min: 1, max: 1 };
   }
-  return { min: tag.minSelected, max: tag.maxSelected };
+  // max=0 → "no maximum" → up to the number of items in the group.
+  const itemCount = Array.isArray(tag.orderTagItems) ? tag.orderTagItems.length : 0;
+  const max = tag.maxSelected === 0 ? itemCount : tag.maxSelected;
+  return { min: tag.minSelected, max };
 }
 
 /**
