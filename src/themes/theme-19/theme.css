@@ -84,6 +84,35 @@
   color-scheme: dark;
 }
 
+/* Product-detail modal rendered as a LIGHT surface (bg #E9EFF9) while the
+ * rest of theme-19 stays dark plum. Flips only the neutral surface tokens to
+ * light values; amber --primary and plum --secondary accents inherit from
+ * .theme-19 so badges / CTA / selection states keep their colours. */
+.theme-19 .pdm-light,
+.dark .theme-19 .pdm-light {
+  --background: 217 57% 94.5%;        /* #E9EFF9 (RGB 233,239,249) */
+  --foreground: 220 28% 20%;          /* dark slate — readable on light */
+  --card: 0 0% 100%;                  /* white cards */
+  --card-foreground: 220 28% 20%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 28% 20%;
+  --muted: 218 35% 91%;
+  --muted-foreground: 220 14% 42%;
+  /* secondary becomes a light surface (was dark plum) so option cards,
+   * pills and chips read with dark text instead of light-on-dark. */
+  --secondary: 218 30% 90%;
+  --secondary-foreground: 220 28% 22%;
+  --accent: 218 30% 90%;
+  --accent-foreground: 220 28% 22%;
+  --border: 218 26% 85%;
+  --input: 218 26% 88%;
+  /* .theme-19 sets `color` directly on the wrapper (cream), which leaks into
+   * elements that lack a text-color class (tag item names, qty numbers) via
+   * inheritance. Re-assert the dark foreground here so those read on light. */
+  color: hsl(var(--foreground));
+  color-scheme: light;
+}
+
 /* ---- Fonts ---- */
 .theme-19,
 .theme-19 * {

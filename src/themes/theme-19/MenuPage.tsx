@@ -210,12 +210,14 @@ export function MenuPage() {
   if (currentView === "order" && viewingOrder) {
     return (
       <div className="theme-19">
-        <OrderReceipt
-          orderId={viewingOrder.id}
-          onBack={handleBackToMenu}
-          waiterCooldown={waiterCooldown}
-          onWaiterSuccess={handleWaiterSuccess}
-        />
+        <div className="pdm-light">
+          <OrderReceipt
+            orderId={viewingOrder.id}
+            onBack={handleBackToMenu}
+            waiterCooldown={waiterCooldown}
+            onWaiterSuccess={handleWaiterSuccess}
+          />
+        </div>
       </div>
     );
   }
@@ -522,30 +524,36 @@ export function MenuPage() {
 
       <AnimatePresence>
         {isCheckoutOpen && (
-          <CheckoutModal
-            onClose={handleCloseCheckout}
-            onOrderComplete={handleOrderComplete}
-            onShowSoundPermission={handleShowSoundPermission}
-          />
+          <div className="pdm-light">
+            <CheckoutModal
+              onClose={handleCloseCheckout}
+              onOrderComplete={handleOrderComplete}
+              onShowSoundPermission={handleShowSoundPermission}
+            />
+          </div>
         )}
       </AnimatePresence>
 
-      <SoundPermissionModal isOpen={showSoundPermission} onAllow={handleAllowSound} onDeny={handleDenySound} />
-      <CallWaiterModal isOpen={showCallWaiter} onClose={handleCloseCallWaiter} onSuccess={handleWaiterSuccess} />
-      <ReservationModal isOpen={showReservation} onClose={handleCloseReservation} />
-      <ChangeTableModal
-        isOpen={showTableSelection}
-        onClose={() => setShowTableSelection(false)}
-        onTableChange={handleTableSelected}
-        currentTable={undefined}
-      />
+      <div className="pdm-light"><SoundPermissionModal isOpen={showSoundPermission} onAllow={handleAllowSound} onDeny={handleDenySound} /></div>
+      <div className="pdm-light"><CallWaiterModal isOpen={showCallWaiter} onClose={handleCloseCallWaiter} onSuccess={handleWaiterSuccess} /></div>
+      <div className="pdm-light"><ReservationModal isOpen={showReservation} onClose={handleCloseReservation} /></div>
+      <div className="pdm-light">
+        <ChangeTableModal
+          isOpen={showTableSelection}
+          onClose={() => setShowTableSelection(false)}
+          onTableChange={handleTableSelected}
+          currentTable={undefined}
+        />
+      </div>
 
       <FlyingEmoji isVisible={isFlyingEmojiVisible} startPosition={flyingEmojiPosition} onComplete={hideFlyingEmoji} />
-      <AnnouncementModal
-        isOpen={showAnnouncement}
-        onClose={() => setShowAnnouncement(false)}
-        htmlContent={restaurant.announcementSettings?.htmlContent || ""}
-      />
+      <div className="pdm-light">
+        <AnnouncementModal
+          isOpen={showAnnouncement}
+          onClose={() => setShowAnnouncement(false)}
+          htmlContent={restaurant.announcementSettings?.htmlContent || ""}
+        />
+      </div>
 
       {selectedExternalPage && (
         <ExternalPageView
