@@ -231,12 +231,11 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               <div key={tag.id} ref={(el) => (tagRefs.current[tag.id] = el)} className={cn("mb-4 p-3 rounded-xl transition-all", isShaking && "animate-shake bg-secondary/10 ring-2 ring-secondary")}>
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className={cn("font-semibold", isShaking ? "text-secondary" : "text-foreground")}>{tag.name}</h3>
-                  {isRequired && (
+                  {isRequired && selectedCount < getEffectiveTagBounds(tag).min && (
                     <span className={cn("px-2 py-0.5 text-xs rounded-full transition-all", isShaking ? "bg-secondary text-secondary-foreground animate-pulse" : "bg-secondary/10 text-secondary")}>
                       {t('common.required')}
                     </span>
                   )}
-                  {getEffectiveTagBounds(tag).max > 1 && <span className="text-xs text-muted-foreground">({t('product.maxSelection', { max: getEffectiveTagBounds(tag).max })})</span>}
                 </div>
                 <div className="space-y-2">
                   {tag.freeTagging && (

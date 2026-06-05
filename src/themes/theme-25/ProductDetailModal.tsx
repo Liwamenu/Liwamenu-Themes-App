@@ -410,11 +410,6 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   <div key={tag.id}>
                     <p className="text-xs font-semibold text-foreground mb-1.5">
                       {tag.name}
-                      {getEffectiveTagBounds(tag).max > 0 && (
-                        <span className="text-muted-foreground font-normal ml-1">
-                          ({t("product.maxSelections", "En fazla")} {getEffectiveTagBounds(tag).max})
-                        </span>
-                      )}
                     </p>
                     {/* Touch-friendly pills (~36 px tall) + inline qty
                         stepper for items whose maxQuantity > 1, so a
