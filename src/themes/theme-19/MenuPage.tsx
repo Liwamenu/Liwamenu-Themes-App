@@ -276,10 +276,10 @@ export function MenuPage() {
         </div>
       </div>
 
-      <div className="container px-3 py-6 pb-24">
+      <div className="container px-1 py-6 pb-24">
         {searchQuery ? (
           /* SEARCH RESULTS */
-          <div className="product-zone rounded-3xl p-3">
+          <div className="product-zone rounded-3xl p-1">
             <h2 className="font-display text-2xl font-bold mb-4" style={{ color: "hsl(var(--surface-light-foreground))" }}>
               {t("menu.searchResults", "Arama Sonuçları")}
               <span className="text-sm font-normal product-card-muted ml-2">({filteredProducts.length})</span>
@@ -449,7 +449,7 @@ export function MenuPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="product-zone rounded-3xl p-3"
+            className="product-zone rounded-3xl p-1"
           >
             <div className="flex items-center gap-3 mb-4">
               <h2 className="font-display text-2xl font-bold italic" style={{ color: "hsl(var(--surface-light-foreground))" }}>
