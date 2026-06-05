@@ -182,29 +182,35 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     [t],
   );
 
-  const validateMandatoryTags = useCallback((): { ok: boolean; missing?: string } => {
+  const validateTags = useCallback((): { ok: boolean; message?: string } => {
     for (const tag of selectedPortion.orderTags) {
       if (tag.freeTagging) continue;
-      const hasMandatory = tag.orderTagItems.some((it) => it.isMandatory);
-      if (!hasMandatory) continue;
       const picks = selectedTags[tag.id] || [];
+      // Group-level minimum — counts total quantity (3x one item counts as 3).
+      const bounds = getEffectiveTagBounds(tag);
+      if (bounds.min > 0) {
+        const count = picks.reduce((sum, it) => sum + (it.quantity || 1), 0);
+        if (count < bounds.min) {
+          return { ok: false, message: t("product.minSelectionError", { name: tag.name, min: bounds.min }) };
+        }
+      }
+      // All mandatory items must be selected.
       const mandatoryItems = tag.orderTagItems.filter((it) => it.isMandatory);
-      const allMandatorySelected = mandatoryItems.every((mi) =>
-        picks.some((p) => p.itemId === mi.id),
-      );
-      if (!allMandatorySelected) return { ok: false, missing: tag.name };
+      if (mandatoryItems.length > 0 && !mandatoryItems.every((mi) => picks.some((p) => p.itemId === mi.id))) {
+        return { ok: false, message: `${tag.name} ${t("product.mandatoryGroup", "zorunlu")}` };
+      }
     }
     return { ok: true };
-  }, [selectedPortion, selectedTags]);
+  }, [selectedPortion, selectedTags, t]);
 
   const handleAddToCart = useCallback(() => {
     if (!canAddToCart) {
       toast.error(t("common.closedHours"));
       return;
     }
-    const v = validateMandatoryTags();
+    const v = validateTags();
     if (!v.ok) {
-      toast.error(`${v.missing} ${t("product.mandatoryGroup", "zorunlu")}`);
+      toast.error(v.message);
       return;
     }
     if (addButtonRef.current) {
@@ -234,7 +240,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
     selectedTags,
     t,
     triggerFlyingEmoji,
-    validateMandatoryTags,
+    validateTags,
   ]);
 
   /* Description with "More" affordance */
@@ -406,10 +412,21 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                     </div>
                   );
                 }
+                const bounds = getEffectiveTagBounds(tag);
+                const selectedCount = (selectedTags[tag.id] || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
+                const isUnfulfilled = bounds.min > 0 && selectedCount < bounds.min;
+                const requirementLabel = bounds.min > 1
+                  ? t("product.selectAtLeast", { count: bounds.min })
+                  : t("common.required");
                 return (
                   <div key={tag.id}>
-                    <p className="text-xs font-semibold text-foreground mb-1.5">
-                      {tag.name}
+                    <p className="text-xs font-semibold text-foreground mb-1.5 flex items-center gap-2">
+                      <span>{tag.name}</span>
+                      {isUnfulfilled && (
+                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-[hsl(var(--brand-orange-soft))] text-[hsl(var(--brand-orange))]">
+                          {requirementLabel}
+                        </span>
+                      )}
                     </p>
                     {/* Touch-friendly pills (~36 px tall) + inline qty
                         stepper for items whose maxQuantity > 1, so a
