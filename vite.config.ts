@@ -26,7 +26,14 @@ export default defineConfig(({ mode }) => ({
       "/api": {
         target: "https://liwamenu.pentegrasyon.net",
         changeOrigin: true,
-        secure: true,
+        // `false` = don't verify the upstream TLS cert chain in the dev
+        // proxy. The backend serves an incomplete chain (missing
+        // intermediate), so strict verification fails under Node builds
+        // that rely on their bundled CA store (e.g. the preview runner),
+        // throwing "unable to verify the first certificate" → 500. This
+        // only affects the local dev proxy; production hits the backend
+        // directly via the browser's own TLS, so it is unchanged.
+        secure: false,
       },
     },
     // HMR over HTTPS tunnel: tell the browser to connect back to the
