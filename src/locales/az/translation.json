@@ -206,6 +206,9 @@
     "noTableDesc": "Ofisiantı çağırmaq üçün əvvəlcə masanızın QR kodunu skan etməlisiniz."
   },
   "reservation": {
+    "tooFrequent": "Bu telefon nömrəsi ilə bu yaxınlarda rezervasiya edilib. Zəhmət olmasa bir az sonra yenidən cəhd edin.",
+    "dateFull": "Bu tarix üçün rezervasiya tutumu doludur. Zəhmət olmasa başqa gün seçin.",
+    "remainingCapacity": "Qalan tutum: {{count}} nəfər",
     "title": "Rezervasiya",
     "button": "Rezervasiya",
     "verifyTitle": "Məlumatlarınızı yoxlayın",

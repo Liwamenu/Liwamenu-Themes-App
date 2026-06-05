@@ -30,6 +30,7 @@ export const API_URLS = {
   createReservation: `${API_BASE_URL}/api/Reservations/Create`,
   verifyReservation: `${API_BASE_URL}/api/Reservations/Verify`,
   resendReservationVerification: `${API_BASE_URL}/api/SMS/ResendReservationVerification`,
+  reservationAvailability: `${API_BASE_URL}/api/Reservations/Availability`,
 
   // Survey
   sendSurvey: `${API_BASE_URL}/api/Restaurants/SubmitSurveyRating`,
@@ -136,6 +137,27 @@ export async function resendReservationVerification(payload: { reservationId: st
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/** Daily reservation capacity for a given date (yyyy-MM-dd). */
+export interface ReservationAvailability {
+  date: string;
+  maxGuests: number;
+  booked: number;
+  remaining: number;
+  isFull: boolean;
+}
+
+/**
+ * Fetch how many seats are still bookable on `date` (yyyy-MM-dd).
+ * The backend tracks a daily guest cap; `remaining` already subtracts
+ * other customers' reservations and `isFull` flags a sold-out day.
+ * Returns the unwrapped `data` object.
+ */
+export async function getReservationAvailability(date: string): Promise<ReservationAvailability> {
+  const url = `${API_URLS.reservationAvailability}?tenant=${encodeURIComponent(getTenant())}&date=${encodeURIComponent(date)}`;
+  const res = await apiFetch(url);
+  return getResponseData(res) as ReservationAvailability;
 }
 
 // Resolve tenant from URL

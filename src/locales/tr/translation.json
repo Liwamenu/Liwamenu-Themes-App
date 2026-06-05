@@ -208,6 +208,9 @@
     "selectTable": "Masa Seç"
   },
   "reservation": {
+    "tooFrequent": "Bu telefon numarasıyla yakın zamanda rezervasyon yapıldı. Lütfen bir süre sonra tekrar deneyin.",
+    "dateFull": "Bu tarihe ait rezervasyon kapasitesi dolu. Lütfen farklı bir gün seçin.",
+    "remainingCapacity": "Kalan kapasite: {{count}} kişi",
     "title": "Rezervasyon Yap",
     "button": "Rezervasyon",
     "verifyTitle": "Bilgilerinizi Doğrulayın",
