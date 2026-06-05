@@ -90,6 +90,7 @@
     "portionSelect": "Select Portion",
     "quantity": "Qty",
     "maxSelection": "Max {{max}}",
+    "selectAtLeast": "Select at least {{count}}",
     "maxSelectionError": "You can select maximum {{max}} items",
     "minSelectionError": "Please select at least {{min}} for \"{{name}}\"",
     "minQuantityError": "\"{{name}}\" requires a minimum quantity of {{min}}",

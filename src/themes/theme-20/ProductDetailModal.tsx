@@ -125,7 +125,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const validateTags = useCallback((): boolean => {
     for (const tag of selectedPortion.orderTags) {
       const currentTagItems = selectedTags[tag.id] || [];
-      const selectedCount = currentTagItems.length;
+      const selectedCount = currentTagItems.reduce((sum, it) => sum + (it.quantity || 1), 0);
       if (getEffectiveTagBounds(tag).min > 0 && selectedCount < getEffectiveTagBounds(tag).min) {
         const tagElement = tagRefs.current[tag.id];
         if (tagElement) tagElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -214,9 +214,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
           {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
             const isRequired = getEffectiveTagBounds(tag).min > 0;
-            const selectedCount = (selectedTags[tag.id] || []).length;
+            const selectedCount = (selectedTags[tag.id] || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
             const isShaking = shakingTagId === tag.id;
             const isUnfulfilled = isRequired && selectedCount < getEffectiveTagBounds(tag).min;
+            const requirementLabel = getEffectiveTagBounds(tag).min > 1
+              ? t('product.selectAtLeast', { count: getEffectiveTagBounds(tag).min })
+              : t('common.required');
             return (
               <div key={tag.id} ref={(el) => (tagRefs.current[tag.id] = el)}
                 className={cn("mb-4 p-3 rounded-xl transition-all", isShaking && "animate-shake bg-secondary/10 ring-2 ring-secondary")}>
@@ -224,7 +227,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   <h3 className={cn("font-semibold", isShaking ? "text-secondary" : "text-foreground")}>{tag.name}</h3>
                   {isUnfulfilled && (
                     <span className={cn("px-2 py-0.5 text-xs rounded-full transition-all",
-                      isShaking ? "bg-secondary text-secondary-foreground animate-pulse" : "bg-secondary/10 text-secondary")}>{t('common.required')}</span>
+                      isShaking ? "bg-secondary text-secondary-foreground animate-pulse" : "bg-secondary/10 text-secondary")}>{requirementLabel}</span>
                   )}
                 </div>
                 <div className="space-y-2">

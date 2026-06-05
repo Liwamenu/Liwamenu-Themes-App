@@ -204,7 +204,9 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const validateTags = useCallback((): boolean => {
     for (const tag of selectedPortion.orderTags) {
       const currentTagItems = selectedTags[tag.id] || [];
-      const selectedCount = currentTagItems.length;
+      // Count total quantity (3× one item counts as 3), not distinct items,
+      // so a group min like "pick at least 4" is satisfied by summed quantities.
+      const selectedCount = currentTagItems.reduce((sum, it) => sum + (it.quantity || 1), 0);
       
       // Check group-level minSelected
       if (getEffectiveTagBounds(tag).min > 0 && selectedCount < getEffectiveTagBounds(tag).min) {
@@ -370,8 +372,13 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           {/* Order Tags */}
           {selectedPortion.orderTags.filter((tag) => !tag.freeTagging || canOrderAtAll).map((tag) => {
             const isRequired = getEffectiveTagBounds(tag).min > 0;
-            const selectedCount = (selectedTags[tag.id] || []).length;
+            const selectedCount = (selectedTags[tag.id] || []).reduce((sum, it) => sum + (it.quantity || 1), 0);
             const isUnfulfilled = isRequired && selectedCount < getEffectiveTagBounds(tag).min;
+            // A required group whose minimum is > 1 spells out the count
+            // ("En az 2 tane seçin") instead of the generic "Zorunlu Seçim".
+            const requirementLabel = getEffectiveTagBounds(tag).min > 1
+              ? t('product.selectAtLeast', { count: getEffectiveTagBounds(tag).min })
+              : t('common.required');
             const isShaking = shakingTagId === tag.id;
             
             return (
@@ -395,7 +402,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                         ? "bg-destructive text-destructive-foreground animate-pulse"
                         : "bg-destructive/10 text-destructive"
                     )}>
-                      {t('common.required')}
+                      {requirementLabel}
                     </span>
                   )}
                 </div>

@@ -3,33 +3,35 @@ import type { OrderTag, OrderTagItem } from "@/types/restaurant";
 /**
  * Effective minimum and maximum selection bounds for an OrderTag.
  *
- * SambaPOS convention (the upstream POS this menu syncs from):
- *   - `min=0, max=0` is the DEFAULT and means **"exactly one selection
- *     is allowed"** — identical to `min=1, max=1`. Treating those two
- *     configurations identically avoids unset tags allowing zero
- *     selections or being treated as unlimited multi-select.
- *   - `max=0` WITH an explicit `min > 0` means **"no upper limit"** —
- *     the customer may pick as many as the group has items. Previously
- *     this leaked through as a literal max of 0, so the UI blocked all
- *     selection and showed a "En fazla 0 seçim yapabilirsiniz" toast.
- *     We now resolve such a max to the number of items in the group, so
- *     the selection is effectively unlimited (capped at all items).
+ * The admin panel exposes `minSelected` / `maxSelected` directly, and they
+ * are honored literally:
+ *   - `min` = how many selections are REQUIRED. `min=0` means the group is
+ *     **optional** — the customer may skip it entirely. A required group has
+ *     `min >= 1`.
+ *   - `max` = how many selections are ALLOWED. `max=0` means **"no upper
+ *     limit"** — the customer may pick as many as the group has items. (A
+ *     literal max of 0 would otherwise block all selection and show a
+ *     "En fazla 0 seçim yapabilirsiniz" toast.) We resolve `max=0` to the
+ *     number of items in the group, so selection is effectively unlimited.
  *
- * Returns the effective bounds the UI should enforce. Callers should
- * use these instead of reading `tag.minSelected` / `tag.maxSelected`
- * directly so the SambaPOS conventions are honored uniformly.
+ * So `min=0, max=0` (the admin default for a non-required group) means
+ * **"optional, pick up to as many items as the group has"** — NOT a forced
+ * single selection. A single-required choice is `min=1, max=1`.
+ *
+ * Returns the effective bounds the UI should enforce. Callers should use
+ * these instead of reading `tag.minSelected` / `tag.maxSelected` directly so
+ * the conventions are honored uniformly across every theme.
  */
 export function getEffectiveTagBounds(tag: OrderTag): {
   min: number;
   max: number;
 } {
-  if (tag.minSelected === 0 && tag.maxSelected === 0) {
-    return { min: 1, max: 1 };
-  }
-  // max=0 → "no maximum" → up to the number of items in the group.
   const itemCount = Array.isArray(tag.orderTagItems) ? tag.orderTagItems.length : 0;
+  // max=0 → "no maximum" → up to the number of items in the group.
   const max = tag.maxSelected === 0 ? itemCount : tag.maxSelected;
-  return { min: tag.minSelected, max };
+  // min is honored literally; 0 means the group is optional.
+  const min = tag.minSelected ?? 0;
+  return { min, max };
 }
 
 /**

@@ -88,6 +88,7 @@
     "portionSelect": "选择份量",
     "quantity": "数量",
     "maxSelection": "最多{{max}}个",
+    "selectAtLeast": "至少选择 {{count}} 个",
     "maxSelectionError": "最多可选择{{max}}项",
     "minSelectionError": "请为 {{name}} 选择至少{{min}}项",
     "minQuantityError": "\"{{name}}\" 最少需要 {{min}} 个",

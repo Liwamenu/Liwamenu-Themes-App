@@ -89,6 +89,7 @@
     "portionSelect": "Porsiyon Seçimi",
     "quantity": "Adet",
     "maxSelection": "En fazla {{max}}",
+    "selectAtLeast": "En az {{count}} tane seçin",
     "maxSelectionError": "En fazla {{max}} seçim yapabilirsiniz",
     "minSelectionError": "\"{{name}}\" için en az {{min}} seçim yapmalısınız",
     "minQuantityError": "\"{{name}}\" için minimum {{min}} adet gereklidir",

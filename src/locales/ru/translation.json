@@ -88,6 +88,7 @@
     "portionSelect": "Выберите порцию",
     "quantity": "Кол-во",
     "maxSelection": "Макс. {{max}}",
+    "selectAtLeast": "Выберите не менее {{count}}",
     "maxSelectionError": "Можно выбрать максимум {{max}} позиций",
     "minSelectionError": "Выберите минимум {{min}} для \"{{name}}\"",
     "minQuantityError": "\"{{name}}\" требует минимум {{min}} шт.",
