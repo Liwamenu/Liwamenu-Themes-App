@@ -88,6 +88,7 @@
     "portionSelect": "اختر الحصة",
     "quantity": "الكمية",
     "maxSelection": "الحد الأقصى {{max}}",
+    "selectAtLeast": "اختر {{count}} على الأقل",
     "maxSelectionError": "يمكنك اختيار {{max}} عناصر كحد أقصى",
     "minSelectionError": "يرجى اختيار {{min}} على الأقل لـ \"{{name}}\"",
     "minQuantityError": "\"{{name}}\" يتطلب حد أدنى {{min}}",

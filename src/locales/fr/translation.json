@@ -88,6 +88,7 @@
     "portionSelect": "Sélectionner la portion",
     "quantity": "Qté",
     "maxSelection": "Max. {{max}}",
+    "selectAtLeast": "Choisissez-en au moins {{count}}",
     "maxSelectionError": "Vous pouvez sélectionner maximum {{max}} articles",
     "minSelectionError": "Veuillez sélectionner au moins {{min}} pour \"{{name}}\"",
     "minQuantityError": "\"{{name}}\" nécessite une quantité minimum de {{min}}",

@@ -88,6 +88,7 @@
     "portionSelect": "Porsiya seçimi",
     "quantity": "Ədəd",
     "maxSelection": "Maksimum {{max}}",
+    "selectAtLeast": "Ən azı {{count}} ədəd seçin",
     "maxSelectionError": "Maksimum {{max}} seçim edə bilərsiniz",
     "minSelectionError": "\"{{name}}\" üçün ən azı {{min}} seçim etməlisiniz",
     "minQuantityError": "\"{{name}}\" üçün minimum {{min}} ədəd tələb olunur",
