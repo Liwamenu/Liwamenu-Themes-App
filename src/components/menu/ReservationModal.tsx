@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { toast } from "sonner";
-import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservation as apiVerifyReservation, getResponseData } from "@/lib/api";
+import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservation as apiVerifyReservation, getResponseData, getReservationAvailability, type ReservationAvailability } from "@/lib/api";
 import { format } from "date-fns";
 import { tr, enUS, de, fr, it, es, ar, az, ru, el, zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -112,6 +112,12 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
   // banner so they pick a different day instead of just seeing a toast.
   const [capacityFullForDate, setCapacityFullForDate] = useState<Date | null>(null);
 
+  // Daily reservation capacity for the currently-selected date. Null until a
+  // date is picked (or if the lookup fails — in which case we fall back to the
+  // static maxGuests bound and let the backend enforce the cap on Create).
+  const [availability, setAvailability] = useState<ReservationAvailability | null>(null);
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
+
   // Phone is split into two parts: country + 10-digit subscriber number
   const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
   const [phoneSubscriber, setPhoneSubscriber] = useState("");
@@ -147,6 +153,54 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
   // Only Turkish phone numbers (+90) can receive SMS
   const isTurkish = phoneCountry === "TR";
 
+  // Whenever the selected date changes, look up the remaining daily capacity
+  // so the guest selector can be bounded to what's actually left and a fully
+  // booked day can refuse new reservations up front.
+  useEffect(() => {
+    if (!formData.date) {
+      setAvailability(null);
+      return;
+    }
+    let cancelled = false;
+    const dateStr = format(formData.date, "yyyy-MM-dd");
+    setAvailabilityLoading(true);
+    getReservationAvailability(dateStr)
+      .then((data) => {
+        if (cancelled || !data) return;
+        const remaining = Math.max(0, Number(data.remaining ?? 0));
+        const next: ReservationAvailability = {
+          date: data.date ?? dateStr,
+          maxGuests: Number(data.maxGuests ?? reservationSettings.maxGuests),
+          booked: Number(data.booked ?? 0),
+          remaining,
+          isFull: Boolean(data.isFull ?? remaining <= 0),
+        };
+        setAvailability(next);
+        // Clamp an already-entered guest count down to what's still available.
+        setFormData((prev) =>
+          prev.guests > next.remaining ? { ...prev, guests: next.remaining } : prev
+        );
+      })
+      .catch(() => {
+        // Don't hard-block on a lookup failure — fall back to the static bound;
+        // the backend still re-validates capacity when the reservation is created.
+        if (!cancelled) setAvailability(null);
+      })
+      .finally(() => {
+        if (!cancelled) setAvailabilityLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.date]);
+
+  // Effective upper bound for the guest selector: the remaining daily capacity
+  // once known, otherwise the restaurant's static per-reservation max.
+  const effectiveMaxGuests = availability ? availability.remaining : reservationSettings.maxGuests;
+  // A fully booked day cannot accept any new reservation.
+  const isDateFull = availability?.isFull ?? false;
+
   const handleInputChange = (field: keyof ReservationFormData, value: string | number | Date | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -180,6 +234,15 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
     }
     if (formData.guests < 1) {
       toast.error(t("validation.enterGuests"));
+      return false;
+    }
+    // Daily capacity guards (backend re-validates on Create as a backstop).
+    if (isDateFull) {
+      toast.error(t("reservation.dateFull"));
+      return false;
+    }
+    if (availability && formData.guests > availability.remaining) {
+      toast.error(t("reservation.remainingCapacity", { count: availability.remaining }));
       return false;
     }
     return true;
@@ -224,12 +287,27 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
       // from the body, then fall back to the other locale, then the
       // promoted message, then a generic string.
       const body = error?.data ?? {};
-      const errorMessage =
-        (i18n.language === "tr" ? body.message_TR : body.message_EN) ||
-        body.message_TR ||
-        body.message_EN ||
-        error?.message ||
-        t("reservation.codeSendError");
+
+      // The per-phone cooldown error (RESERVATION_TOO_FREQUENT) is returned by
+      // the backend as a hard-coded English string ("Reservation limit reached
+      // for this phone number") without a localized message_TR, so it always
+      // showed in English. Detect it — by errorCode or the known English
+      // phrasing — and render our own copy in the user's selected language.
+      const errorCode = String(body.errorCode || body.code || body.ErrorCode || "").toUpperCase();
+      const rawMsg = String(
+        body.message_EN || body.message_TR || body.message || error?.message || ""
+      ).toLowerCase();
+      const isTooFrequent =
+        errorCode.includes("FREQUENT") ||
+        /reservation limit reached|limit reached for this phone|too frequent|recently made|too many reservation/.test(rawMsg);
+
+      const errorMessage = isTooFrequent
+        ? t("reservation.tooFrequent")
+        : (i18n.language === "tr" ? body.message_TR : body.message_EN) ||
+          body.message_TR ||
+          body.message_EN ||
+          error?.message ||
+          t("reservation.codeSendError");
       toast.error(errorMessage);
     } finally {
       setIsSendingCode(false);
@@ -514,7 +592,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Users className="w-4 h-4 text-muted-foreground" />
-                  {t("reservation.guests")} ({t("common.max")} {reservationSettings.maxGuests})
+                  {t("reservation.guests")} ({t("common.max")} {effectiveMaxGuests})
                 </label>
                 <Input
                   type="text"
@@ -527,13 +605,27 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
                       handleInputChange("guests", 0);
                     } else {
                       const num = parseInt(val);
-                      if (!isNaN(num) && num >= 0 && num <= reservationSettings.maxGuests) {
+                      if (!isNaN(num) && num >= 0 && num <= effectiveMaxGuests) {
                         handleInputChange("guests", num);
                       }
                     }
                   }}
+                  disabled={isDateFull}
                   className="h-12 leading-normal"
                 />
+                {/* Daily-capacity feedback for the selected date. */}
+                {formData.date && availability && (
+                  isDateFull ? (
+                    <p className="text-sm text-destructive flex items-start gap-1.5">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{t("reservation.dateFull")}</span>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      {t("reservation.remainingCapacity", { count: availability.remaining })}
+                    </p>
+                  )
+                )}
               </div>
 
               <div className="space-y-2">
@@ -549,7 +641,11 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
                 />
               </div>
 
-              <Button onClick={handleContinue} className="w-full h-12 text-base font-medium">
+              <Button
+                onClick={handleContinue}
+                disabled={isDateFull || availabilityLoading}
+                className="w-full h-12 text-base font-medium"
+              >
                 {t("common.continue")}
               </Button>
             </div>

@@ -206,6 +206,9 @@
     "noTableDesc": "Para llamar al camarero, primero debes escanear el código QR de tu mesa."
   },
   "reservation": {
+    "tooFrequent": "Recientemente se realizó una reserva con este número de teléfono. Vuelva a intentarlo más tarde.",
+    "dateFull": "La capacidad de reserva para esta fecha está completa. Por favor, elija otro día.",
+    "remainingCapacity": "Capacidad restante: {{count}} personas",
     "title": "Reserva",
     "button": "Reservar",
     "verifyTitle": "Verifica tus datos",

@@ -209,6 +209,9 @@
     "selectTable": "Select Table"
   },
   "reservation": {
+    "tooFrequent": "A reservation was recently made with this phone number. Please try again later.",
+    "dateFull": "Reservation capacity for this date is full. Please choose a different day.",
+    "remainingCapacity": "Remaining capacity: {{count}} guests",
     "title": "Make Reservation",
     "button": "Reserve",
     "verifyTitle": "Verify Your Info",

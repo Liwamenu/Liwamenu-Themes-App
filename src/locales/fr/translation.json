@@ -206,6 +206,9 @@
     "noTableDesc": "Veuillez d'abord scanner le code QR de votre table pour appeler un serveur."
   },
   "reservation": {
+    "tooFrequent": "Une réservation a récemment été effectuée avec ce numéro de téléphone. Veuillez réessayer plus tard.",
+    "dateFull": "La capacité de réservation pour cette date est complète. Veuillez choisir un autre jour.",
+    "remainingCapacity": "Capacité restante : {{count}} personnes",
     "title": "Réservation",
     "button": "Réserver",
     "verifyTitle": "Vérifier vos infos",

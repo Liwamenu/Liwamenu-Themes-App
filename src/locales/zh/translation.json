@@ -206,6 +206,9 @@
     "noTableDesc": "请先扫描您餐桌上的二维码以呼叫服务员。"
   },
   "reservation": {
+    "tooFrequent": "该电话号码最近已进行预订。请稍后再试。",
+    "dateFull": "该日期的预订容量已满。请选择其他日期。",
+    "remainingCapacity": "剩余容量：{{count}} 人",
     "title": "预订",
     "button": "预订",
     "verifyTitle": "验证您的信息",

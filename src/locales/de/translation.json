@@ -206,6 +206,9 @@
     "noTableDesc": "Bitte scannen Sie zuerst den QR-Code Ihres Tisches, um einen Kellner zu rufen."
   },
   "reservation": {
+    "tooFrequent": "Mit dieser Telefonnummer wurde kürzlich eine Reservierung vorgenommen. Bitte versuchen Sie es später erneut.",
+    "dateFull": "Die Reservierungskapazität für dieses Datum ist erschöpft. Bitte wählen Sie einen anderen Tag.",
+    "remainingCapacity": "Verbleibende Kapazität: {{count}} Gäste",
     "title": "Reservierung",
     "button": "Reservieren",
     "verifyTitle": "Daten bestätigen",

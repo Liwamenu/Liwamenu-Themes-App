@@ -206,6 +206,9 @@
     "noTableDesc": "Per chiamare un cameriere, devi prima scansionare il codice QR del tuo tavolo."
   },
   "reservation": {
+    "tooFrequent": "È stata effettuata di recente una prenotazione con questo numero di telefono. Riprova più tardi.",
+    "dateFull": "La capacità di prenotazione per questa data è esaurita. Scegli un altro giorno.",
+    "remainingCapacity": "Capacità rimanente: {{count}} persone",
     "title": "Prenotazione",
     "button": "Prenota",
     "verifyTitle": "Verifica i tuoi dati",
