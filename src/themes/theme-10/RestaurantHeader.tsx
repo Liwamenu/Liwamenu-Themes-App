@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@/components/menu/ThemeSwitcher";
 import { ReservationModal } from "@/components/menu/ReservationModal";
 import { SurveyModal } from "@/components/menu/SurveyModal";
 import { Button } from "@/components/ui/button";
+import { GoogleReviewButton } from "@/components/menu/GoogleReviewButton";
 import { Order } from "@/types/restaurant";
 
 interface RestaurantHeaderProps {
@@ -142,6 +143,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
             <Star className="w-4 h-4 shrink-0" />
             <span className="truncate">{t("survey.button")}</span>
           </button>
+          <GoogleReviewButton />
           <a
             href={`tel:${restaurant.phoneNumber}`}
             className="flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors text-sm font-medium min-w-0"

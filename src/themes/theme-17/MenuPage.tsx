@@ -42,6 +42,7 @@ import { Input } from "@/components/ui/input";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { SurveyModal } from "./SurveyModal";
+import { GoogleReviewButton } from "@/components/menu/GoogleReviewButton";
 import { cn } from "@/lib/utils";
 
 type View = "menu" | "order";
@@ -382,6 +383,7 @@ export function MenuPage() {
             <button onClick={() => setIsSurveyOpen(true)} className="cafe-pill">
               <MessageSquare className="w-3.5 h-3.5" /> {t("survey.button")}
             </button>
+            <GoogleReviewButton />
           </div>
         </div>
       </div>

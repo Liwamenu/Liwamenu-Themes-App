@@ -15,10 +15,16 @@ import { Button } from "@/components/ui/button";
  */
 export function GoogleReviewButton({
   className,
+  variant = "default",
 }: {
   /** Optional override for the wrapper className (themes may want their
-   *  own pill chrome). Defaults to the shared outline-rounded style. */
+   *  own pill chrome). When set, replaces the variant defaults entirely. */
   className?: string;
+  /** Visual mode:
+   *  - `default` — compact white pill (footer / header rows)
+   *  - `drawer`  — full-width row with leading icon (hamburger menus)
+   */
+  variant?: "default" | "drawer";
 }) {
   const { t } = useTranslation();
   const { restaurant } = useRestaurant();
@@ -39,7 +45,14 @@ export function GoogleReviewButton({
       // language Google uses on its own review prompts.
       className={
         className ??
-        "flex items-center gap-2 rounded-full !bg-white !text-gray-900 !border-gray-300 hover:!bg-gray-50 hover:!text-gray-900 font-medium shadow-sm"
+        (variant === "drawer"
+          // Hamburger / drawer item: full-width row, leading-aligned icon
+          // + label. Keeps Google's chrome (white pill, dark slate label)
+          // so it stays legible inside dark drawers (theme-19) as well as
+          // light ones (theme-25).
+          ? "w-full justify-start flex items-center gap-3 px-4 py-3 rounded-xl !bg-white !text-gray-900 !border-gray-300 hover:!bg-gray-50 hover:!text-gray-900 font-medium shadow-sm"
+          // Default (footer / header row): compact white pill.
+          : "flex items-center gap-2 rounded-full !bg-white !text-gray-900 !border-gray-300 hover:!bg-gray-50 hover:!text-gray-900 font-medium shadow-sm")
       }
     >
       <a href={url} target="_blank" rel="noopener noreferrer" aria-label={t("footer.googleReview")}>

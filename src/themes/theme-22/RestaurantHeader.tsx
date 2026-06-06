@@ -25,6 +25,7 @@ import type { Country } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 import { cn } from "@/lib/utils";
 import { Order } from "@/types/restaurant";
+import { GoogleReviewButton } from "@/components/menu/GoogleReviewButton";
 
 const LANGUAGES: { code: string; label: string; countryCode: Country }[] = [
   { code: "tr", label: "Türkçe", countryCode: "TR" },
@@ -282,6 +283,8 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
                   <Star className="w-5 h-5 text-[hsl(var(--sushi-amber))]" />
                   <span>{t("survey.button")}</span>
                 </button>
+
+                <GoogleReviewButton variant="drawer" />
 
                 {/* Theme picker — inline buttons (avoids dropdown z-index
                     conflicts inside the drawer) */}

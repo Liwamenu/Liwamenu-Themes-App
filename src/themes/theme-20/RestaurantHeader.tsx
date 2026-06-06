@@ -9,6 +9,7 @@ import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/restaurant";
+import { GoogleReviewButton } from "@/components/menu/GoogleReviewButton";
 
 interface RestaurantHeaderProps {
   orders?: Order[];
@@ -106,6 +107,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               <Star className="w-3.5 h-3.5" />
               <span>{t("survey.button")}</span>
             </Button>
+            <GoogleReviewButton />
             {restaurant.phoneNumber && (
               <Button asChild variant="outline" size="sm" className="rounded-full p-0 w-9 h-9 flex items-center justify-center">
                 <a href={`tel:${restaurant.phoneNumber}`} aria-label="Phone">
