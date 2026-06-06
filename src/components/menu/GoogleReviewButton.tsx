@@ -28,9 +28,18 @@ export function GoogleReviewButton({
     <Button
       asChild
       variant="outline"
+      // Hard-coded white / dark-grey palette instead of theme tokens.
+      // The previous version inherited `--background` / `--foreground`
+      // from the active theme, which on some themes (theme-19 plum,
+      // theme-25 sand, etc.) left the button bg and the surrounding
+      // footer almost the same colour — the label "Google'da Değerlendir"
+      // became unreadable. Locking the button to Google's own brand
+      // chrome (white pill, slate text) keeps it legible on every theme
+      // and every light/dark mode, and it also matches the visual
+      // language Google uses on its own review prompts.
       className={
         className ??
-        "flex items-center gap-2 rounded-full"
+        "flex items-center gap-2 rounded-full !bg-white !text-gray-900 !border-gray-300 hover:!bg-gray-50 hover:!text-gray-900 font-medium shadow-sm"
       }
     >
       <a href={url} target="_blank" rel="noopener noreferrer" aria-label={t("footer.googleReview")}>
