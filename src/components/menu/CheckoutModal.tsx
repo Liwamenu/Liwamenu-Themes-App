@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode } from "lucide-react";
+import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore, refreshRestaurantData } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
@@ -27,7 +27,7 @@ interface CheckoutModalProps {
   onOrderComplete: (order: Order, orderType: "inPerson" | "online") => void;
   onShowSoundPermission: () => void;
 }
-type OrderType = "inPerson" | "online";
+type OrderType = "inPerson" | "online" | "whatsapp";
 type CheckoutStep = "type" | "details" | "payment" | "confirm";
 export function CheckoutModal({
   onClose,
@@ -42,6 +42,7 @@ export function CheckoutModal({
     enabledPaymentMethods,
     canOrderOnline,
     canOrderInPerson,
+    canOrderWhatsapp,
     setTableNumber,
     formatPrice,
     formatPriceWithSign
@@ -232,6 +233,22 @@ export function CheckoutModal({
       } else {
         setStep("details");
       }
+    } else if (type === "whatsapp") {
+      // Same minimum-order gate as online — restaurants typically want a
+      // floor before they accept any delivery, regardless of intake channel.
+      if (subtotal < restaurant.minOrderAmount) {
+        toast.error(
+          <Trans
+            i18nKey="order.minOrderError"
+            values={{ min: formatPrice(restaurant.minOrderAmount) }}
+            components={{ br: <br />, b: <b /> }}
+          />
+        );
+        return;
+      }
+      // No location check, no payment step — straight to customer details,
+      // then the confirm screen sends the message via wa.me.
+      setStep("details");
     }
   };
 
@@ -249,6 +266,19 @@ export function CheckoutModal({
   const handleDetailsSubmit = () => {
     if (orderType === "inPerson") {
       // For in-person, skip payment and go to confirm
+      setStep("confirm");
+    } else if (orderType === "whatsapp") {
+      // WhatsApp doesn't go through the payment step. Validate name + phone
+      // (address optional — many WhatsApp restaurants confirm it in chat)
+      // then jump straight to confirm.
+      if (!customerInfo.name.trim() || !phoneSubscriber.trim()) {
+        toast.error(t("order.fillAllFields"));
+        return;
+      }
+      if (!isPhoneValid) {
+        toast.error(t("common.phoneError"));
+        return;
+      }
       setStep("confirm");
     } else {
       if (!customerInfo.name.trim() || !phoneSubscriber.trim() || !customerInfo.address.trim()) {
@@ -273,14 +303,51 @@ export function CheckoutModal({
     } else if (step === "payment") {
       setStep("details");
     } else if (step === "confirm") {
-      if (orderType === "inPerson") {
+      // WhatsApp and in-person skip the payment step, so confirm → details.
+      if (orderType === "inPerson" || orderType === "whatsapp") {
         setStep("details");
       } else {
         setStep("payment");
       }
     }
   };
+
+  /**
+   * WhatsApp confirmation path — formats the order, opens wa.me in a new tab
+   * with the message prefilled, clears the cart, and closes the modal. No
+   * backend order is created; the restaurant intakes the order over WhatsApp.
+   */
+  const handleConfirmWhatsappOrder = async () => {
+    const { buildWhatsappOrderUrl } = await import("@/lib/whatsappOrder");
+    const url = buildWhatsappOrderUrl({
+      restaurant,
+      items,
+      customer: {
+        name: customerInfo.name,
+        phone: buildE164Phone(phoneCountry, phoneSubscriber),
+        address: customerInfo.address || undefined,
+      },
+      total,
+      orderNote: orderNote || undefined,
+      t,
+      moneySign: restaurant.moneySign || "₺",
+    });
+    if (!url) {
+      toast.error(t("common.error"));
+      return;
+    }
+    // Open in a new tab; if the device handles wa.me natively this still
+    // works (browsers route the link out to the WhatsApp app).
+    window.open(url, "_blank", "noopener,noreferrer");
+    clearCart();
+    onClose();
+  };
+
   const handleConfirmOrder = async () => {
+    if (orderType === "whatsapp") {
+      await handleConfirmWhatsappOrder();
+      return;
+    }
     setIsSubmitting(true);
 
     // Re-verify location at submit time. proceedWithLocationCheck ran
@@ -631,7 +698,22 @@ export function CheckoutModal({
                   </button>
                 </div>}
 
-              {!canOrderInPerson && !canOrderOnline && <div className="flex items-center gap-3 p-4 bg-destructive/10 text-destructive rounded-xl">
+              {canOrderWhatsapp && (
+                <button
+                  onClick={() => handleSelectOrderType("whatsapp")}
+                  className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors"
+                >
+                  <div className="w-14 h-14 rounded-xl bg-[#25D366]/10 flex items-center justify-center">
+                    <MessageCircle className="w-7 h-7 text-[#25D366]" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h4 className="font-semibold text-lg">{t("order.whatsappOrder")}</h4>
+                    <p className="text-sm text-muted-foreground">{t("order.whatsappOrderDescription")}</p>
+                  </div>
+                </button>
+              )}
+
+              {!canOrderInPerson && !canOrderOnline && !canOrderWhatsapp && <div className="flex items-center gap-3 p-4 bg-destructive/10 text-destructive rounded-xl">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-sm">{t("order.noOrdersAvailable")}</p>
                 </div>}
@@ -878,9 +960,24 @@ export function CheckoutModal({
               </div>
 
               {/* Confirm Button */}
-              <Button onClick={handleConfirmOrder} disabled={isSubmitting} size="lg" className="w-full h-14 text-base font-semibold rounded-2xl shadow-glow">
+              <Button
+                onClick={handleConfirmOrder}
+                disabled={isSubmitting}
+                size="lg"
+                className={cn(
+                  "w-full h-14 text-base font-semibold rounded-2xl shadow-glow",
+                  orderType === "whatsapp" && "bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+                )}
+              >
                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                {t("order.confirmOrder")}
+                {orderType === "whatsapp" ? (
+                  <span className="flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5" />
+                    {t("order.sendToWhatsapp")}
+                  </span>
+                ) : (
+                  t("order.confirmOrder")
+                )}
               </Button>
             </motion.div>}
         </div>

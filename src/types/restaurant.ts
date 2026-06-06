@@ -223,6 +223,24 @@ export interface RestaurantData {
   slogan2: string;
   onlineOrder: boolean;
   inPersonOrder: boolean;
+  /**
+   * Feature flag — when true, the customer-facing checkout exposes a
+   * "Sipariş WhatsApp ile gönder" option that opens the restaurant's
+   * WhatsApp with a fully-formatted order message. No order is created in
+   * the backend; the restaurant collects the order out-of-band via
+   * WhatsApp. See WHATSAPP_ORDER_BACKEND_BRIEF for backend persistence.
+   *
+   * Defaults to `false` for restaurants that don't opt in. Until backend
+   * support ships, the flag is read but always false in production.
+   */
+  whatsappOrder: boolean;
+  /**
+   * WhatsApp number (in international format, digits-only e.g. "905339695761")
+   * the order message is sent to. Required when `whatsappOrder` is true.
+   * Separate from `socialLinks.whatsappUrl` because that one is the public
+   * "chat with us" link and may differ from the order-intake number.
+   */
+  whatsappOrderPhone: string;
   hide: boolean;
   themeId: number;
   maxDistance: number;

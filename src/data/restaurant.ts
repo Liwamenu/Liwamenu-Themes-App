@@ -21,6 +21,8 @@ export const restaurantData: FullRestaurantInfo = {
     slogan2: "İnsanları bir araya getiren hiçbir şey, güzel yemek kadar etkili değildir.",
     onlineOrder: true,
     inPersonOrder: true,
+    whatsappOrder: false,
+    whatsappOrderPhone: "",
     hide: false,
     themeId: 1,
     maxDistance: 500,
