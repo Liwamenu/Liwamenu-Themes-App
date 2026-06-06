@@ -135,18 +135,43 @@ export function CheckoutModal({
   const subtotal = getTotal();
   const tableNumber = restaurant.tableNumber;
 
+  /**
+   * Compose the final orderNote sent to the kitchen / restaurant. When the
+   * customer toggled "leave a tip" on a paket or WhatsApp order, prepend a
+   * sentence with the (optional) amount — formatted with the restaurant's
+   * currency sign so the staff doesn't have to guess units. The amount is
+   * opaque text; we only strip one leading currency sign if the customer
+   * already typed it. For in-person or when the tip is off, returns the
+   * raw orderNote (or undefined when empty), matching the previous behaviour.
+   */
+  const composeOrderNote = (): string | undefined => {
+    if ((orderType === "online" || orderType === "whatsapp") && tipEnabled) {
+      const moneySign = restaurant.moneySign || "₺";
+      const stripped = tipAmount.trim().replace(moneySign, "").trim();
+      const tipNote = stripped
+        ? t("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
+        : t("order.tipNotePrefix");
+      return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
+    }
+    return orderNote || undefined;
+  };
+
   // Phone validation
   const isPhoneValid = validatePhoneForCountry(buildE164Phone(phoneCountry, phoneSubscriber), phoneCountry);
 
-  // Calculate discount and final total
+  // Calculate discount and final total. WhatsApp orders intake the same
+  // way paket does (delivery to a customer-supplied address), so they get
+  // the paket discount rate and delivery fee too — restaurants asked for
+  // parity here so a customer doesn't pay a different total depending on
+  // which channel they pick.
   const getDiscountRate = () => {
     if (orderType === "inPerson") return restaurant.tableOrderDiscountRate;
-    if (orderType === "online") return restaurant.onlineOrderDiscountRate;
+    if (orderType === "online" || orderType === "whatsapp") return restaurant.onlineOrderDiscountRate;
     return 0;
   };
   const discountRate = getDiscountRate();
   const discountAmount = subtotal * discountRate / 100;
-  const deliveryFee = orderType === "online" ? restaurant.deliveryFee : 0;
+  const deliveryFee = (orderType === "online" || orderType === "whatsapp") ? restaurant.deliveryFee : 0;
   const coverCharge = orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
   const total = subtotal - discountAmount + deliveryFee + coverCharge;
   // Shared geolocation + distance-check logic used by both the
@@ -374,8 +399,12 @@ export function CheckoutModal({
         address: customerInfo.address || undefined,
       },
       location: customerLocation || undefined,
+      subtotal,
+      discountAmount,
+      discountRate,
+      deliveryFee,
       total,
-      orderNote: orderNote || undefined,
+      orderNote: composeOrderNote(),
       t,
       moneySign: restaurant.moneySign || "₺",
     });
@@ -482,19 +511,7 @@ export function CheckoutModal({
         };
       }),
       totalAmount: total,
-      orderNote: (() => {
-        // Prepend the tip note when enabled (paket only). Amount is opaque
-        // free text — we don't validate it, so the customer can type "₺50",
-        // "50", or leave it blank ("Bahşiş vereceğim" alone).
-        if (orderType === "online" && tipEnabled) {
-          const trimmedAmount = tipAmount.trim();
-          const tipNote = trimmedAmount
-            ? t("order.tipNoteWithAmount", { amount: trimmedAmount })
-            : t("order.tipNotePrefix");
-          return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
-        }
-        return orderNote || undefined;
-      })(),
+      orderNote: composeOrderNote(),
       createdAt: new Date().toISOString(),
       ...(customerLocation ? { customerLocation } : {}),
       ...(orderType === "inPerson" ? {
@@ -856,9 +873,10 @@ export function CheckoutModal({
                   </div>
                 </div>}
 
-              {/* Tip (paket only) — toggle + optional amount. Sent as a
-                  prefix on orderNote; the order total is untouched. */}
-              {orderType === "online" && (
+              {/* Tip (paket + WhatsApp) — toggle + optional amount. Sent as
+                  a prefix on orderNote so it travels with the order through
+                  either channel; the order total is untouched. */}
+              {(orderType === "online" || orderType === "whatsapp") && (
                 <div className="rounded-2xl border border-border p-4 bg-secondary/50">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
