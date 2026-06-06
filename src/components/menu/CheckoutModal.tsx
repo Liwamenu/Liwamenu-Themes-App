@@ -144,14 +144,19 @@ export function CheckoutModal({
    * opaque text; we only strip one leading currency sign if the customer
    * already typed it. For in-person or when the tip is off, returns the
    * raw orderNote (or undefined when empty), matching the previous behaviour.
+   *
+   * `tFn` defaults to the UI `t` for paket orders (the note is stored on the
+   * backend and the customer may read it back). WhatsApp callers pass the
+   * restaurant-language `messageT` so the tip sentence reads in the same
+   * language as the rest of the WhatsApp message.
    */
-  const composeOrderNote = (): string | undefined => {
+  const composeOrderNote = (tFn: typeof t = t): string | undefined => {
     if ((orderType === "online" || orderType === "whatsapp") && tipEnabled) {
       const moneySign = restaurant.moneySign || "₺";
       const stripped = tipAmount.trim().replace(moneySign, "").trim();
       const tipNote = stripped
-        ? t("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
-        : t("order.tipNotePrefix");
+        ? tFn("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
+        : tFn("order.tipNotePrefix");
       return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
     }
     return orderNote || undefined;
@@ -410,7 +415,7 @@ export function CheckoutModal({
       location: customerLocation || undefined,
       paymentMethodName: selectedPayment?.name,
       total,
-      orderNote: composeOrderNote(),
+      orderNote: composeOrderNote(messageT),
       t: messageT,
       moneySign: restaurant.moneySign || "₺",
     });

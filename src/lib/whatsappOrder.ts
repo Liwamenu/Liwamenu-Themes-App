@@ -80,11 +80,13 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
   const { restaurant, items, customer, location, paymentMethodName, total, orderNote, t, moneySign = "₺" } = input;
   const lines: string[] = [];
 
-  // Section bullet — used everywhere a header would otherwise carry a
-  // category emoji. The blue square (🟦) renders consistently across the
-  // WhatsApp clients restaurants use; the previous mix (🍽️ 👤 🛒 💰 📝)
-  // fell back to "◆" / square-with-hole on Android WhatsApp Business.
-  const HEADER = "🟦";
+  // Section bullet. We've cycled through a few options here:
+  //   • emoji mix (🍽️ 👤 🛒 💰 📝) → fell back to "◆" on some clients
+  //   • 🟦 large blue square (Unicode 12.0) → not in older WA Business fonts
+  // The small blue diamond 🔹 is Unicode 6.0 (2010) and is present in
+  // every WhatsApp Business build we've seen since. Keeps the same visual
+  // weight as the previous square without the font-fallback risk.
+  const HEADER = "🔹";
 
   lines.push(`${HEADER} *${restaurant.name}*`);
   lines.push(t("order.whatsappMsgGreeting"));
