@@ -585,11 +585,20 @@ export function CheckoutModal({
   };
 
   /** Remove every cart line that the backend flagged as deleted/
-   *  inactive, then close — the customer can re-checkout when ready. */
+   *  inactive, then close — the customer can re-checkout when ready.
+   *
+   *  Covers three flavours of "stale" cart entry:
+   *    1. The product itself was deleted/hidden.
+   *    2. The selected portion was deleted (e.g. "Large" removed).
+   *    3. One of the selected tag options (orderTagItems) was deleted —
+   *       e.g. the customer chose "Add ice cream" and the restaurant later
+   *       removed that option. Previously this leaked through: tapping
+   *       "Remove and continue" cleared the modal but the cart still
+   *       carried the stale tagItemId, so the next submit raised the
+   *       same 400. We now drop any cart line that references a tag item
+   *       that's no longer in the live menu.
+   */
   const handleUnavailableAcknowledge = () => {
-    // We don't get a structured list for 400; the safest action is to
-    // refresh the menu so the cart drops stale rows, then keep what's
-    // still valid in the cart for the customer to review.
     refreshRestaurantData().finally(() => {
       const liveProducts = useRestaurantStore.getState().restaurantData.products;
       const removeIds = items
@@ -597,7 +606,16 @@ export function CheckoutModal({
           const live = liveProducts.find((p) => p.id === it.product.id);
           if (!live) return true; // product gone
           const livePortion = live.portions.find((p) => p.id === it.portion.id);
-          return !livePortion; // portion gone
+          if (!livePortion) return true; // portion gone
+          // Tag option gone: build the set of live tagItem IDs for this
+          // portion and drop the cart line if any selected tag references
+          // an ID that's not in the live set.
+          const liveTagItemIds = new Set(
+            (livePortion.orderTags || [])
+              .flatMap((tg) => tg.orderTagItems || [])
+              .map((it2) => it2.id),
+          );
+          return (it.selectedTags || []).some((sel) => !liveTagItemIds.has(sel.itemId));
         })
         .map((it) => it.id);
       if (removeIds.length > 0) removeItems(removeIds);

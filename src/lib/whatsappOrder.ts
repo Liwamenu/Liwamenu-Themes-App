@@ -113,12 +113,29 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
 }
 
 /**
+ * Resolve the phone number to send the order to. Prefers the dedicated
+ * `whatsappOrderPhone` field, but falls back to the public WhatsApp URL
+ * (`socialLinks.whatsappUrl`, e.g. `https://wa.me/905339695761`) and then
+ * to the restaurant's main `phoneNumber` so the button works today even
+ * before the backend ships the dedicated order-intake field
+ * (see WhatsApp_Order_Backend_Brief.md). When the backend lands, the first
+ * branch always wins for restaurants that configured it.
+ */
+function resolveWhatsappPhone(r: RestaurantData): string {
+  const direct = digitsOnly(r.whatsappOrderPhone);
+  if (direct) return direct;
+  const socialDigits = digitsOnly(r.socialLinks?.whatsappUrl ?? "");
+  if (socialDigits) return socialDigits;
+  return digitsOnly(r.phoneNumber);
+}
+
+/**
  * Build the `https://wa.me/<phone>?text=<encoded>` URL. Returns null when no
- * phone is configured — callers should disable the button instead of opening
- * a malformed URL.
+ * phone is configured anywhere on the restaurant — callers should hide the
+ * button instead of opening a malformed URL.
  */
 export function buildWhatsappOrderUrl(input: WhatsappOrderInput): string | null {
-  const phone = digitsOnly(input.restaurant.whatsappOrderPhone);
+  const phone = resolveWhatsappPhone(input.restaurant);
   if (!phone) return null;
   const text = buildWhatsappOrderMessage(input);
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
