@@ -575,6 +575,13 @@ export function useRestaurant() {
 
   const canOrderOnline = data.onlineOrder && isRestaurantActive && isCurrentlyOpen;
   const canOrderInPerson = data.inPersonOrder && isRestaurantActive && isCurrentlyOpen;
+  // WhatsApp ordering is gated by the feature flag AND requires a phone
+  // number — without one the button can't open a meaningful URL.
+  const canOrderWhatsapp =
+    !!data.whatsappOrder &&
+    !!(data.whatsappOrderPhone && data.whatsappOrderPhone.trim()) &&
+    isRestaurantActive &&
+    isCurrentlyOpen;
 
   return {
     restaurant: data,
@@ -587,6 +594,7 @@ export function useRestaurant() {
     enabledPaymentMethods,
     canOrderOnline,
     canOrderInPerson,
+    canOrderWhatsapp,
     setTableNumber,
     formatPrice,
     formatPriceWithSign,
