@@ -6,6 +6,7 @@ import { useRestaurant } from "@/hooks/useRestaurant";
 import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
 import { Button } from "@/components/ui/button";
+import { SocialIconLink } from "@/components/menu/SocialIconLink";
 
 const dayKeys = ["", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -33,16 +34,12 @@ export function Footer() {
             <h3 className="font-semibold text-center mb-4">{t("footer.followUs")}</h3>
             <div className="flex justify-center gap-4">
               {socialLinks.map((link, index) => (
-                <a
+                <SocialIconLink
                   key={index}
-                  href={link.url!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center"
-                  aria-label={link.label}
-                >
-                  <link.icon className="w-5 h-5" />
-                </a>
+                  url={link.url!}
+                  label={link.label}
+                  icon={link.icon}
+                />
               ))}
             </div>
           </div>
