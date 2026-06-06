@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Προσθέστε προσαρμοσμένη σημείωση..."
   },
   "order": {
+    "leaveTip": "Φιλοδώρημα",
+    "tipDescription": "Αποστέλλεται ως σημείωση στον κούριερ/εστιατόριο",
+    "tipAmountPlaceholder": "Ποσό (προαιρετικό)",
+    "tipNotePrefix": "Θα αφήσω φιλοδώρημα",
+    "tipNoteWithAmount": "Θα αφήσω φιλοδώρημα: {{amount}}",
     "placeOrder": "Παραγγελία",
     "selectType": "Τύπος παραγγελίας",
     "inPerson": "Στο εστιατόριο",

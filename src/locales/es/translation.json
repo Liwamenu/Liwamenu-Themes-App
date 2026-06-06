@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Añade una nota personalizada..."
   },
   "order": {
+    "leaveTip": "Dejar propina",
+    "tipDescription": "Se envía como nota al mensajero/restaurante",
+    "tipAmountPlaceholder": "Importe (opcional)",
+    "tipNotePrefix": "Dejaré propina",
+    "tipNoteWithAmount": "Dejaré propina: {{amount}}",
     "placeOrder": "Pedir",
     "selectType": "Tipo de pedido",
     "inPerson": "En mesa",

@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "أضف ملاحظة مخصصة..."
   },
   "order": {
+    "leaveTip": "ترك بقشيش",
+    "tipDescription": "يُرسل كملاحظة إلى عامل التوصيل/المطعم",
+    "tipAmountPlaceholder": "المبلغ (اختياري)",
+    "tipNotePrefix": "سأترك بقشيشاً",
+    "tipNoteWithAmount": "سأترك بقشيشاً: {{amount}}",
     "placeOrder": "تقديم الطلب",
     "selectType": "نوع الطلب",
     "inPerson": "في المطعم",

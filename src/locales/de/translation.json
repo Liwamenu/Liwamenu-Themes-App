@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Eigene Anmerkung hinzufügen..."
   },
   "order": {
+    "leaveTip": "Trinkgeld geben",
+    "tipDescription": "Wird als Notiz an den Kurier/das Restaurant gesendet",
+    "tipAmountPlaceholder": "Betrag (optional)",
+    "tipNotePrefix": "Ich gebe Trinkgeld",
+    "tipNoteWithAmount": "Ich gebe Trinkgeld: {{amount}}",
     "placeOrder": "Bestellen",
     "selectType": "Bestellart wählen",
     "inPerson": "Vor Ort essen",

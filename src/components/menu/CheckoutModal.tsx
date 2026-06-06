@@ -74,6 +74,12 @@ export function CheckoutModal({
     address: ""
   });
   const [orderNote, setOrderNote] = useState("");
+  // Tip (paket only). We don't touch the total — the amount (if any) is
+  // sent as a sentence prepended to orderNote so the kitchen/courier sees
+  // "Bahşiş vereceğim: ₺50" alongside the customer's own note. Toggle alone
+  // (no amount) sends just "Bahşiş vereceğim".
+  const [tipEnabled, setTipEnabled] = useState(false);
+  const [tipAmount, setTipAmount] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWithinRange, setIsWithinRange] = useState(false);
@@ -362,7 +368,19 @@ export function CheckoutModal({
         };
       }),
       totalAmount: total,
-      orderNote: orderNote || undefined,
+      orderNote: (() => {
+        // Prepend the tip note when enabled (paket only). Amount is opaque
+        // free text — we don't validate it, so the customer can type "₺50",
+        // "50", or leave it blank ("Bahşiş vereceğim" alone).
+        if (orderType === "online" && tipEnabled) {
+          const trimmedAmount = tipAmount.trim();
+          const tipNote = trimmedAmount
+            ? t("order.tipNoteWithAmount", { amount: trimmedAmount })
+            : t("order.tipNotePrefix");
+          return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
+        }
+        return orderNote || undefined;
+      })(),
       createdAt: new Date().toISOString(),
       ...(customerLocation ? { customerLocation } : {}),
       ...(orderType === "inPerson" ? {
@@ -690,6 +708,36 @@ export function CheckoutModal({
                     </div>
                   </div>
                 </div>}
+
+              {/* Tip (paket only) — toggle + optional amount. Sent as a
+                  prefix on orderNote; the order total is untouched. */}
+              {orderType === "online" && (
+                <div className="rounded-2xl border border-border p-4 bg-secondary/50">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={tipEnabled}
+                      onChange={(e) => setTipEnabled(e.target.checked)}
+                      className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium">{t("order.leaveTip")}</div>
+                      <div className="text-sm text-muted-foreground">{t("order.tipDescription")}</div>
+                    </div>
+                  </label>
+                  {tipEnabled && (
+                    <div className="mt-3">
+                      <Input
+                        inputMode="decimal"
+                        placeholder={t("order.tipAmountPlaceholder")}
+                        value={tipAmount}
+                        onChange={(e) => setTipAmount(e.target.value)}
+                        className="rounded-xl"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Order Note */}
               <div>

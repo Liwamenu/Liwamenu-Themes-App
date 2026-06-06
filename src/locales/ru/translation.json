@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Добавьте особое примечание..."
   },
   "order": {
+    "leaveTip": "Оставить чаевые",
+    "tipDescription": "Отправляется курьеру/ресторану как примечание",
+    "tipAmountPlaceholder": "Сумма (необязательно)",
+    "tipNotePrefix": "Я оставлю чаевые",
+    "tipNoteWithAmount": "Я оставлю чаевые: {{amount}}",
     "placeOrder": "Заказать",
     "selectType": "Тип заказа",
     "inPerson": "В ресторане",
