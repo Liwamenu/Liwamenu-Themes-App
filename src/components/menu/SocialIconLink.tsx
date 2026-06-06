@@ -1,41 +1,46 @@
-import type { ComponentType, CSSProperties, SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 
 /**
- * Brand colors for the social platforms we link to from the footer. Used so
- * every theme's social row renders in the original brand colors (no themed
- * recolour) regardless of the surrounding light/dark palette.
+ * Brand-coloured PNG assets shipped with the app (under /public/images).
+ * Keyed by the `label` the Footer passes in, so a new platform just needs an
+ * entry here + the matching file in public/images.
  *
- * Instagram is intentionally a single solid colour (not the official multi-stop
- * gradient) because the gradient does not read at favicon-sized icons against
- * arbitrary theme backgrounds; the magenta is recognisable on its own.
+ * Google is listed but currently has no UI hook-up — the backend is adding
+ * the `googleUrl` field; when it lands the footer just adds another entry to
+ * its socialLinks array and this component renders it without further work.
  */
-const BRAND_COLORS: Record<string, string> = {
-  Facebook: "#1877F2",
-  Instagram: "#E1306C",
-  TikTok: "#000000",
-  YouTube: "#FF0000",
-  WhatsApp: "#25D366",
+const ICON_SRC: Record<string, string> = {
+  Facebook: "/images/facebook.png",
+  Instagram: "/images/instagram.png",
+  TikTok: "/images/tiktok.png",
+  YouTube: "/images/youtube.png",
+  WhatsApp: "/images/whatsapp.png",
+  Google: "/images/google.png",
 };
 
 interface SocialIconLinkProps {
   /** Outbound URL — caller should already have filtered out empty links. */
   url: string;
-  /** Platform name; also used to look up the brand colour. */
+  /** Platform name; also used to look up the PNG asset. */
   label: string;
-  /** The icon component (Lucide or our TikTok shim). Must honour currentColor. */
+  /**
+   * Fallback icon component (Lucide or our TikTok shim). Rendered only when
+   * the platform has no PNG entry in `ICON_SRC`. Themes still need to import
+   * an icon to satisfy the existing socialLinks shape; if a PNG is present
+   * it always wins.
+   */
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   /** Wrapper `<a>` class — themes can pass spacing/hover effects here. */
   className?: string;
-  /** Icon size/spacing class — defaults to a touch-friendly 28px. */
+  /** Icon size class — defaults to a touch-friendly 28px. */
   iconClassName?: string;
-  /** Optional style override for the icon (rarely needed). */
-  iconStyle?: CSSProperties;
 }
 
 /**
- * Renders a social media link as a transparent-background, brand-coloured
- * outline icon. Replaces the previous theme-specific circle/pill chrome so
- * the icons read the same way across every theme.
+ * Renders a social media link as the platform's original brand artwork (PNG
+ * under /public/images) so the colours match the real brand identity exactly.
+ * Background stays transparent; the only visual chrome is a subtle scale-up
+ * on hover.
  */
 export function SocialIconLink({
   url,
@@ -43,9 +48,9 @@ export function SocialIconLink({
   icon: Icon,
   className,
   iconClassName,
-  iconStyle,
 }: SocialIconLinkProps) {
-  const color = BRAND_COLORS[label] ?? "currentColor";
+  const src = ICON_SRC[label];
+  const sizeClass = iconClassName ?? "w-7 h-7";
   return (
     <a
       href={url}
@@ -57,19 +62,17 @@ export function SocialIconLink({
         "inline-flex items-center justify-center p-2 transition-transform hover:scale-110"
       }
     >
-      <Icon
-        className={iconClassName ?? "w-7 h-7"}
-        style={{
-          color,
-          // TikTok's brand colour is black, which disappears on dark theme
-          // footers. A tiny white drop-shadow keeps the silhouette visible on
-          // both light and dark backgrounds without changing the brand colour.
-          ...(label === "TikTok" && {
-            filter: "drop-shadow(0 0 1px rgba(255,255,255,0.9))",
-          }),
-          ...iconStyle,
-        }}
-      />
+      {src ? (
+        <img
+          src={src}
+          alt={label}
+          className={`${sizeClass} object-contain`}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <Icon className={sizeClass} />
+      )}
     </a>
   );
 }
