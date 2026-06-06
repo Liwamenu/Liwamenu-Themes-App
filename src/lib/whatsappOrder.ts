@@ -47,6 +47,18 @@ export interface WhatsappOrderInput {
     latitude: number;
     longitude: number;
   };
+  /** Cart subtotal BEFORE discount/delivery. When omitted the message
+   *  only shows the final total — fine for restaurants that don't apply
+   *  paket discounts. */
+  subtotal?: number;
+  /** Discount applied (positive amount). When > 0 we render an itemised
+   *  "Ara Toplam → İndirim → Toplam" breakdown so the restaurant sees
+   *  why the final total is below subtotal. */
+  discountAmount?: number;
+  /** Discount percentage, shown next to the amount for clarity. */
+  discountRate?: number;
+  /** Delivery fee added on top, displayed as a separate line. */
+  deliveryFee?: number;
   total: number;
   orderNote?: string;
   /** i18n function bound to the active locale. */
@@ -69,7 +81,20 @@ function digitsOnly(raw: string): string {
  * the caller can show a preview if they want, or unit-test the layout.
  */
 export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
-  const { restaurant, items, customer, location, total, orderNote, t, moneySign = "₺" } = input;
+  const {
+    restaurant,
+    items,
+    customer,
+    location,
+    subtotal,
+    discountAmount,
+    discountRate,
+    deliveryFee,
+    total,
+    orderNote,
+    t,
+    moneySign = "₺",
+  } = input;
   const lines: string[] = [];
 
   // Section bullet — used everywhere a header would otherwise carry a
@@ -124,7 +149,24 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
   }
   lines.push("");
 
-  // Total -------------------------------------------------------------
+  // Total — itemised when there's a discount or delivery fee so the
+  // restaurant can audit the price; bare line otherwise.
+  const hasBreakdown =
+    (typeof subtotal === "number" && Math.abs(subtotal - total) > 0.001) ||
+    (typeof discountAmount === "number" && discountAmount > 0) ||
+    (typeof deliveryFee === "number" && deliveryFee > 0);
+  if (hasBreakdown && typeof subtotal === "number") {
+    lines.push(`${HEADER} *${t("order.subtotal")}: ${fmtPrice(subtotal, moneySign)}*`);
+    if (typeof discountAmount === "number" && discountAmount > 0) {
+      const ratePart = typeof discountRate === "number" && discountRate > 0
+        ? ` (%${discountRate})`
+        : "";
+      lines.push(`${HEADER} *${t("order.onlineDiscount")}${ratePart}: -${fmtPrice(discountAmount, moneySign)}*`);
+    }
+    if (typeof deliveryFee === "number" && deliveryFee > 0) {
+      lines.push(`${HEADER} *${t("order.deliveryFee")}: ${fmtPrice(deliveryFee, moneySign)}*`);
+    }
+  }
   lines.push(`${HEADER} *${t("order.whatsappMsgTotal")}: ${fmtPrice(total, moneySign)}*`);
 
   // Optional customer note --------------------------------------------
