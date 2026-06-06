@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle } from "lucide-react";
@@ -64,6 +64,20 @@ export function CheckoutModal({
     addOrder
   } = useOrder();
   const [step, setStep] = useState<CheckoutStep>("type");
+
+  // Silent menu refresh on mount. The cart can persist for up to 3h, so by
+  // the time the customer opens checkout the menu may have moved on
+  // (admin re-synced from SambaPOS, deleted an option, re-priced an item).
+  // Pulling fresh data here, then running syncPricesFromLiveMenu, means the
+  // payload we submit always carries live IDs/prices. Avoids the "items
+  // not available" 400 that used to repeat even after a full page refresh.
+  // Fire-and-forget — failure is non-fatal (we just keep the cached menu).
+  useEffect(() => {
+    refreshRestaurantData().then((ok) => {
+      if (ok) syncPricesFromLiveMenu();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [orderType, setOrderType] = useState<OrderType | null>(null);
 
   // Phone is split into two parts: country + 10-digit subscriber number

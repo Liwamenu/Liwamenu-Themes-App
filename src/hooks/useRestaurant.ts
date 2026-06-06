@@ -129,7 +129,12 @@ export async function refreshRestaurantData(): Promise<boolean> {
   if (USE_DUMMY_DATA) return true;
   try {
     const tenant = getTenant();
-    const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
+    // `no-store` bypasses both browser and intermediate caches. Without it
+    // the browser may serve a stale response on repeated reloads, so the
+    // customer keeps seeing outdated tag-option IDs and gets the same 400
+    // "items not found" after refreshing the page. The endpoint is small
+    // and tenant-scoped — no measurable cost to re-fetch every time.
+    const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`, { cache: "no-store" });
     if (!res.ok) return false;
     const json = await res.json();
     const fresh = normalizeRestaurantData(
@@ -199,7 +204,7 @@ export function useInitializeRestaurant() {
       setLoading(true);
       try {
         const tenant = getTenant();
-        const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
+        const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`, { cache: "no-store" });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         const json = await res.json();
         if (!cancelled) {
@@ -274,7 +279,7 @@ export function useInitializeRestaurant() {
       inFlight = true;
       try {
         const tenant = getTenant();
-        const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`);
+        const res = await fetch(`${API_URLS.getRestaurantFull}?tenant=${tenant}`, { cache: "no-store" });
         if (!res.ok) return;
         const json = await res.json();
         const fresh = normalizeRestaurantData(
