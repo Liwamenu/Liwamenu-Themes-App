@@ -575,13 +575,17 @@ export function useRestaurant() {
 
   const canOrderOnline = data.onlineOrder && isRestaurantActive && isCurrentlyOpen;
   const canOrderInPerson = data.inPersonOrder && isRestaurantActive && isCurrentlyOpen;
-  // WhatsApp ordering is gated by the feature flag AND requires a phone
-  // number — without one the button can't open a meaningful URL.
-  const canOrderWhatsapp =
-    !!data.whatsappOrder &&
-    !!(data.whatsappOrderPhone && data.whatsappOrderPhone.trim()) &&
-    isRestaurantActive &&
-    isCurrentlyOpen;
+  // WhatsApp ordering — TEMPORARY gating until the backend ships the
+  // `whatsappOrder` / `whatsappOrderPhone` fields (see
+  // WhatsApp_Order_Backend_Brief.md). For now we surface the option
+  // whenever paket (online) ordering is available; once the backend
+  // returns the real flag, restore the original line:
+  //   const canOrderWhatsapp =
+  //     !!data.whatsappOrder &&
+  //     !!(data.whatsappOrderPhone && data.whatsappOrderPhone.trim()) &&
+  //     isRestaurantActive && isCurrentlyOpen;
+  // TODO(backend-whatsapp-order): revert to flag-gated check.
+  const canOrderWhatsapp = canOrderOnline;
 
   return {
     restaurant: data,
