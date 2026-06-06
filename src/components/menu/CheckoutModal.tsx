@@ -165,19 +165,29 @@ export function CheckoutModal({
   // Phone validation
   const isPhoneValid = validatePhoneForCountry(buildE164Phone(phoneCountry, phoneSubscriber), phoneCountry);
 
-  // Calculate discount and final total. WhatsApp orders intake the same
-  // way paket does (delivery to a customer-supplied address), so they get
-  // the paket discount rate and delivery fee too — restaurants asked for
-  // parity here so a customer doesn't pay a different total depending on
-  // which channel they pick.
+  // WhatsApp gets its own dedicated operational fields (discount / delivery
+  // / minOrder / maxDistance) so the restaurant can price each channel
+  // independently. When the backend hasn't shipped the WhatsApp-specific
+  // value yet (older restaurants on the first-stage rollout), we fall
+  // back to the matching paket field — that was the temporary behaviour
+  // before the new fields landed and stays as the safe default.
+  const whatsappDiscountRate = restaurant.whatsappOrderDiscountRate ?? restaurant.onlineOrderDiscountRate;
+  const whatsappDeliveryFee = restaurant.whatsappOrderDeliveryFee ?? restaurant.deliveryFee;
+  const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? restaurant.minOrderAmount;
+  const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance ?? restaurant.maxDistance;
+  // Calculate discount and final total.
   const getDiscountRate = () => {
     if (orderType === "inPerson") return restaurant.tableOrderDiscountRate;
-    if (orderType === "online" || orderType === "whatsapp") return restaurant.onlineOrderDiscountRate;
+    if (orderType === "online") return restaurant.onlineOrderDiscountRate;
+    if (orderType === "whatsapp") return whatsappDiscountRate;
     return 0;
   };
   const discountRate = getDiscountRate();
   const discountAmount = subtotal * discountRate / 100;
-  const deliveryFee = (orderType === "online" || orderType === "whatsapp") ? restaurant.deliveryFee : 0;
+  const deliveryFee =
+    orderType === "online" ? restaurant.deliveryFee :
+    orderType === "whatsapp" ? whatsappDeliveryFee :
+    0;
   const coverCharge = orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
   const total = subtotal - discountAmount + deliveryFee + coverCharge;
   // Shared geolocation + distance-check logic used by both the
@@ -246,15 +256,36 @@ export function CheckoutModal({
         });
       }
     } else if (type === "whatsapp") {
-      // WhatsApp wants the GPS pin so the courier finds the customer, but
-      // unlike the online/in-person paths we DON'T enforce the restaurant
-      // max-distance — the restaurant decides whether to deliver after
-      // seeing the WhatsApp message. If the customer denies/fails the
-      // permission we still let the order proceed; the typed address in
-      // the next step is then the only locator.
+      // WhatsApp captures the GPS pin so the courier finds the customer.
+      // When the restaurant set whatsappOrderMaxDistance > 0 we ALSO
+      // enforce that bound (paket-parity); zero/null disables the check
+      // so the restaurant can still accept far-away WhatsApp orders.
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        if (whatsappMaxDistance > 0) {
+          const withinRange = checkDistanceWithCoords(
+            coords.latitude, coords.longitude,
+            restaurant.latitude, restaurant.longitude,
+            whatsappMaxDistance,
+          );
+          if (!withinRange) {
+            const distance = getDistanceWithCoords(
+              coords.latitude, coords.longitude,
+              restaurant.latitude, restaurant.longitude,
+            );
+            setLocationErrorModal({
+              isOpen: true,
+              message: t("order.outOfRange", {
+                distance: distance.toFixed(1),
+                max: whatsappMaxDistance,
+              }),
+              errorType: "outOfRange",
+              orderTypeAttempted: "online",
+            });
+            return;
+          }
+        }
       } catch {
         // ignore — fall through to details without a pin
       }
@@ -293,13 +324,14 @@ export function CheckoutModal({
         setStep("details");
       }
     } else if (type === "whatsapp") {
-      // Same minimum-order gate as online — restaurants typically want a
-      // floor before they accept any delivery, regardless of intake channel.
-      if (subtotal < restaurant.minOrderAmount) {
+      // Minimum-order gate uses the WhatsApp-specific floor when the
+      // restaurant configured one; falls back to the paket minimum
+      // when the dedicated field hasn't been shipped yet.
+      if (subtotal < whatsappMinAmount) {
         toast.error(
           <Trans
             i18nKey="order.minOrderError"
-            values={{ min: formatPrice(restaurant.minOrderAmount) }}
+            values={{ min: formatPrice(whatsappMinAmount) }}
             components={{ br: <br />, b: <b /> }}
           />
         );

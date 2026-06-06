@@ -241,6 +241,18 @@ export interface RestaurantData {
    * "chat with us" link and may differ from the order-intake number.
    */
   whatsappOrderPhone: string;
+  /**
+   * WhatsApp-channel parity for the four operational paket fields. All four
+   * are optional in the type because the backend ships them in two stages:
+   * the boolean + phone landed first, the four numeric fields are still
+   * being added. Callers should fall back to the matching paket field
+   * (`onlineOrderDiscountRate` / `deliveryFee` / `minOrderAmount` /
+   * `maxDistance`) when the WhatsApp-specific one is undefined.
+   */
+  whatsappOrderDiscountRate?: number;
+  whatsappOrderDeliveryFee?: number;
+  whatsappOrderMinAmount?: number;
+  whatsappOrderMaxDistance?: number;
   hide: boolean;
   themeId: number;
   maxDistance: number;
