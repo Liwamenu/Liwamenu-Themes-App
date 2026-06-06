@@ -273,6 +273,7 @@
     "enterCode": "请输入验证码"
   },
   "footer": {
+    "googleReview": "在 Google 上评价",
     "followUs": "关注我们",
     "workingHours": "营业时间",
     "closed": "已打烊",

@@ -273,6 +273,7 @@
     "enterCode": "Пожалуйста, введите код подтверждения"
   },
   "footer": {
+    "googleReview": "Оценить на Google",
     "followUs": "Подписывайтесь",
     "workingHours": "Часы работы",
     "closed": "Закрыто",

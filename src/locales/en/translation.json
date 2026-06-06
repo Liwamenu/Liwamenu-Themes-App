@@ -276,6 +276,7 @@
     "enterCode": "Please enter the verification code"
   },
   "footer": {
+    "googleReview": "Review on Google",
     "followUs": "Follow Us",
     "workingHours": "Working Hours",
     "closed": "Closed",
