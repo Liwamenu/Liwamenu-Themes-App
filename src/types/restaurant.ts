@@ -237,6 +237,17 @@ export interface RestaurantData {
   specialPriceName: string;
   googleAnalytics: string;
   /**
+   * Google "write a review" deep link for this restaurant. Backend
+   * persists/returns it on the restaurant entity (see GOOGLE_REVIEW_LINK
+   * DTO brief) — typically a `g.page/r/.../review` or
+   * `search.google.com/local/writereview?placeid=…` URL.
+   *
+   * Empty/null when the owner hasn't pasted one yet. Themes show a
+   * "Google'da Değerlendir / Write a review" button next to the
+   * reservation/feedback buttons ONLY when this is non-empty.
+   */
+  googleReviewLink: string | null;
+  /**
    * Whether the restaurant's QR-menu license is currently active.
    * Backend renamed the previous `licenseIsActive` field to this in
    * the May 2026 license rework (alongside new `tvLicenseIsActive`

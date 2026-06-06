@@ -7,6 +7,7 @@ import { ReservationModal } from "./ReservationModal";
 import { SurveyModal } from "./SurveyModal";
 import { Button } from "@/components/ui/button";
 import { SocialIconLink } from "@/components/menu/SocialIconLink";
+import { GoogleReviewButton } from "@/components/menu/GoogleReviewButton";
 
 const dayKeys = ["", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -83,6 +84,7 @@ export function Footer() {
               <Star className="w-4 h-4" />
               <span>{t("survey.button")}</span>
             </Button>
+            <GoogleReviewButton />
           </div>
         </div>
 

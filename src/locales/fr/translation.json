@@ -273,6 +273,7 @@
     "enterCode": "Veuillez entrer le code de vérification"
   },
   "footer": {
+    "googleReview": "Évaluer sur Google",
     "followUs": "Suivez-nous",
     "workingHours": "Heures d'ouverture",
     "closed": "Fermé",
