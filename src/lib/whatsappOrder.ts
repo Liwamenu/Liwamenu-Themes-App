@@ -47,6 +47,10 @@ export interface WhatsappOrderInput {
     latitude: number;
     longitude: number;
   };
+  /** Localised name of the payment method the customer selected (e.g.
+   *  "Nakit", "Kart", "Online Ödeme"). Shown on its own line so the
+   *  courier knows whether to bring a card terminal. */
+  paymentMethodName?: string;
   /** Final amount the customer agreed to pay — already accounts for paket
    *  discount, delivery fee, etc. computed by the checkout. The message
    *  intentionally hides the breakdown (restaurant request: only show the
@@ -73,7 +77,7 @@ function digitsOnly(raw: string): string {
  * the caller can show a preview if they want, or unit-test the layout.
  */
 export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
-  const { restaurant, items, customer, location, total, orderNote, t, moneySign = "₺" } = input;
+  const { restaurant, items, customer, location, paymentMethodName, total, orderNote, t, moneySign = "₺" } = input;
   const lines: string[] = [];
 
   // Section bullet — used everywhere a header would otherwise carry a
@@ -125,6 +129,11 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
   }
   lines.push("");
   lines.push(`${HEADER} *${t("order.whatsappMsgTotal")}: ${fmtPrice(total, moneySign)}*`);
+
+  // Payment method — courier needs to know cash vs card before heading out.
+  if (paymentMethodName && paymentMethodName.trim()) {
+    lines.push(`${HEADER} *${t("order.whatsappMsgPayment")}:* ${paymentMethodName.trim()}`);
+  }
 
   // Optional customer note --------------------------------------------
   if (orderNote && orderNote.trim()) {
