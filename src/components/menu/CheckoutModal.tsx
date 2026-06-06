@@ -214,6 +214,20 @@ export function CheckoutModal({
           orderTypeAttempted: "inPerson"
         });
       }
+    } else if (type === "whatsapp") {
+      // WhatsApp wants the GPS pin so the courier finds the customer, but
+      // unlike the online/in-person paths we DON'T enforce the restaurant
+      // max-distance — the restaurant decides whether to deliver after
+      // seeing the WhatsApp message. If the customer denies/fails the
+      // permission we still let the order proceed; the typed address in
+      // the next step is then the only locator.
+      try {
+        const coords = await getLocation();
+        setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      } catch {
+        // ignore — fall through to details without a pin
+      }
+      setStep("details");
     }
   };
 
@@ -260,8 +274,26 @@ export function CheckoutModal({
         );
         return;
       }
-      // No location check, no payment step — straight to customer details,
-      // then the confirm screen sends the message via wa.me.
+      // Try to capture the customer's GPS so the WhatsApp message can
+      // include a Google Maps pin for the courier. If the browser already
+      // granted permission we read it silently; otherwise we prompt with
+      // the same explainer modal as paket — but unlike paket we do NOT
+      // enforce the restaurant's max-distance check (the restaurant
+      // decides whether to deliver). The customer can also just skip the
+      // permission and type an address.
+      if (await isLocationPermissionGranted()) {
+        try {
+          const coords = await getLocation();
+          setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        } catch {
+          // ignore — location is optional for WhatsApp
+        }
+      } else {
+        setLocationPermission({ isOpen: true, reason: 'online' });
+        return;
+      }
+      // No payment step — straight to customer details, then the confirm
+      // screen sends the message via wa.me.
       setStep("details");
     }
   };
@@ -341,6 +373,7 @@ export function CheckoutModal({
         phone: buildE164Phone(phoneCountry, phoneSubscriber),
         address: customerInfo.address || undefined,
       },
+      location: customerLocation || undefined,
       total,
       orderNote: orderNote || undefined,
       t,
