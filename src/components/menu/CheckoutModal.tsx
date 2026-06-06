@@ -35,7 +35,8 @@ export function CheckoutModal({
   onShowSoundPermission
 }: CheckoutModalProps) {
   const {
-    t
+    t,
+    i18n
   } = useTranslation();
   const {
     restaurant,
@@ -339,9 +340,9 @@ export function CheckoutModal({
       // For in-person, skip payment and go to confirm
       setStep("confirm");
     } else if (orderType === "whatsapp") {
-      // WhatsApp doesn't go through the payment step. Validate name + phone
-      // (address optional — many WhatsApp restaurants confirm it in chat)
-      // then jump straight to confirm.
+      // WhatsApp goes through the payment step too — the restaurant needs
+      // to know cash vs card up front. Address is optional (the courier
+      // usually confirms it in chat), but name + phone are required.
       if (!customerInfo.name.trim() || !phoneSubscriber.trim()) {
         toast.error(t("order.fillAllFields"));
         return;
@@ -350,7 +351,7 @@ export function CheckoutModal({
         toast.error(t("common.phoneError"));
         return;
       }
-      setStep("confirm");
+      setStep("payment");
     } else {
       if (!customerInfo.name.trim() || !phoneSubscriber.trim() || !customerInfo.address.trim()) {
         toast.error(t("order.fillAllFields"));
@@ -374,8 +375,9 @@ export function CheckoutModal({
     } else if (step === "payment") {
       setStep("details");
     } else if (step === "confirm") {
-      // WhatsApp and in-person skip the payment step, so confirm → details.
-      if (orderType === "inPerson" || orderType === "whatsapp") {
+      // In-person skips payment (paid at the table), so confirm → details.
+      // WhatsApp DOES have a payment step (cash/card choice for the courier).
+      if (orderType === "inPerson") {
         setStep("details");
       } else {
         setStep("payment");
@@ -390,6 +392,13 @@ export function CheckoutModal({
    */
   const handleConfirmWhatsappOrder = async () => {
     const { buildWhatsappOrderUrl } = await import("@/lib/whatsappOrder");
+    // Lock the message to the restaurant's own menu language — the message
+    // is read by the restaurant staff, not the customer, so a French diner
+    // browsing a Turkish menu should still send a Turkish order. Falls back
+    // to the active UI language when menuLang is missing.
+    const messageLang = (restaurant.menuLang || i18n.language || "tr").toLowerCase();
+    const messageT = i18n.getFixedT(messageLang);
+    const selectedPayment = enabledPaymentMethods.find((pm) => pm.id === selectedPaymentMethod);
     const url = buildWhatsappOrderUrl({
       restaurant,
       items,
@@ -399,9 +408,10 @@ export function CheckoutModal({
         address: customerInfo.address || undefined,
       },
       location: customerLocation || undefined,
+      paymentMethodName: selectedPayment?.name,
       total,
       orderNote: composeOrderNote(),
-      t,
+      t: messageT,
       moneySign: restaurant.moneySign || "₺",
     });
     if (!url) {

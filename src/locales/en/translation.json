@@ -115,6 +115,7 @@
     "whatsappMsgLocation": "Location",
     "whatsappMsgPortion": "Portion",
     "whatsappMsgQuantity": "Quantity",
+    "whatsappMsgPayment": "Payment",
     "leaveTip": "Leave a tip",
     "tipDescription": "Sent as a note to the courier/restaurant",
     "tipAmountPlaceholder": "Amount (optional)",
