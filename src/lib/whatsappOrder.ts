@@ -36,6 +36,17 @@ export interface WhatsappOrderInput {
     phone: string;
     address?: string;
   };
+  /**
+   * Captured GPS for the courier — when present we add a Google Maps
+   * "directions" link to the message so the courier can tap it from
+   * WhatsApp and open turn-by-turn directions to the exact spot. The
+   * customer's typed address still appears separately; the pin is a
+   * complement, not a replacement.
+   */
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
   total: number;
   orderNote?: string;
   /** i18n function bound to the active locale. */
@@ -58,24 +69,37 @@ function digitsOnly(raw: string): string {
  * the caller can show a preview if they want, or unit-test the layout.
  */
 export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
-  const { restaurant, items, customer, total, orderNote, t, moneySign = "₺" } = input;
+  const { restaurant, items, customer, location, total, orderNote, t, moneySign = "₺" } = input;
   const lines: string[] = [];
 
-  lines.push(`🍽️ *${restaurant.name}*`);
+  // Section bullet — used everywhere a header would otherwise carry a
+  // category emoji. The blue square (🟦) renders consistently across the
+  // WhatsApp clients restaurants use; the previous mix (🍽️ 👤 🛒 💰 📝)
+  // fell back to "◆" / square-with-hole on Android WhatsApp Business.
+  const HEADER = "🟦";
+
+  lines.push(`${HEADER} *${restaurant.name}*`);
   lines.push(t("order.whatsappMsgGreeting"));
   lines.push("");
 
   // Customer block ----------------------------------------------------
-  lines.push(`👤 *${t("order.whatsappMsgCustomer")}*`);
+  lines.push(`${HEADER} *${t("order.whatsappMsgCustomer")}*`);
   lines.push(`• ${t("order.whatsappMsgName")}: ${customer.name}`);
   lines.push(`• ${t("order.whatsappMsgPhone")}: ${customer.phone}`);
   if (customer.address && customer.address.trim()) {
     lines.push(`• ${t("order.whatsappMsgAddress")}: ${customer.address.trim()}`);
   }
+  if (location) {
+    // Google Maps "directions" deep link — opens the app on a phone with
+    // turn-by-turn directions from the courier's current position to the
+    // customer pin. `q=lat,lng` is the universally-supported fallback.
+    const mapsUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+    lines.push(`• ${t("order.whatsappMsgLocation")}: ${mapsUrl}`);
+  }
   lines.push("");
 
   // Order items block -------------------------------------------------
-  lines.push(`🛒 *${t("order.whatsappMsgOrder")}*`);
+  lines.push(`${HEADER} *${t("order.whatsappMsgOrder")}*`);
   for (const item of items) {
     const portionName = item.portion?.name;
     const productLabel = portionName ? `${item.product.name} (${portionName})` : item.product.name;
@@ -101,12 +125,12 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
   lines.push("");
 
   // Total -------------------------------------------------------------
-  lines.push(`💰 *${t("order.whatsappMsgTotal")}: ${fmtPrice(total, moneySign)}*`);
+  lines.push(`${HEADER} *${t("order.whatsappMsgTotal")}: ${fmtPrice(total, moneySign)}*`);
 
   // Optional customer note --------------------------------------------
   if (orderNote && orderNote.trim()) {
     lines.push("");
-    lines.push(`📝 *${t("order.whatsappMsgNote")}:* ${orderNote.trim()}`);
+    lines.push(`${HEADER} *${t("order.whatsappMsgNote")}:* ${orderNote.trim()}`);
   }
 
   return lines.join("\n");
