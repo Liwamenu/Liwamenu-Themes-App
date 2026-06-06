@@ -101,6 +101,11 @@
     "freeTagPlaceholder": "Add a custom note..."
   },
   "order": {
+    "leaveTip": "Leave a tip",
+    "tipDescription": "Sent as a note to the courier/restaurant",
+    "tipAmountPlaceholder": "Amount (optional)",
+    "tipNotePrefix": "I'll leave a tip",
+    "tipNoteWithAmount": "I'll leave a tip: {{amount}}",
     "placeOrder": "Place Order",
     "selectType": "Select Order Type",
     "inPerson": "Dine In",

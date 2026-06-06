@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Aggiungi una nota personalizzata..."
   },
   "order": {
+    "leaveTip": "Lascia una mancia",
+    "tipDescription": "Inviato come nota al corriere/ristorante",
+    "tipAmountPlaceholder": "Importo (opzionale)",
+    "tipNotePrefix": "Lascerò una mancia",
+    "tipNoteWithAmount": "Lascerò una mancia: {{amount}}",
     "placeOrder": "Ordina",
     "selectType": "Tipo di ordine",
     "inPerson": "Al tavolo",

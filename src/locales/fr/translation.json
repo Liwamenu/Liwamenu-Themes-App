@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Ajoutez une note personnalisée..."
   },
   "order": {
+    "leaveTip": "Laisser un pourboire",
+    "tipDescription": "Envoyé comme note au coursier/restaurant",
+    "tipAmountPlaceholder": "Montant (optionnel)",
+    "tipNotePrefix": "Je laisserai un pourboire",
+    "tipNoteWithAmount": "Je laisserai un pourboire: {{amount}}",
     "placeOrder": "Commander",
     "selectType": "Type de commande",
     "inPerson": "Sur place",

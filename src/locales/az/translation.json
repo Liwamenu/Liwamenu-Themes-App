@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "Xüsusi qeyd əlavə edin..."
   },
   "order": {
+    "leaveTip": "Bəxşiş ver",
+    "tipDescription": "Kuryeye/restorana qeyd olaraq göndərilir",
+    "tipAmountPlaceholder": "Məbləğ (opsional)",
+    "tipNotePrefix": "Bəxşiş verəcəyəm",
+    "tipNoteWithAmount": "Bəxşiş verəcəyəm: {{amount}}",
     "placeOrder": "Sifariş ver",
     "selectType": "Sifariş növü seçin",
     "inPerson": "Masada sifariş",

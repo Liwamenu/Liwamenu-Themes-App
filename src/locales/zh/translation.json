@@ -99,6 +99,11 @@
     "freeTagPlaceholder": "添加自定义备注..."
   },
   "order": {
+    "leaveTip": "留小费",
+    "tipDescription": "作为备注发送给骑手/餐厅",
+    "tipAmountPlaceholder": "金额（可选）",
+    "tipNotePrefix": "我会留小费",
+    "tipNoteWithAmount": "我会留小费：{{amount}}",
     "placeOrder": "下单",
     "selectType": "订单类型",
     "inPerson": "堂食",
