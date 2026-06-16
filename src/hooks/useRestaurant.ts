@@ -163,6 +163,26 @@ export const useRestaurantStore = create<RestaurantStore>((set) => ({
   setInitialized: (initialized: boolean) => set({ isInitialized: initialized }),
   setTableNumber: (tableNumber: string) => {
     writePersistedTable(tableNumber);
+    // Also sync the URL so a later page reload / silent refetch reads
+    // the new table back instead of resurrecting the original QR-coded
+    // value. Without this the init path would parse `?tableNumber=<old>`
+    // off the URL and overwrite the persisted choice, so every operation
+    // after a ChangeTableModal swap kept reverting to the first table.
+    // history.replaceState keeps the change out of the browser back stack
+    // (so the back button still goes wherever the customer came from).
+    if (typeof window !== 'undefined') {
+      try {
+        const url = new URL(window.location.href);
+        if (tableNumber.trim()) {
+          url.searchParams.set('tableNumber', tableNumber.trim());
+        } else {
+          url.searchParams.delete('tableNumber');
+        }
+        window.history.replaceState({}, '', url.toString());
+      } catch {
+        /* malformed URL — ignore, the persisted value still wins */
+      }
+    }
     set((state) => ({
       restaurantData: { ...state.restaurantData, tableNumber },
     }));
