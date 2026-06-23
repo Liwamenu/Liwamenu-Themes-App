@@ -578,7 +578,7 @@ export function MenuPage() {
                 {activeCategory.name}
               </h2>
               <span className="gold-divider" />
-              <span className="text-xs text-muted-foreground">{activeCategory.products.length} ürün</span>
+              <span className="text-xs text-muted-foreground">{t("menu.productCount", { count: activeCategory.products.length })}</span>
             </div>
             {selectedCategoryId !== CAMPAIGN_CATEGORY_ID && (
               <SubcategoryButtons

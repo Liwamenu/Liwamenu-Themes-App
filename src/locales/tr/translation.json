@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "Restoran {{max}} çapında masada sipariş kabul etmektedir, mevcut konumunuz {{distance}} uzakta görünüyor.",
     "locationErrorTitle": "Konum Hatası",
     "noOrdersAvailable": "Şu an sipariş alınmıyor. Mesai saatleri dışında. Lütfen daha sonra tekrar deneyin.",
+    "activeOrders": "{{count}} aktif sipariş",
     "subtotal": "Ara Toplam",
     "discount": "İndirim",
     "tableDiscount": "Masa İndirimi",

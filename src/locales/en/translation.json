@@ -154,6 +154,7 @@
     "tableOrderOutOfRangeDistance": "The restaurant accepts table orders within {{max}}, your current location appears to be {{distance}} away.",
     "locationErrorTitle": "Location Error",
     "noOrdersAvailable": "Orders are not being accepted at this time. Outside of business hours. Please try again later.",
+    "activeOrders": "{{count}} active orders",
     "subtotal": "Subtotal",
     "discount": "Discount",
     "tableDiscount": "Table Discount",

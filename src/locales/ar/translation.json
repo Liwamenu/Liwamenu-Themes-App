@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "المطعم يقبل الطلبات في المكان ضمن {{max}}، يبدو أن موقعك الحالي على بعد {{distance}}.",
     "locationErrorTitle": "خطأ في الموقع",
     "noOrdersAvailable": "لا يتم قبول الطلبات حالياً. خارج ساعات العمل.",
+    "activeOrders": "{{count}} طلبات نشطة",
     "subtotal": "المجموع الفرعي",
     "discount": "خصم",
     "tableDiscount": "خصم الطاولة",

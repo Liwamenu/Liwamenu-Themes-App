@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "Il ristorante accetta ordini al tavolo entro {{max}}, la tua posizione attuale sembra essere a {{distance}}.",
     "locationErrorTitle": "Errore posizione",
     "noOrdersAvailable": "Gli ordini non sono accettati al momento. Fuori orario di apertura.",
+    "activeOrders": "{{count}} ordini attivi",
     "subtotal": "Subtotale",
     "discount": "Sconto",
     "tableDiscount": "Sconto tavolo",
