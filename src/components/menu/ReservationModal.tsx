@@ -16,7 +16,7 @@ import { API_URLS, isTurkishPhone, apiFetch, createReservation, verifyReservatio
 import { format } from "date-fns";
 import { tr, enUS, de, fr, it, es, ar, az, ru, el, zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits, getDefaultPhoneCountry } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
 
 interface ReservationModalProps {
@@ -118,13 +118,16 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
   const [availability, setAvailability] = useState<ReservationAvailability | null>(null);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
 
-  // Phone is split into two parts: country + 10-digit subscriber number
-  const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
+  // Phone is split into two parts: country + 10-digit subscriber number.
+  // The default country comes from the restaurant's own contact number so
+  // the prefix matches the restaurant's locale instead of always +90.
+  const defaultPhoneCountry = getDefaultPhoneCountry(restaurant.phoneNumber);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(defaultPhoneCountry);
   const [phoneSubscriber, setPhoneSubscriber] = useState("");
 
   const [formData, setFormData] = useState<ReservationFormData>({
     fullName: "",
-    phone: buildE164Phone("TR", ""),
+    phone: buildE164Phone(defaultPhoneCountry, ""),
     email: "",
     date: undefined,
     time: "",
@@ -149,6 +152,22 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
       document.documentElement.style.overflow = "";
     };
   }, [isOpen, embedded]);
+
+  // The phone-country default has to follow the restaurant's own contact
+  // number, but this modal stays mounted from page load and the restaurant
+  // data arrives asynchronously — so the useState initializer above runs
+  // against the bundled fallback (a +90 number) before the real tenant data
+  // lands, freezing the country to TR. Re-derive it whenever the modal opens
+  // (data is loaded by then) or the contact number changes, but only while
+  // the field is still pristine so we never clobber a number the guest is
+  // typing.
+  useEffect(() => {
+    if (!isOpen || phoneSubscriber) return;
+    const next = getDefaultPhoneCountry(restaurant.phoneNumber);
+    setPhoneCountry(next);
+    setFormData((prev) => ({ ...prev, phone: buildE164Phone(next, "") }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, restaurant.phoneNumber]);
 
   // Only Turkish phone numbers (+90) can receive SMS
   const isTurkish = phoneCountry === "TR";
@@ -393,7 +412,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
     setStep("form");
     setVerificationCode("");
     setReservationId("");
-    setPhoneCountry("TR");
+    setPhoneCountry(defaultPhoneCountry);
     setPhoneSubscriber("");
     setCapacityFullForDate(null);
     setFormData({

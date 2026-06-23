@@ -20,7 +20,7 @@ import { initFirebaseMessaging } from "@/lib/firebase";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
 import { LocationPermissionModal, type LocationPermissionReason } from "@/components/menu/LocationPermissionModal";
 import confetti from "canvas-confetti";
-import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits } from "@/lib/phoneValidation";
+import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits, getDefaultPhoneCountry } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
 interface CheckoutModalProps {
   onClose: () => void;
@@ -81,14 +81,32 @@ export function CheckoutModal({
   }, []);
   const [orderType, setOrderType] = useState<OrderType | null>(null);
 
-  // Phone is split into two parts: country + 10-digit subscriber number
-  const [phoneCountry, setPhoneCountry] = useState<Country>("TR");
+  // Phone is split into two parts: country + 10-digit subscriber number.
+  // The default country comes from the restaurant's own contact number so
+  // the prefix matches where the customer is ordering from (e.g. +49 for a
+  // German restaurant) instead of always defaulting to +90.
+  const defaultPhoneCountry = getDefaultPhoneCountry(restaurant.phoneNumber);
+  const [phoneCountry, setPhoneCountry] = useState<Country>(defaultPhoneCountry);
   const [phoneSubscriber, setPhoneSubscriber] = useState("");
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
-    phone: buildE164Phone("TR", ""),
+    phone: buildE164Phone(defaultPhoneCountry, ""),
     address: ""
   });
+
+  // The useState initializer runs against whatever restaurant data exists at
+  // mount; if checkout is reached before the tenant fetch resolves, that's the
+  // bundled +90 fallback. Re-derive the phone-country default once the real
+  // contact number is available, but only while the field is still pristine so
+  // we never overwrite digits the customer has started entering.
+  useEffect(() => {
+    if (phoneSubscriber) return;
+    const next = getDefaultPhoneCountry(restaurant.phoneNumber);
+    setPhoneCountry(next);
+    setCustomerInfo((prev) => ({ ...prev, phone: buildE164Phone(next, "") }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurant.phoneNumber]);
+
   const [orderNote, setOrderNote] = useState("");
   // Tip (paket only). We don't touch the total — the amount (if any) is
   // sent as a sentence prepended to orderNote so the kitchen/courier sees
