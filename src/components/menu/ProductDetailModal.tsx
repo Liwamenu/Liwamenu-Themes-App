@@ -107,6 +107,8 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   // Calculate tag total
   const tagTotal = Object.values(selectedTags).flat().reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
   const totalPrice = (displayPrice + tagTotal) * quantity;
+  // For zero-price products, show the tag total in the header so it stays in sync with the cart button
+  const headerPrice = displayPrice === 0 ? tagTotal : displayPrice;
 
   // Handle tag selection
   const handleTagSelect = (tag: OrderTag, item: OrderTagItem) => {
@@ -331,7 +333,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             {/* Price */}
             <div className="flex items-baseline gap-2 flex-wrap min-w-0">
               <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
-                {formatPrice(displayPrice)}
+                {formatPrice(headerPrice)}
               </span>
               {originalPrice && (
                 <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
