@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "Restoran {{max}} ərazidə masa sifarişi qəbul edir, cari yeriniz {{distance}} uzaqda görünür.",
     "locationErrorTitle": "Məkan xətası",
     "noOrdersAvailable": "Hazırda sifariş qəbul edilmir. İş saatlarından kənar.",
+    "activeOrders": "{{count}} aktiv sifariş",
     "subtotal": "Ara cəm",
     "discount": "Endirim",
     "tableDiscount": "Masa endirimi",

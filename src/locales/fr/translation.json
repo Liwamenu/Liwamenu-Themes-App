@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "Le restaurant accepte les commandes sur place dans un rayon de {{max}}, votre position actuelle semble être à {{distance}}.",
     "locationErrorTitle": "Erreur de localisation",
     "noOrdersAvailable": "Les commandes ne sont pas acceptées actuellement. En dehors des heures d'ouverture.",
+    "activeOrders": "{{count}} commandes actives",
     "subtotal": "Sous-total",
     "discount": "Réduction",
     "tableDiscount": "Réduction table",

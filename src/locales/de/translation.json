@@ -153,6 +153,7 @@
     "tableOrderOutOfRangeDistance": "Das Restaurant akzeptiert Tischbestellungen innerhalb von {{max}}, Ihr aktueller Standort scheint {{distance}} entfernt zu sein.",
     "locationErrorTitle": "Standortfehler",
     "noOrdersAvailable": "Derzeit werden keine Bestellungen angenommen. Außerhalb der Geschäftszeiten.",
+    "activeOrders": "{{count}} aktive Bestellungen",
     "subtotal": "Zwischensumme",
     "discount": "Rabatt",
     "tableDiscount": "Tischrabatt",

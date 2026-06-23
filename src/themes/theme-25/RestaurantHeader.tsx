@@ -125,7 +125,7 @@ export function RestaurantHeader({ orders = [], onViewOrder }: RestaurantHeaderP
               {orders.length > 0 && (
                 <span
                   className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-[hsl(var(--brand-orange))] text-white text-[11px] font-bold flex items-center justify-center shadow-md ring-2 ring-white animate-pulse"
-                  aria-label={`${orders.length} aktif sipariş`}
+                  aria-label={t("order.activeOrders", { count: orders.length })}
                 >
                   {orders.length}
                 </span>
