@@ -76,6 +76,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
   const originalPrice = displayPrice !== selectedPortion.price ? selectedPortion.price : null;
   const tagTotal = Object.values(selectedTags).flat().reduce((sum, tag) => sum + (tag.price * tag.quantity), 0);
   const totalPrice = (displayPrice + tagTotal) * quantity;
+  const headerPrice = displayPrice === 0 ? tagTotal : displayPrice;
 
   const handleTagSelect = (tag: OrderTag, item: OrderTagItem) => {
     setSelectedTags(prev => {
@@ -196,7 +197,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">{product.name}</h2>
             <p className="text-muted-foreground text-sm mb-4">{product.description}</p>
             <div className="flex items-baseline gap-2 flex-wrap min-w-0">
-              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
+              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(headerPrice)}</span>
               {originalPrice && <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>}
             </div>
           </div>
