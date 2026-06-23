@@ -55,6 +55,33 @@ export function getCallingCodeDigits(country?: Country) {
   return String(getCountryCallingCode(country));
 }
 
+/**
+ * Resolve the default phone-input country from the restaurant's own contact
+ * number, so a customer ordering from (say) a German restaurant sees +49
+ * pre-selected in the checkout / reservation phone field instead of the
+ * hard-coded +90.
+ *
+ * The backend stores the contact phone as an international E.164 number,
+ * usually WITHOUT the leading "+" (e.g. "908508407807" = +90 850 840 7807).
+ * We prepend "+" when it's missing and let libphonenumber detect the
+ * country. Anything we can't confidently resolve (empty, national-format
+ * with a trunk 0, malformed) falls back to the given fallback ("TR").
+ */
+export function getDefaultPhoneCountry(
+  restaurantPhone: string | undefined,
+  fallback: Country = "TR",
+): Country {
+  const raw = (restaurantPhone ?? "").trim();
+  if (!raw) return fallback;
+  const candidate = raw.startsWith("+") ? raw : `+${raw.replace(/\D/g, "")}`;
+  try {
+    const parsed = parsePhoneNumberFromString(candidate);
+    return (parsed?.country as Country) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export function sanitizeSubscriberDigits(value: string | undefined, maxDigits = 15) {
   return (value ?? "").replace(/\D/g, "").slice(0, maxDigits);
 }
