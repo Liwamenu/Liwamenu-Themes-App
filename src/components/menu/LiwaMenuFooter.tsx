@@ -14,7 +14,7 @@ export function LiwaMenuFooter({ className }: LiwaMenuFooterProps) {
       style={{ fontFamily: "'Conthrax', 'Orbitron', monospace", fontSize: "12px", letterSpacing: "0.02em" }}
     >
       <a
-        href="https://wa.me/908508407807"
+        href="https://www.liwamenu.com"
         target="_blank"
         rel="noopener noreferrer"
         className="hover:opacity-80 transition-opacity"
