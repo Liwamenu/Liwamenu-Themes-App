@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle } from "lucide-react";
@@ -134,6 +134,10 @@ export function CheckoutModal({
   const [locationPermission, setLocationPermission] = useState<{
     isOpen: boolean;
     reason: LocationPermissionReason;
+    // 'order' (default) advances the checkout flow once location is granted;
+    // 'pricing' only resolves the location so the zone-based minimum/fee can
+    // be displayed, without moving the customer off the order-type screen.
+    purpose?: 'order' | 'pricing';
   }>({ isOpen: false, reason: 'online' });
 
   // Backend 409 PRICE_MISMATCH: a structured list of every cart line
@@ -238,6 +242,39 @@ export function CheckoutModal({
   const whatsappDeliveryFee = restaurant.whatsappOrderDeliveryFee ?? onlineDeliveryFee;
   const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? onlineMinOrderAmount;
   const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance || onlineMaxDistance;
+
+  // Zone-based pricing needs the customer's location to resolve the right
+  // minimum-order floor. The moment they reach checkout (they tapped "complete
+  // order" in the cart) we proactively resolve their location so the minimum
+  // shown reflects their delivery zone instead of the base default. We only do
+  // this when it can actually matter — delivery zones configured, a delivery
+  // channel offered, location not known yet, and the cart still below the
+  // HIGHEST zone minimum (otherwise the minimum is already met in every zone).
+  // If permission is already granted we read it silently; otherwise we show the
+  // explainer so the customer can grant it (they can dismiss it and still pick
+  // dine-in). Runs once — we never re-prompt after a dismissal.
+  const pricingLocationRequested = useRef(false);
+  useEffect(() => {
+    if (pricingLocationRequested.current) return;
+    if (!hasDeliveryZones || customerLocation) return;
+    if (!(canOrderOnline || canOrderWhatsapp)) return;
+    const maxZoneMin = Math.max(...deliveryZones.map((z) => z.minOrderAmount ?? 0));
+    if (subtotal >= maxZoneMin) return;
+    pricingLocationRequested.current = true;
+    (async () => {
+      try {
+        if (await isLocationPermissionGranted()) {
+          const coords = await getLocation();
+          setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        } else {
+          setLocationPermission({ isOpen: true, reason: 'online', purpose: 'pricing' });
+        }
+      } catch {
+        /* ignore — fall back to the base minimum on screen */
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasDeliveryZones, customerLocation, canOrderOnline, canOrderWhatsapp, subtotal]);
 
   // Calculate discount and final total.
   const getDiscountRate = () => {
@@ -450,7 +487,20 @@ export function CheckoutModal({
 
   // Called when user taps "Allow" in the custom location-permission modal.
   const handleLocationPermissionAllow = async () => {
+    const purpose = locationPermission.purpose ?? 'order';
     setLocationPermission(prev => ({ ...prev, isOpen: false }));
+    if (purpose === 'pricing') {
+      // Resolve the location only to price the order (so the zone's minimum and
+      // delivery fee display correctly). Don't advance the flow — the customer
+      // still chooses their order type next.
+      try {
+        const coords = await getLocation();
+        setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      } catch {
+        /* ignore — keep the base minimum on screen */
+      }
+      return;
+    }
     if (orderType) {
       await proceedWithLocationCheck(orderType);
     }

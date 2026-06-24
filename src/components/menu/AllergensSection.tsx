@@ -49,8 +49,13 @@ export function AllergensSection({ product }: { product: Product }) {
         // every theme/mode so customers don't mistake the allergen
         // chips for a selectable add-on group. Slate / red text
         // tokens below are theme-independent on purpose because they
-        // need to stay readable on this #F0F0F0 background.
-        <div className="mt-2 bg-[#F0F0F0] rounded-xl p-3">
+        // need to stay readable on this light background.
+        //
+        // Uses `bg-stone-100` (not an arbitrary hex) so the card opts into
+        // theme-25's "intentionally light card in dark mode" exclusion list
+        // — otherwise that theme's `.bg-card p/span` override repaints this
+        // slate/red copy near-white and it vanishes on the light surface.
+        <div className="mt-2 bg-stone-100 rounded-xl p-3">
           {list.length === 0 ? (
             <p className="text-xs text-slate-600 italic">
               {t("allergens.none")}
