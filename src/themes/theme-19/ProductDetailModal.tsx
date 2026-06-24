@@ -228,7 +228,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                   <h3 className={cn("font-semibold", isShaking ? "text-primary" : "text-foreground")}>{tag.name}</h3>
                   {isUnfulfilled && (
                     <span className={cn("px-2 py-0.5 text-xs rounded-full transition-all",
-                      isShaking ? "bg-primary text-primary-foreground animate-pulse" : "bg-primary/10 text-primary")}>{requirementLabel}</span>
+                      isShaking ? "bg-primary text-primary-foreground animate-pulse" : "bg-primary/10 text-foreground")}>{requirementLabel}</span>
                   )}
                 </div>
                 <div className="space-y-2">

@@ -2,7 +2,7 @@ import { useMemo, useEffect } from 'react';
 import { create } from 'zustand';
 import { restaurantData as initialRestaurantData } from '@/data/restaurant';
 import { RestaurantData, Product, ProductCategoryRef, WorkingHour } from '@/types/restaurant';
-import { changeLanguage } from '@/lib/i18n';
+import { changeLanguage, isBrowserLanguageSupported } from '@/lib/i18n';
 import { USE_DUMMY_DATA, API_URLS, getTenant } from '@/lib/api';
 import { jsDayToPlanDay } from '@/lib/priceList';
 import { THREE_HOURS_MS, startTTLEvictionTimer } from '@/lib/persistTTL';
@@ -257,8 +257,12 @@ export function useInitializeRestaurant() {
 
           setRestaurantData(restaurantData);
 
-          // Set default language from restaurant's menuLang
-          if (restaurantData.menuLang) {
+          // Language on entry: honour the visitor's BROWSER language when we
+          // support it; only fall back to the restaurant's configured default
+          // (menuLang) when the browser language isn't one we ship. i18n init
+          // already set the browser language (or tr) as the starting point, so
+          // we only override here for the fallback case.
+          if (!isBrowserLanguageSupported() && restaurantData.menuLang) {
             changeLanguage(restaurantData.menuLang.toLowerCase());
           }
         }
@@ -334,7 +338,10 @@ export function useInitializeRestaurant() {
         fresh.tableNumber = current.tableNumber;
         useRestaurantStore.getState().setRestaurantData(fresh);
 
-        if (menuLangChanged && fresh.menuLang) {
+        // Mirror the entry rule: a visitor on a supported browser language
+        // stays on it; only follow the restaurant's menuLang change when the
+        // browser language isn't one we ship.
+        if (menuLangChanged && fresh.menuLang && !isBrowserLanguageSupported()) {
           changeLanguage(fresh.menuLang.toLowerCase());
         }
       } catch {

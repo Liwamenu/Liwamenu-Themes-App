@@ -191,9 +191,9 @@ export function CheckoutModal({
   // back to the matching paket field — that was the temporary behaviour
   // before the new fields landed and stays as the safe default.
   const whatsappDiscountRate = restaurant.whatsappOrderDiscountRate ?? restaurant.onlineOrderDiscountRate;
-  const whatsappDeliveryFee = restaurant.whatsappOrderDeliveryFee ?? restaurant.deliveryFee;
-  const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? restaurant.minOrderAmount;
-  const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance ?? restaurant.maxDistance;
+  // The remaining WhatsApp operational values (delivery fee / min order / max
+  // distance) fall back to the *paket* values, which are zone-aware — so they
+  // are defined just below, after the delivery-zone derivation.
 
   // Distance-tiered paket pricing. When the restaurant defines deliveryZones,
   // the delivery fee + minimum-order floor + delivery radius all depend on how
@@ -228,6 +228,16 @@ export function CheckoutModal({
   const onlineMaxDistance = hasDeliveryZones
     ? getMaxZoneDistance(deliveryZones) ?? restaurant.maxDistance
     : restaurant.maxDistance;
+
+  // WhatsApp parity: WhatsApp now runs the SAME location + minimum-order gate
+  // as paket. Each value honours a WhatsApp-specific override when the
+  // restaurant set one, otherwise it inherits the (zone-aware) paket value so
+  // the two channels behave identically. maxDistance uses `||` so a legacy 0
+  // ("no WhatsApp limit") now means "use the paket radius" — matching paket,
+  // which always enforces coverage.
+  const whatsappDeliveryFee = restaurant.whatsappOrderDeliveryFee ?? onlineDeliveryFee;
+  const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? onlineMinOrderAmount;
+  const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance || onlineMaxDistance;
 
   // Calculate discount and final total.
   const getDiscountRate = () => {
@@ -330,40 +340,51 @@ export function CheckoutModal({
         });
       }
     } else if (type === "whatsapp") {
-      // WhatsApp captures the GPS pin so the courier finds the customer.
-      // When the restaurant set whatsappOrderMaxDistance > 0 we ALSO
-      // enforce that bound (paket-parity); zero/null disables the check
-      // so the restaurant can still accept far-away WhatsApp orders.
+      // WhatsApp now enforces the SAME coverage gate as paket: the customer
+      // must be within delivery range (zone radius when zones are configured,
+      // else the flat WhatsApp/paket max distance). We also keep the GPS fix
+      // so the wa.me message can carry a Maps pin for the courier.
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        if (whatsappMaxDistance > 0) {
-          const withinRange = checkDistanceWithCoords(
-            coords.latitude, coords.longitude,
-            restaurant.latitude, restaurant.longitude,
-            whatsappMaxDistance,
-          );
-          if (!withinRange) {
-            const distance = getDistanceWithCoords(
-              coords.latitude, coords.longitude,
-              restaurant.latitude, restaurant.longitude,
-            );
-            setLocationErrorModal({
-              isOpen: true,
-              message: t("order.outOfRange", {
-                distance: distance.toFixed(1),
-                max: whatsappMaxDistance,
-              }),
-              errorType: "outOfRange",
-              orderTypeAttempted: "online",
-            });
-            return;
-          }
+        const distance = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
+        const tier = hasDeliveryZones ? findTierByDistance(distance, deliveryZones) : null;
+        const withinRange = hasDeliveryZones
+          ? tier !== null
+          : checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, whatsappMaxDistance);
+        if (!withinRange) {
+          setLocationErrorModal({
+            isOpen: true,
+            message: t("order.outOfRange", {
+              distance: distance.toFixed(1),
+              max: hasDeliveryZones ? onlineMaxDistance : whatsappMaxDistance,
+            }),
+            errorType: "outOfRange",
+            orderTypeAttempted: "whatsapp",
+          });
+          return;
         }
-      } catch {
-        // ignore — fall through to details without a pin
+        // Tiered minimum-order gate (deferred to here for the same reason as
+        // online — the floor depends on the resolved zone).
+        if (hasDeliveryZones && tier && subtotal < tier.minOrderAmount) {
+          toast.error(
+            <Trans
+              i18nKey="order.minOrderError"
+              values={{ min: formatPrice(tier.minOrderAmount) }}
+              components={{ br: <br />, b: <b /> }}
+            />
+          );
+          return;
+        }
+        setStep("details");
+      } catch (error) {
+        setLocationErrorModal({
+          isOpen: true,
+          message: t("order.locationError"),
+          errorType: "permission",
+          orderTypeAttempted: "whatsapp",
+        });
       }
-      setStep("details");
     }
   };
 
@@ -401,10 +422,11 @@ export function CheckoutModal({
         setStep("details");
       }
     } else if (type === "whatsapp") {
-      // Minimum-order gate uses the WhatsApp-specific floor when the
-      // restaurant configured one; falls back to the paket minimum
-      // when the dedicated field hasn't been shipped yet.
-      if (subtotal < whatsappMinAmount) {
+      // Minimum-order gate. With distance tiers the floor depends on the
+      // customer's zone (resolved after the GPS fix), so defer it to
+      // proceedWithLocationCheck and only run the flat up-front check for
+      // restaurants without zones — mirroring the paket flow exactly.
+      if (!hasDeliveryZones && subtotal < whatsappMinAmount) {
         toast.error(
           <Trans
             i18nKey="order.minOrderError"
@@ -414,27 +436,15 @@ export function CheckoutModal({
         );
         return;
       }
-      // Try to capture the customer's GPS so the WhatsApp message can
-      // include a Google Maps pin for the courier. If the browser already
-      // granted permission we read it silently; otherwise we prompt with
-      // the same explainer modal as paket — but unlike paket we do NOT
-      // enforce the restaurant's max-distance check (the restaurant
-      // decides whether to deliver). The customer can also just skip the
-      // permission and type an address.
+      // Location check now matches paket: route through proceedWithLocationCheck
+      // so WhatsApp enforces the coverage gate (and captures the GPS pin for
+      // the courier). If permission is already granted we run it directly;
+      // otherwise show the same explainer modal as paket.
       if (await isLocationPermissionGranted()) {
-        try {
-          const coords = await getLocation();
-          setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        } catch {
-          // ignore — location is optional for WhatsApp
-        }
+        proceedWithLocationCheck(type);
       } else {
         setLocationPermission({ isOpen: true, reason: 'online' });
-        return;
       }
-      // No payment step — straight to customer details, then the confirm
-      // screen sends the message via wa.me.
-      setStep("details");
     }
   };
 
@@ -1144,8 +1154,11 @@ export function CheckoutModal({
                       <span className="whitespace-nowrap truncate min-w-0 shrink-0">-{formatPrice(discountAmount)}</span>
                     </div>}
 
-                  {/* Delivery Fee */}
-                  {orderType === "online" && deliveryFee > 0 && <div className="flex justify-between gap-2 text-sm">
+                  {/* Delivery Fee — applies to paket (online) AND WhatsApp.
+                      deliveryFee is already 0 for in-person, so gating on the
+                      amount alone keeps the line off the dine-in summary while
+                      fixing the missing-fee gap on WhatsApp orders. */}
+                  {deliveryFee > 0 && <div className="flex justify-between gap-2 text-sm">
                       <span className="text-muted-foreground shrink-0">{t("order.deliveryFee")}</span>
                       <span className="whitespace-nowrap truncate min-w-0">{formatPrice(deliveryFee)}</span>
                     </div>}
