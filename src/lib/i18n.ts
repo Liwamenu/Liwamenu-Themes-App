@@ -38,9 +38,19 @@ const updateDirection = (lang: string) => {
   document.documentElement.lang = lang;
 };
 
+// The visitor's browser language (e.g. "de" from "de-DE"), lowercased.
+export const getBrowserLanguage = (): string =>
+  (typeof navigator !== 'undefined' ? navigator.language : '').split('-')[0].toLowerCase();
+
+// Whether we ship a translation for the visitor's browser language. When true
+// we honour it on menu entry; when false we fall back to the restaurant's
+// configured default (menuLang) — see useRestaurant.
+export const isBrowserLanguageSupported = (): boolean =>
+  supportedLanguages.includes(getBrowserLanguage());
+
 // Get initial language from browser
 const getInitialLanguage = (): string => {
-  const browserLang = navigator.language.split('-')[0].toLowerCase();
+  const browserLang = getBrowserLanguage();
   return supportedLanguages.includes(browserLang) ? browserLang : 'tr';
 };
 
