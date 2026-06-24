@@ -531,7 +531,17 @@ export function useRestaurant() {
 
   const formatPrice = (price: number): string => {
     const decimals = data.decimalPoint ?? 2;
-    const formatted = price.toFixed(decimals);
+    // Map currency symbol to a locale so Intl.NumberFormat uses the right
+    // thousands/decimal separators (e.g. ₺ → tr-TR gives "5.000,00").
+    const localeMap: Record<string, string> = {
+      "₺": "tr-TR", "€": "de-DE", "$": "en-US", "£": "en-GB",
+      "₽": "ru-RU", "¥": "ja-JP", "₪": "he-IL", "₴": "uk-UA",
+    };
+    const locale = localeMap[data.moneySign ?? ""] ?? "tr-TR";
+    const formatted = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    }).format(price);
     if (data.moneySign) {
       return `${data.moneySign}${formatted}`;
     }
