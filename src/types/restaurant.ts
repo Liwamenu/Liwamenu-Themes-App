@@ -203,6 +203,24 @@ export interface SurveySettings {
   categories: SurveyCategory[];
 }
 
+/**
+ * One distance band for paket (online delivery) pricing. The restaurant can
+ * define several so the delivery fee and minimum-order floor scale with how
+ * far the customer is. This is an UPPER-BOUND model: `maxDistanceKm` values
+ * ascend, and a customer at distance `d` falls into the FIRST zone whose
+ * `maxDistanceKm >= d`. The largest `maxDistanceKm` is the delivery radius —
+ * a customer beyond it is out of coverage (cannot place a paket order).
+ *
+ * Optional / may be empty: when the backend ships no zones the checkout flow
+ * falls back to the flat `deliveryFee` / `minOrderAmount` / `maxDistance`
+ * fields below, so older restaurants keep working unchanged.
+ */
+export interface DeliveryZone {
+  maxDistanceKm: number;
+  minOrderAmount: number;
+  deliveryFee: number;
+}
+
 export interface RestaurantData {
   restaurantId: string;
   dealerId: string | null;
@@ -262,6 +280,13 @@ export interface RestaurantData {
   deliveryFee: number;
   coverCharge?: number;
   minOrderAmount: number;
+  /**
+   * Distance-tiered paket pricing. When present and non-empty, the checkout
+   * flow resolves the customer's zone by GPS distance and applies that zone's
+   * `deliveryFee` + `minOrderAmount` instead of the flat fields above. Empty /
+   * undefined → flat behaviour. See {@link DeliveryZone}.
+   */
+  deliveryZones?: DeliveryZone[];
   tenant: string;
   isSpecialPriceActive: boolean;
   specialPriceName: string;

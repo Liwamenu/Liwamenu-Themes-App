@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderPayload, Order } from "@/types/restaurant";
 import { createOnlineOrder, getResponseData, ApiError } from "@/lib/api";
+import { findTierByDistance, getMaxZoneDistance } from "@/lib/deliveryZones";
 import { useFirebaseMessagingStore, initializeFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 import { initFirebaseMessaging } from "@/lib/firebase";
 import { ChangeTableModal } from "@/components/menu/ChangeTableModal";
@@ -193,6 +194,41 @@ export function CheckoutModal({
   const whatsappDeliveryFee = restaurant.whatsappOrderDeliveryFee ?? restaurant.deliveryFee;
   const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? restaurant.minOrderAmount;
   const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance ?? restaurant.maxDistance;
+
+  // Distance-tiered paket pricing. When the restaurant defines deliveryZones,
+  // the delivery fee + minimum-order floor + delivery radius all depend on how
+  // far the customer is. We can only resolve the zone once we have their GPS
+  // fix (captured in customerLocation during the location-permission flow), so
+  // until then `onlineTier` is null and every "online…" value below falls back
+  // to the flat restaurant-level field — preserving the original behaviour for
+  // restaurants that haven't configured zones.
+  const deliveryZones = restaurant.deliveryZones;
+  const hasDeliveryZones = Array.isArray(deliveryZones) && deliveryZones.length > 0;
+  const customerDistanceKm = customerLocation
+    ? getDistanceWithCoords(
+        customerLocation.latitude,
+        customerLocation.longitude,
+        restaurant.latitude,
+        restaurant.longitude,
+      )
+    : null;
+  const onlineTier =
+    hasDeliveryZones && customerDistanceKm != null
+      ? findTierByDistance(customerDistanceKm, deliveryZones)
+      : null;
+  // Effective paket values: zone-derived when zones exist (tier wins once the
+  // location is known; before that we show the flat base as a hint), flat
+  // otherwise. getMaxZoneDistance gives the outermost zone = delivery radius.
+  const onlineDeliveryFee = hasDeliveryZones
+    ? onlineTier?.deliveryFee ?? restaurant.deliveryFee
+    : restaurant.deliveryFee;
+  const onlineMinOrderAmount = hasDeliveryZones
+    ? onlineTier?.minOrderAmount ?? restaurant.minOrderAmount
+    : restaurant.minOrderAmount;
+  const onlineMaxDistance = hasDeliveryZones
+    ? getMaxZoneDistance(deliveryZones) ?? restaurant.maxDistance
+    : restaurant.maxDistance;
+
   // Calculate discount and final total.
   const getDiscountRate = () => {
     if (orderType === "inPerson") return restaurant.tableOrderDiscountRate;
@@ -203,7 +239,7 @@ export function CheckoutModal({
   const discountRate = getDiscountRate();
   const discountAmount = subtotal * discountRate / 100;
   const deliveryFee =
-    orderType === "online" ? restaurant.deliveryFee :
+    orderType === "online" ? onlineDeliveryFee :
     orderType === "whatsapp" ? whatsappDeliveryFee :
     0;
   const coverCharge = orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
@@ -215,19 +251,39 @@ export function CheckoutModal({
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        const withinRange = checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, restaurant.maxDistance);
+        const distance = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
+        // Resolve the zone from the FRESH coords — customerLocation state was
+        // just set and won't be readable in this same tick. With zones, no
+        // matching tier means the customer is past the outermost band (out of
+        // coverage). Without zones we keep the flat max-distance gate.
+        const tier = hasDeliveryZones ? findTierByDistance(distance, deliveryZones) : null;
+        const withinRange = hasDeliveryZones
+          ? tier !== null
+          : checkDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude, restaurant.maxDistance);
         setIsWithinRange(withinRange);
         if (!withinRange) {
-          const distance = getDistanceWithCoords(coords.latitude, coords.longitude, restaurant.latitude, restaurant.longitude);
           setLocationErrorModal({
             isOpen: true,
             message: t("order.outOfRange", {
               distance: distance.toFixed(1),
-              max: restaurant.maxDistance
+              max: hasDeliveryZones ? onlineMaxDistance : restaurant.maxDistance
             }),
             errorType: "outOfRange",
             orderTypeAttempted: "online"
           });
+          return;
+        }
+        // Tiered minimum-order gate: the floor depends on which zone the
+        // customer landed in, so it can only run now (after the GPS fix).
+        // The flat path already gated this up front in handleSelectOrderType.
+        if (hasDeliveryZones && tier && subtotal < tier.minOrderAmount) {
+          toast.error(
+            <Trans
+              i18nKey="order.minOrderError"
+              values={{ min: formatPrice(tier.minOrderAmount) }}
+              components={{ br: <br />, b: <b /> }}
+            />
+          );
           return;
         }
         setStep("details");
@@ -314,8 +370,11 @@ export function CheckoutModal({
   const handleSelectOrderType = async (type: OrderType) => {
     setOrderType(type);
     if (type === "online") {
-      // Check minimum order amount first
-      if (subtotal < restaurant.minOrderAmount) {
+      // Check minimum order amount first. With distance tiers the floor
+      // depends on the customer's zone, which we don't know until after the
+      // GPS fix — so defer that gate to proceedWithLocationCheck and only run
+      // the flat up-front check for restaurants without zones.
+      if (!hasDeliveryZones && subtotal < restaurant.minOrderAmount) {
         toast.error(
           <Trans
             i18nKey="order.minOrderError"
@@ -502,7 +561,7 @@ export function CheckoutModal({
         const coords = await getLocation();
         const maxKm =
           orderType === "online"
-            ? restaurant.maxDistance
+            ? onlineMaxDistance
             : restaurant.maxTableOrderDistanceMeter / 1000;
         const inRange = checkDistanceWithCoords(
           coords.latitude,
@@ -522,7 +581,7 @@ export function CheckoutModal({
             toast.error(
               t("order.outOfRange", {
                 distance: distance.toFixed(1),
-                max: restaurant.maxDistance,
+                max: onlineMaxDistance,
               }),
             );
           } else {
@@ -814,16 +873,18 @@ export function CheckoutModal({
                 </button>}
 
               {canOrderOnline && <div className="space-y-2">
-                  {/* Minimum Order Warning for Online Orders */}
-                  {subtotal < restaurant.minOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
+                  {/* Minimum Order Warning for Online Orders. With zones this is
+                      a pre-location hint showing the base-tier floor; the real
+                      per-zone gate runs after the GPS fix in the flow above. */}
+                  {subtotal < onlineMinOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
                       <span className="text-destructive font-medium min-w-0 break-words text-xs leading-snug">
                         {t('order.minOrderProgress', {
-                  remaining: formatPrice(restaurant.minOrderAmount - subtotal)
+                  remaining: formatPrice(onlineMinOrderAmount - subtotal)
                 })}
                       </span>
                       <div className="text-right shrink-0 min-w-0">
                         <span className="text-xs text-muted-foreground dark:text-gray-500 block">{t('order.minOrderLabel')}</span>
-                        <span className="text-muted-foreground dark:text-gray-700 whitespace-nowrap truncate block">{formatPrice(restaurant.minOrderAmount)}</span>
+                        <span className="text-muted-foreground dark:text-gray-700 whitespace-nowrap truncate block">{formatPrice(onlineMinOrderAmount)}</span>
                       </div>
                     </div>}
                   <button onClick={() => handleSelectOrderType("online")} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
@@ -834,7 +895,7 @@ export function CheckoutModal({
                       <h4 className="font-semibold text-lg">{t("order.online")}</h4>
                       <p className="text-sm text-muted-foreground">
                         {t("order.onlineDesc", {
-                    distance: restaurant.maxDistance
+                    distance: onlineMaxDistance
                   })}
                       </p>
                     </div>
