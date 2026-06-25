@@ -1172,29 +1172,31 @@ export function CheckoutModal({
                   either channel; the order total is untouched. */}
               {(orderType === "online" || orderType === "whatsapp") && (
                 <div className="rounded-2xl border border-border p-4 bg-secondary/50">
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={tipEnabled}
-                      onChange={(e) => setTipEnabled(e.target.checked)}
-                      className="mt-1 w-4 h-4 accent-primary cursor-pointer"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium">{t("order.leaveTip")}</div>
-                      <div className="text-sm text-muted-foreground">{t("order.tipDescription")}</div>
-                    </div>
-                  </label>
-                  {tipEnabled && (
-                    <div className="mt-3">
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-start gap-3 cursor-pointer flex-1 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={tipEnabled}
+                        onChange={(e) => setTipEnabled(e.target.checked)}
+                        className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{t("order.leaveTip")}</div>
+                        <div className="text-sm text-muted-foreground">{t("order.tipDescription")}</div>
+                      </div>
+                    </label>
+                    {/* Amount opens inline on the right of the same row (not below). */}
+                    {tipEnabled && (
                       <Input
                         inputMode="decimal"
-                        placeholder={t("order.tipAmountPlaceholder")}
+                        aria-label={t("order.tipAmountPlaceholder")}
+                        placeholder={restaurant.moneySign || "₺"}
                         value={tipAmount}
                         onChange={(e) => setTipAmount(e.target.value)}
-                        className="rounded-xl"
+                        className="rounded-xl w-28 shrink-0 text-right"
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 
