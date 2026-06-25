@@ -61,11 +61,6 @@ export function RestaurantHeader({ orders = [], onViewOrder, isVisible = true, o
           )}
         </motion.div>
 
-        {/* Title */}
-        <h1 className="font-display text-lg font-bold tracking-widest text-foreground uppercase">
-          {t("menu.title", "MENUS")}
-        </h1>
-
         {/* Right side: theme, lang, cart */}
         <div className="flex items-center gap-1">
           {orders.length > 0 && onViewOrder && (
