@@ -99,7 +99,12 @@ export function MenuPage() {
       setShowAnnouncement(true);
     }, announcementSettings.delayMs * 1000);
     return () => clearTimeout(timer);
-  }, [restaurant.announcementSettings]);
+  // Depend on the primitive settings (not the object reference): a silent
+  // refetch / checkout refresh replaces restaurant with a NEW object that has
+  // the SAME announcement, which previously re-ran this effect and re-opened
+  // the modal. Primitive deps only re-fire when the announcement truly changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurant.announcementSettings?.enabled, restaurant.announcementSettings?.delayMs]);
 
   // Header hide/show on scroll
   useEffect(() => {
