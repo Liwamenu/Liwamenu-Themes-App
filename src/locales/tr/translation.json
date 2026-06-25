@@ -314,7 +314,7 @@
   },
   "locationPermission": {
     "title": "Konum İzni Gerekli",
-    "reason_online": "Paket sipariş verebilmek için restoranın hizmet alanında olup olmadığınızı kontrol etmemiz gerekmektedir.",
+    "reason_online": "Sipariş vermek için restoranın hizmet verdiği alanda olduğunuzu anlamamız gerekiyor. Lütfen tam konuma izin verin.",
     "reason_inPerson": "Masada sipariş verebilmeniz için restoranda olduğunuzu anlamamız gerekiyor, lütfen bunun için konum erişimine izin verin.",
     "reason_callWaiter": "Garson çağırabilmek için restoranda olup olmadığınızı doğrulamamız gerekmektedir.",
     "privacyNote": "Konum bilginiz yalnızca mesafe kontrolü için kullanılır, saklanmaz veya üçüncü taraflarla paylaşılmaz.",

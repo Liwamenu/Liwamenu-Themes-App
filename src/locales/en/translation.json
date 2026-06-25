@@ -315,7 +315,7 @@
   },
   "locationPermission": {
     "title": "Location Permission Required",
-    "reason_online": "We need to check whether you are within the restaurant's delivery area to place a delivery order.",
+    "reason_online": "To place an order, we need to confirm that you are within the restaurant’s service area. Please allow access to your precise location.",
     "reason_inPerson": "To place a table order, we need to confirm that you are at the restaurant. Please allow location access for this.",
     "reason_callWaiter": "We need to verify that you are at the restaurant to call a waiter.",
     "privacyNote": "Your location is only used for distance verification and is not stored or shared with third parties.",

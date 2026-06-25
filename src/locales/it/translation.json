@@ -313,7 +313,7 @@
   },
   "locationPermission": {
     "title": "Autorizzazione posizione richiesta",
-    "reason_online": "Dobbiamo verificare se ti trovi nell'area di consegna del ristorante per effettuare un ordine di consegna.",
+    "reason_online": "Per effettuare un ordine, dobbiamo confermare che ti trovi nell’area servita dal ristorante. Consenti l’accesso alla tua posizione precisa.",
     "reason_inPerson": "Per ordinare al tavolo, dobbiamo confermare che ti trovi nel ristorante. Consenti l’accesso alla posizione per questo.",
     "reason_callWaiter": "Dobbiamo verificare che ti trovi nel ristorante per chiamare un cameriere.",
     "privacyNote": "La tua posizione viene utilizzata solo per la verifica della distanza e non viene archiviata né condivisa con terzi.",
