@@ -27,6 +27,7 @@ export function Footer() {
   ].filter((link) => link.url);
 
   return (
+    <>
     <footer className="bg-primary text-primary-foreground mt-8">
       <div className="max-w-[1220px] mx-auto px-4 py-8">
         {/* Social Links */}
@@ -130,9 +131,12 @@ export function Footer() {
           </p>
         </div>
       </div>
+    </footer>
 
+      {/* Modals render OUTSIDE the footer: its text-primary-foreground (white)
+          must not cascade into the modal surfaces and hide the form text. */}
       <ReservationModal isOpen={isReservationOpen} onClose={() => setIsReservationOpen(false)} />
       <SurveyModal isOpen={isSurveyOpen} onClose={() => setIsSurveyOpen(false)} />
-    </footer>
+    </>
   );
 }

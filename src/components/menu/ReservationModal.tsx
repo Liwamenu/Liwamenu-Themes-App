@@ -3,7 +3,7 @@ import type { Country } from "react-phone-number-input";
 import { getCountryCallingCode } from "react-phone-number-input";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Calendar, Clock, Users, User, Phone, Mail, MessageSquare, AlertTriangle, Check, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Calendar, Users, MessageSquare, AlertTriangle, Check, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -476,12 +476,9 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
           {step === "form" && (
             <div className="p-4 space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  {t("reservation.fullName")}
-                </label>
                 <Input
                   type="text"
+                  aria-label={t("reservation.fullName")}
                   placeholder={t("reservation.fullNamePlaceholder")}
                   value={formData.fullName}
                   onChange={(e) => handleInputChange("fullName", e.target.value)}
@@ -490,10 +487,6 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-muted-foreground" />
-                  {t("reservation.phone")}
-                </label>
                 <Phone10Field
                   value={{ country: phoneCountry, subscriber: phoneSubscriber }}
                   onChange={(next) => {
@@ -507,12 +500,9 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  {t("reservation.email")}
-                </label>
                 <Input
                   type="email"
+                  aria-label={t("reservation.email")}
                   placeholder={t("reservation.emailPlaceholder")}
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
@@ -541,10 +531,6 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    {t("reservation.date")}
-                  </label>
                   <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -586,15 +572,11 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    {t("reservation.time")}
-                  </label>
                   <Select
                     value={formData.time}
                     onValueChange={(value) => handleInputChange("time", value)}
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12" aria-label={t("reservation.time")}>
                       <SelectValue placeholder={t("common.selectTime")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -795,7 +777,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
   if (embedded) {
     return (
       <div className="w-full">
-        <div className="relative w-full max-w-md mx-auto bg-card rounded-2xl border border-border shadow-sm">
+        <div className="relative w-full max-w-md mx-auto bg-card text-card-foreground rounded-2xl border border-border shadow-sm">
           {inner}
         </div>
       </div>
@@ -816,7 +798,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-card rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
+          className="relative w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
         >
           {inner}
         </motion.div>
