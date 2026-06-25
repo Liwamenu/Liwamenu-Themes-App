@@ -51,11 +51,17 @@ export interface WhatsappOrderInput {
    *  "Nakit", "Kart", "Online Ödeme"). Shown on its own line so the
    *  courier knows whether to bring a card terminal. */
   paymentMethodName?: string;
-  /** Final amount the customer agreed to pay — already accounts for paket
-   *  discount, delivery fee, etc. computed by the checkout. The message
-   *  intentionally hides the breakdown (restaurant request: only show the
-   *  total). */
+  /** Final amount the customer agreed to pay — already accounts for the
+   *  discount, delivery fee, etc. computed by the checkout. */
   total: number;
+  /** Price breakdown (item subtotal, discount, delivery fee) so the WhatsApp
+   *  message shows the same figures as the paket order summary. All optional —
+   *  when omitted (or zero) the corresponding line is skipped and only the
+   *  total is shown, preserving the old compact layout. */
+  subtotal?: number;
+  discountRate?: number;
+  discountAmount?: number;
+  deliveryFee?: number;
   orderNote?: string;
   /** i18n function bound to the active locale. */
   t: TFunction;
@@ -77,7 +83,7 @@ function digitsOnly(raw: string): string {
  * the caller can show a preview if they want, or unit-test the layout.
  */
 export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
-  const { restaurant, items, customer, location, paymentMethodName, total, orderNote, t, moneySign = "₺" } = input;
+  const { restaurant, items, customer, location, paymentMethodName, total, subtotal, discountRate, discountAmount, deliveryFee, orderNote, t, moneySign = "₺" } = input;
   const lines: string[] = [];
 
   // Section bullet. We've cycled through a few options here:
@@ -114,10 +120,9 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
   //   1x Çoban Kavurma (Yarım Porsiyon)
   //      Bol acılı
   //
-  // Per-line and per-tag prices are intentionally omitted — only the final
-  // total is shown. The total already reflects any discount / delivery fee
-  // computed by the checkout, so the restaurant sees the same number the
-  // customer agreed to pay without needing a line-by-line breakdown.
+  // Per-line and per-tag prices stay omitted to keep the item list compact;
+  // the figures that make up the total (subtotal, discount, delivery fee) are
+  // shown together as a breakdown just below, mirroring the paket summary.
   lines.push(`${HEADER} *${t("order.whatsappMsgOrder")}*`);
   for (const item of items) {
     const portionName = item.portion?.name;
@@ -130,6 +135,23 @@ export function buildWhatsappOrderMessage(input: WhatsappOrderInput): string {
     }
   }
   lines.push("");
+
+  // Price breakdown — mirror the paket order summary (item subtotal, discount,
+  // delivery fee) so the restaurant sees how the total is composed. Each line
+  // is skipped when it doesn't apply, so a plain order with no discount/fee
+  // still shows just the total.
+  const hasDiscount = typeof discountAmount === "number" && discountAmount > 0;
+  const hasDelivery = typeof deliveryFee === "number" && deliveryFee > 0;
+  if (typeof subtotal === "number" && (hasDiscount || hasDelivery)) {
+    lines.push(`${HEADER} ${t("order.subtotal")}: ${fmtPrice(subtotal, moneySign)}`);
+    if (hasDiscount) {
+      const pct = discountRate ? ` (${discountRate}%)` : "";
+      lines.push(`${HEADER} ${t("order.discount")}${pct}: -${fmtPrice(discountAmount as number, moneySign)}`);
+    }
+    if (hasDelivery) {
+      lines.push(`${HEADER} ${t("order.deliveryFee")}: ${fmtPrice(deliveryFee as number, moneySign)}`);
+    }
+  }
   lines.push(`${HEADER} *${t("order.whatsappMsgTotal")}: ${fmtPrice(total, moneySign)}*`);
 
   // Payment method — courier needs to know cash vs card before heading out.
