@@ -100,6 +100,9 @@
     "freeTagPlaceholder": "Özel notunuzu yazabilirsiniz..."
   },
   "order": {
+    "fulfillmentTitle": "Siparişi nasıl alacaksınız?",
+    "deliverToAddressDesc": "Adresinize teslim edelim (varsa servis ücreti eklenir)",
+    "pickupSelfDesc": "Gelip kendiniz alın (servis ücreti yok)",
     "deliverToAddress": "Adresime Teslim Edilsin",
     "pickupSelf": "Kendim Gelip Alacağım",
     "whatsappOrder": "WhatsApp ile Sipariş",

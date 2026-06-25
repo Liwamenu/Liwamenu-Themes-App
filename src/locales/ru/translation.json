@@ -100,6 +100,9 @@
     "freeTagPlaceholder": "Добавьте особое примечание..."
   },
   "order": {
+    "fulfillmentTitle": "Как вы хотите получить заказ?",
+    "deliverToAddressDesc": "Доставим по вашему адресу (может взиматься плата за доставку)",
+    "pickupSelfDesc": "Заберите сами (без платы за доставку)",
     "deliverToAddress": "Доставить по моему адресу",
     "pickupSelf": "Заберу сам",
     "whatsappOrder": "Заказ через WhatsApp",

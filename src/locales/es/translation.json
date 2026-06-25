@@ -100,6 +100,9 @@
     "freeTagPlaceholder": "Añade una nota personalizada..."
   },
   "order": {
+    "fulfillmentTitle": "¿Cómo quieres recibir tu pedido?",
+    "deliverToAddressDesc": "Lo llevamos a tu dirección (puede aplicarse un cargo por servicio)",
+    "pickupSelfDesc": "Recógelo tú mismo (sin cargo por servicio)",
     "deliverToAddress": "Entregar en mi dirección",
     "pickupSelf": "Lo recogeré yo mismo",
     "whatsappOrder": "Pedir por WhatsApp",

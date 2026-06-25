@@ -30,7 +30,7 @@ interface CheckoutModalProps {
   onShowSoundPermission: () => void;
 }
 type OrderType = "inPerson" | "online" | "whatsapp";
-type CheckoutStep = "type" | "details" | "payment" | "confirm";
+type CheckoutStep = "type" | "fulfillment" | "details" | "payment" | "confirm";
 export function CheckoutModal({
   onClose,
   onOrderComplete,
@@ -465,30 +465,37 @@ export function CheckoutModal({
     }
   };
 
+  // Delivery-channel gate (paket / WhatsApp): the flat minimum-order check up
+  // front, then the GPS + coverage gate (proceedWithLocationCheck) that resolves
+  // the per-zone minimum/fee. Only reached when the customer chose "deliver to
+  // my address" — self-pickup skips this entirely.
+  const startDeliveryGate = async (type: OrderType) => {
+    // With distance tiers the floor depends on the customer's zone (resolved
+    // after the GPS fix), so defer that to proceedWithLocationCheck and only run
+    // the flat up-front check for restaurants without zones.
+    const flatMin = type === "whatsapp" ? whatsappMinAmount : restaurant.minOrderAmount;
+    if (!hasDeliveryZones && subtotal < flatMin) {
+      toast.error(
+        <Trans
+          i18nKey="order.minOrderError"
+          values={{ min: formatPrice(flatMin) }}
+          components={{ br: <br />, b: <b /> }}
+        />
+      );
+      return;
+    }
+    // If the browser already granted location, skip the explainer modal.
+    if (await isLocationPermissionGranted()) {
+      proceedWithLocationCheck(type);
+    } else {
+      setLocationPermission({ isOpen: true, reason: 'online' });
+    }
+  };
+
   const handleSelectOrderType = async (type: OrderType) => {
     setOrderType(type);
-    if (type === "online") {
-      // Check minimum order amount first. With distance tiers the floor
-      // depends on the customer's zone, which we don't know until after the
-      // GPS fix — so defer that gate to proceedWithLocationCheck and only run
-      // the flat up-front check for restaurants without zones.
-      if (!hasDeliveryZones && subtotal < restaurant.minOrderAmount) {
-        toast.error(
-          <Trans
-            i18nKey="order.minOrderError"
-            values={{ min: formatPrice(restaurant.minOrderAmount) }}
-            components={{ br: <br />, b: <b /> }}
-          />
-        );
-        return;
-      }
-      // If browser already granted location, skip the explainer modal
-      if (await isLocationPermissionGranted()) {
-        proceedWithLocationCheck(type);
-      } else {
-        setLocationPermission({ isOpen: true, reason: 'online' });
-      }
-    } else if (type === "inPerson") {
+    if (type === "inPerson") {
+      // Dine-in: optional table-distance gate, then straight to details.
       if (restaurant.checkTableOrderDistance) {
         if (await isLocationPermissionGranted()) {
           proceedWithLocationCheck(type);
@@ -498,31 +505,26 @@ export function CheckoutModal({
       } else {
         setStep("details");
       }
-    } else if (type === "whatsapp") {
-      // Minimum-order gate. With distance tiers the floor depends on the
-      // customer's zone (resolved after the GPS fix), so defer it to
-      // proceedWithLocationCheck and only run the flat up-front check for
-      // restaurants without zones — mirroring the paket flow exactly.
-      if (!hasDeliveryZones && subtotal < whatsappMinAmount) {
-        toast.error(
-          <Trans
-            i18nKey="order.minOrderError"
-            values={{ min: formatPrice(whatsappMinAmount) }}
-            components={{ br: <br />, b: <b /> }}
-          />
-        );
-        return;
-      }
-      // Location check now matches paket: route through proceedWithLocationCheck
-      // so WhatsApp enforces the coverage gate (and captures the GPS pin for
-      // the courier). If permission is already granted we run it directly;
-      // otherwise show the same explainer modal as paket.
-      if (await isLocationPermissionGranted()) {
-        proceedWithLocationCheck(type);
-      } else {
-        setLocationPermission({ isOpen: true, reason: 'online' });
-      }
+      return;
     }
+    // Paket (online) / WhatsApp: ask delivery-vs-pickup BEFORE any location or
+    // minimum-order gate. A customer coming to collect the order shouldn't have
+    // to share their location or clear a delivery minimum.
+    setPickupSelf(false);
+    setStep("fulfillment");
+  };
+
+  // Fulfillment step — "deliver to my address": run the normal delivery gate.
+  const handleChooseDelivery = () => {
+    setPickupSelf(false);
+    if (orderType) startDeliveryGate(orderType);
+  };
+
+  // Fulfillment step — "I'll pick it up myself": no delivery fee, no location,
+  // no delivery minimum. Straight to the contact-details step.
+  const handleChoosePickup = () => {
+    setPickupSelf(true);
+    setStep("details");
   };
 
   // Called when user taps "Allow" in the custom location-permission modal.
@@ -590,8 +592,18 @@ export function CheckoutModal({
   };
   const handleBack = () => {
     if (step === "details") {
+      // Paket/WhatsApp reached details via the fulfillment choice; dine-in
+      // came straight from the type screen.
+      if (orderType === "online" || orderType === "whatsapp") {
+        setStep("fulfillment");
+      } else {
+        setStep("type");
+        setOrderType(null);
+      }
+    } else if (step === "fulfillment") {
       setStep("type");
       setOrderType(null);
+      setPickupSelf(false);
     } else if (step === "payment") {
       setStep("details");
     } else if (step === "confirm") {
@@ -1072,6 +1084,38 @@ export function CheckoutModal({
               </>)}
             </motion.div>}
 
+          {/* Step: Fulfillment — deliver vs self-pickup (paket / WhatsApp).
+              Shown BEFORE the location/min gate so pickup can skip it. */}
+          {step === "fulfillment" && <motion.div initial={{
+          opacity: 0,
+          x: 20
+        }} animate={{
+          opacity: 1,
+          x: 0
+        }} className="space-y-4">
+              <h3 className="text-lg font-semibold mb-4">{t("order.fulfillmentTitle")}</h3>
+
+              <button onClick={handleChooseDelivery} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                  {locationLoading ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Home className="w-7 h-7 text-primary" />}
+                </div>
+                <div className="text-left flex-1">
+                  <h4 className="font-semibold text-lg">{t("order.deliverToAddress")}</h4>
+                  <p className="text-sm text-muted-foreground">{t("order.deliverToAddressDesc")}</p>
+                </div>
+              </button>
+
+              <button onClick={handleChoosePickup} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <ShoppingBag className="w-7 h-7 text-primary" />
+                </div>
+                <div className="text-left flex-1">
+                  <h4 className="font-semibold text-lg">{t("order.pickupSelf")}</h4>
+                  <p className="text-sm text-muted-foreground">{t("order.pickupSelfDesc")}</p>
+                </div>
+              </button>
+            </motion.div>}
+
           {/* Step: Details */}
           {step === "details" && <motion.div initial={{
           opacity: 0,
@@ -1081,7 +1125,7 @@ export function CheckoutModal({
           x: 0
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">
-                {orderType === "inPerson" ? t("order.orderInfo") : t("order.deliveryInfo")}
+                {orderType === "inPerson" || pickupSelf ? t("order.orderInfo") : t("order.deliveryInfo")}
               </h3>
 
               {orderType === "inPerson" ? <div className="space-y-4">
@@ -1103,30 +1147,6 @@ export function CheckoutModal({
                     </div>
                   </div>
                 </div> : <div className="space-y-4">
-                  {/* Delivery vs self-pickup (paket / WhatsApp). Picking up
-                      drops the delivery fee and replaces the address with the
-                      pickup note; name + phone stay required either way so the
-                      restaurant knows whose order it is. */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPickupSelf(false)}
-                      className={`flex items-center gap-2.5 p-3 rounded-xl border-2 text-sm font-medium text-left transition-all ${!pickupSelf ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
-                    >
-                      <Home className="w-5 h-5 text-primary shrink-0" />
-                      <span className="flex-1">{t("order.deliverToAddress")}</span>
-                      {!pickupSelf && <Check className="w-5 h-5 text-primary shrink-0" />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPickupSelf(true)}
-                      className={`flex items-center gap-2.5 p-3 rounded-xl border-2 text-sm font-medium text-left transition-all ${pickupSelf ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
-                    >
-                      <ShoppingBag className="w-5 h-5 text-primary shrink-0" />
-                      <span className="flex-1">{t("order.pickupSelf")}</span>
-                      {pickupSelf && <Check className="w-5 h-5 text-primary shrink-0" />}
-                    </button>
-                  </div>
                   <div>
                     <Label htmlFor="name">{t("order.fullName")}</Label>
                     <div className="relative mt-2">

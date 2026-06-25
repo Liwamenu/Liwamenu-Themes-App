@@ -101,6 +101,9 @@
     "freeTagPlaceholder": "Add a custom note..."
   },
   "order": {
+    "fulfillmentTitle": "How would you like to get your order?",
+    "deliverToAddressDesc": "We'll bring it to your address (a service fee may apply)",
+    "pickupSelfDesc": "Pick it up yourself (no service fee)",
     "deliverToAddress": "Deliver to My Address",
     "pickupSelf": "I'll Pick It Up Myself",
     "whatsappOrder": "Order via WhatsApp",
