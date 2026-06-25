@@ -219,23 +219,18 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
 
   const discountRate = getDiscountRate();
   
-  // Service fees
-  const deliveryFee = order.orderType === "online" ? (restaurant.deliveryFee || 0) : 0;
-  const coverCharge = order.orderType === "inPerson" ? (restaurant.coverCharge || 0) : 0;
-  const serviceFee = deliveryFee + coverCharge;
-  
-  // order.totalAmount is the final amount after discount + service fees
-  // We need to reverse-calculate the original subtotal (before discount and service fees)
-  const calculateSubtotal = () => {
-    const amountWithoutServiceFee = order.totalAmount - serviceFee;
-    if (discountRate > 0) {
-      return amountWithoutServiceFee / (1 - discountRate / 100);
-    }
-    return amountWithoutServiceFee;
-  };
-  
-  const subtotal = calculateSubtotal();
+  // Subtotal is the sum of the line items exactly as ordered — the values
+  // stored on the order itself, so it is the source of truth. (Re-deriving it
+  // from totalAmount minus the CURRENT flat restaurant.deliveryFee was wrong:
+  // with distance-based delivery zones the fee actually charged differs from
+  // the flat field, which corrupted the subtotal and inflated the discount —
+  // making it look like the discount had been taken on items + delivery.)
+  const subtotal = (order.items || []).reduce((sum, it) => sum + (it.itemTotal || 0), 0);
   const discountAmount = subtotal * (discountRate / 100);
+  // Whatever remains between the discounted subtotal and the stored total is
+  // the service fee that was actually charged — delivery for paket (incl. the
+  // zone fee) or cover for dine-in — with no reliance on the flat field.
+  const serviceFee = Math.max(0, order.totalAmount - (subtotal - discountAmount));
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen bg-background">
@@ -407,29 +402,18 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
             </div>
           )}
 
-          {/* Service Fee - Delivery or Cover Charge */}
-          {serviceFee > 0 && (
-            <div className="px-6 py-2 text-base border-b border-dashed border-border">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-muted-foreground shrink-0">
-                  {order.orderType === "online" ? t("order.deliveryFee") : t("order.coverCharge")}
-                </span>
-                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(serviceFee)}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Subtotal (with service fee included) */}
+          {/* Subtotal — items only, so the discount below reads clearly as a
+              percentage of the order amount (not of items + delivery). */}
           {(discountRate > 0 || serviceFee > 0) && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground shrink-0">{t("common.subtotal")}</span>
-                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(subtotal + serviceFee)}</span>
+                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(subtotal)}</span>
               </div>
             </div>
           )}
 
-          {/* Discount */}
+          {/* Discount — applied to the item subtotal above */}
           {discountRate > 0 && (
             <div className="px-6 py-2 text-base border-b border-dashed border-border text-success dark:text-green-400">
               <div className="flex items-center justify-between gap-2">
@@ -438,6 +422,19 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                   {discountRate}%)
                 </span>
                 <span className="font-bold whitespace-nowrap truncate min-w-0 shrink-0">-{formatPrice(discountAmount)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Service Fee — delivery (paket) or cover (dine-in), added AFTER the
+              discount so the math reads subtotal − discount + fee = total. */}
+          {serviceFee > 0 && (
+            <div className="px-6 py-2 text-base border-b border-dashed border-border">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground shrink-0">
+                  {order.orderType === "online" ? t("order.deliveryFee") : t("order.coverCharge")}
+                </span>
+                <span className="font-medium whitespace-nowrap truncate min-w-0">{formatPrice(serviceFee)}</span>
               </div>
             </div>
           )}
