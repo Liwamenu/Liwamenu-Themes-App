@@ -143,6 +143,7 @@
     "paymentMethod": "Payment Method",
     "copy": "Copy",
     "copied": "Copied",
+    "copyAll": "Copy All",
     "bankTransfer": "Bank Transfer",
     "bankName": "Bank",
     "accountHolder": "Account Holder",

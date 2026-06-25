@@ -142,6 +142,7 @@
     "paymentMethod": "Ödəniş üsulu",
     "copy": "Kopyala",
     "copied": "Kopyalandı",
+    "copyAll": "Hamısını kopyala",
     "bankTransfer": "Bank köçürməsi",
     "bankName": "Bank",
     "accountHolder": "Hesab sahibi",

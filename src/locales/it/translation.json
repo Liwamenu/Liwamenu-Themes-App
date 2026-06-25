@@ -142,6 +142,7 @@
     "paymentMethod": "Metodo di pagamento",
     "copy": "Copia",
     "copied": "Copiato",
+    "copyAll": "Copia tutto",
     "bankTransfer": "Bonifico bancario",
     "bankName": "Banca",
     "accountHolder": "Intestatario",

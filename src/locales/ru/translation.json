@@ -142,6 +142,7 @@
     "paymentMethod": "Способ оплаты",
     "copy": "Копировать",
     "copied": "Скопировано",
+    "copyAll": "Копировать всё",
     "bankTransfer": "Банковский перевод",
     "bankName": "Банк",
     "accountHolder": "Владелец счёта",

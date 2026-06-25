@@ -142,6 +142,7 @@
     "paymentMethod": "Ödeme Yöntemi",
     "copy": "Kopyala",
     "copied": "Kopyalandı",
+    "copyAll": "Tümünü Kopyala",
     "bankTransfer": "Banka Transferi",
     "bankName": "Banka",
     "accountHolder": "Hesap Sahibi",

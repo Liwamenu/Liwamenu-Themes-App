@@ -142,6 +142,7 @@
     "paymentMethod": "طريقة الدفع",
     "copy": "نسخ",
     "copied": "تم النسخ",
+    "copyAll": "نسخ الكل",
     "bankTransfer": "تحويل بنكي",
     "bankName": "البنك",
     "accountHolder": "صاحب الحساب",

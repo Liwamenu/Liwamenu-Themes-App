@@ -142,6 +142,7 @@
     "paymentMethod": "Mode de paiement",
     "copy": "Copier",
     "copied": "Copié",
+    "copyAll": "Tout copier",
     "bankTransfer": "Virement bancaire",
     "bankName": "Banque",
     "accountHolder": "Titulaire du compte",
