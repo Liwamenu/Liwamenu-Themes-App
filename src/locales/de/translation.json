@@ -148,6 +148,7 @@
     "accountHolder": "Kontoinhaber",
     "iban": "IBAN",
     "bankTransferInstruction": "Nach Bestätigung Ihrer Bestellung können Sie den Betrag auf das untenstehende Konto überweisen.",
+    "amountToPay": "Zu zahlender Betrag",
     "orderSummary": "Bestellübersicht",
     "tableOrder": "Vor Ort",
     "onlineDelivery": "Lieferung",

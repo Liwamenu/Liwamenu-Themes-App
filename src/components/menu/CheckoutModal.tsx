@@ -1220,7 +1220,7 @@ export function CheckoutModal({
                   customer copies the account info before reviewing/completing
                   the (offline) payment. */}
               {selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID && (
-                <BankTransferCard restaurant={restaurant} />
+                <BankTransferCard restaurant={restaurant} amount={total} />
               )}
 
               <h3 className="text-lg font-semibold mb-4">{t("order.orderSummary")}</h3>

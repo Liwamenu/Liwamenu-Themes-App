@@ -148,6 +148,7 @@
     "accountHolder": "Κάτοχος λογαριασμού",
     "iban": "IBAN",
     "bankTransferInstruction": "Αφού επιβεβαιώσετε την παραγγελία σας, μπορείτε να μεταφέρετε το ποσό στον παρακάτω λογαριασμό.",
+    "amountToPay": "Ποσό πληρωμής",
     "orderSummary": "Σύνοψη παραγγελίας",
     "tableOrder": "Στο εστιατόριο",
     "onlineDelivery": "Παράδοση",

@@ -90,20 +90,31 @@ function CopyableField({ label, value, mono }: { label: string; value: string; m
  */
 export function BankTransferCard({
   restaurant,
+  amount,
   className,
 }: {
-  restaurant: Pick<RestaurantData, "bankName" | "bankAccountHolder" | "iban" | "bankTransferNote">;
+  restaurant: Pick<
+    RestaurantData,
+    "bankName" | "bankAccountHolder" | "iban" | "bankTransferNote" | "menuLang" | "moneySign"
+  >;
+  /** Total to pay — appended to the "copy all" block as "Ödenecek Tutar". */
+  amount?: number;
   className?: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { bankName, bankAccountHolder, iban, bankTransferNote } = restaurant;
   const [copiedAll, copyAll] = useCopyFeedback();
 
-  // One labelled block with every detail, for the "copy all" button.
+  // The "copy all" block is built in the restaurant's MENU language (like the
+  // WhatsApp order message): the customer pastes it as a payment reference the
+  // restaurant reconciles, so it should read in the restaurant's own language.
+  const menuT = i18n.getFixedT((restaurant.menuLang || i18n.language || "tr").toLowerCase());
+  const moneySign = restaurant.moneySign || "₺";
   const allText = [
-    bankName && `${t("order.bankName")}: ${bankName}`,
-    bankAccountHolder && `${t("order.accountHolder")}: ${bankAccountHolder}`,
-    iban && `${t("order.iban")}: ${iban}`,
+    bankName && `${menuT("order.bankName")}: ${bankName}`,
+    bankAccountHolder && `${menuT("order.accountHolder")}: ${bankAccountHolder}`,
+    iban && `${menuT("order.iban")}: ${iban}`,
+    typeof amount === "number" && `${menuT("order.amountToPay")} : ${moneySign} ${amount.toFixed(2)}`,
   ]
     .filter(Boolean)
     .join("\n");

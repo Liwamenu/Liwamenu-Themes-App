@@ -148,6 +148,7 @@
     "accountHolder": "Владелец счёта",
     "iban": "IBAN",
     "bankTransferInstruction": "После подтверждения заказа вы можете перевести сумму на указанный ниже счёт.",
+    "amountToPay": "Сумма к оплате",
     "orderSummary": "Итого заказа",
     "tableOrder": "В ресторане",
     "onlineDelivery": "Доставка",

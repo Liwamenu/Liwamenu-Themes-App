@@ -148,6 +148,7 @@
     "accountHolder": "Intestatario",
     "iban": "IBAN",
     "bankTransferInstruction": "Dopo aver confermato lordine, puoi bonificare limporto sul conto qui sotto.",
+    "amountToPay": "Importo da pagare",
     "orderSummary": "Riepilogo ordine",
     "tableOrder": "Al tavolo",
     "onlineDelivery": "Consegna",

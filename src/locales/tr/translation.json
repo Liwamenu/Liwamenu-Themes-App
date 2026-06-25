@@ -148,6 +148,7 @@
     "accountHolder": "Hesap Sahibi",
     "iban": "IBAN",
     "bankTransferInstruction": "Siparişinizi onayladıktan sonra aşağıdaki banka hesabına havale/EFT yapabilirsiniz.",
+    "amountToPay": "Ödenecek Tutar",
     "orderSummary": "Sipariş Özeti",
     "tableOrder": "Masada Sipariş",
     "onlineDelivery": "Paket Servis",

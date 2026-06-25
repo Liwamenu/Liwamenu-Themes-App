@@ -148,6 +148,7 @@
     "accountHolder": "Hesab sahibi",
     "iban": "IBAN",
     "bankTransferInstruction": "Sifarişinizi təsdiqlədikdən sonra məbləği aşağıdakı bank hesabına köçürə bilərsiniz.",
+    "amountToPay": "Ödəniləcək məbləğ",
     "orderSummary": "Sifariş xülasəsi",
     "tableOrder": "Masada sifariş",
     "onlineDelivery": "Çatdırılma",

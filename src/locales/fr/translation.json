@@ -148,6 +148,7 @@
     "accountHolder": "Titulaire du compte",
     "iban": "IBAN",
     "bankTransferInstruction": "Après avoir confirmé votre commande, vous pouvez virer le montant sur le compte ci-dessous.",
+    "amountToPay": "Montant à payer",
     "orderSummary": "Résumé de commande",
     "tableOrder": "Sur place",
     "onlineDelivery": "Livraison",

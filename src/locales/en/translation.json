@@ -149,6 +149,7 @@
     "accountHolder": "Account Holder",
     "iban": "IBAN",
     "bankTransferInstruction": "After confirming your order, you can transfer the total to the bank account below.",
+    "amountToPay": "Amount to Pay",
     "orderSummary": "Order Summary",
     "tableOrder": "Dine In",
     "onlineDelivery": "Online Delivery",
