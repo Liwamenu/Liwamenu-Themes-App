@@ -759,7 +759,11 @@ export function CheckoutModal({
         // Self-pickup: no delivery address — stamp the choice in the address
         // field so the restaurant sees it where they'd look for "where to send".
         customerInfo: pickupSelf ? { ...customerInfo, address: t("order.pickupSelf") } : customerInfo,
-        paymentMethodId: selectedPaymentMethod!,
+        // Bank transfer is a client-side sentinel, not a backend payment method;
+        // its id ("bank-transfer") is not a Guid, so sending it fails the
+        // backend's nullable-Guid paymentMethodId with a 400. Send null instead —
+        // the choice is conveyed by paymentMethodName ("Banka Transferi").
+        paymentMethodId: selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? null : selectedPaymentMethod!,
         paymentMethodName: orderPaymentName
       })
     };
@@ -800,11 +804,14 @@ export function CheckoutModal({
       const data = getResponseData(res);
       const orderId = data?.id || data?.Id || `order-${Date.now()}`;
 
-      // Create order with status
+      // Create order with status. The payload sent null for bank transfer (the
+      // backend wants a Guid); restore the sentinel locally so the receipt
+      // renders the bank-transfer card.
       const order: Order = {
         ...orderPayload,
         id: orderId,
-        status: "pending"
+        status: "pending",
+        ...(selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? { paymentMethodId: BANK_TRANSFER_PAYMENT_ID } : {}),
       };
 
       // Save order
