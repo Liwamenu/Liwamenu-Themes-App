@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle } from "lucide-react";
+import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle, Landmark } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore, refreshRestaurantData } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
@@ -23,6 +23,7 @@ import { LocationPermissionModal, type LocationPermissionReason } from "@/compon
 import confetti from "canvas-confetti";
 import { buildE164Phone, sanitizeSubscriberDigits, validatePhoneForCountry, getMaxSubscriberDigits, getDefaultPhoneCountry } from "@/lib/phoneValidation";
 import { Phone10Field } from "@/components/phone/Phone10Field";
+import { BankTransferCard, BANK_TRANSFER_PAYMENT_ID, isBankTransferAvailable } from "@/components/menu/BankTransferCard";
 interface CheckoutModalProps {
   onClose: () => void;
   onOrderComplete: (order: Order, orderType: "inPerson" | "online") => void;
@@ -582,7 +583,7 @@ export function CheckoutModal({
         address: customerInfo.address || undefined,
       },
       location: customerLocation || undefined,
-      paymentMethodName: selectedPayment?.name,
+      paymentMethodName: selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? messageT("order.bankTransfer") : selectedPayment?.name,
       total,
       orderNote: composeOrderNote(messageT),
       t: messageT,
@@ -671,6 +672,12 @@ export function CheckoutModal({
     }
 
     const selectedPayment = enabledPaymentMethods.find(pm => pm.id === selectedPaymentMethod);
+    // Bank transfer isn't a backend payment method, so resolve its name from
+    // i18n in the restaurant's menu language (the field is restaurant-facing).
+    const orderPaymentName =
+      selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID
+        ? i18n.getFixedT((restaurant.menuLang || i18n.language || "tr").toLowerCase())("order.bankTransfer")
+        : selectedPayment?.name;
     const orderPayload: OrderPayload = {
       restaurantId: restaurant.restaurantId,
       orderType: orderType!,
@@ -699,7 +706,7 @@ export function CheckoutModal({
       } : {
         customerInfo,
         paymentMethodId: selectedPaymentMethod!,
-        paymentMethodName: selectedPayment?.name
+        paymentMethodName: orderPaymentName
       })
     };
     try {
@@ -1118,6 +1125,23 @@ export function CheckoutModal({
                     <span className="font-medium flex-1 text-left">{method.name}</span>
                     {selectedPaymentMethod === method.id && <Check className="w-5 h-5 text-primary" />}
                   </button>)}
+
+                {/* Bank Transfer — synthetic option, only when the restaurant
+                    enabled it. Reuses handlePaymentSelect: the account details
+                    (with IBAN copy) are shown on the confirm step. */}
+                {isBankTransferAvailable(restaurant) && (
+                  <button
+                    key={BANK_TRANSFER_PAYMENT_ID}
+                    onClick={() => handlePaymentSelect(BANK_TRANSFER_PAYMENT_ID)}
+                    className={cn("w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all", selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? "border-primary bg-primary/5" : "border-border hover:border-primary/50")}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+                      <Landmark className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-medium flex-1 text-left">{t("order.bankTransfer")}</span>
+                    {selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID && <Check className="w-5 h-5 text-primary" />}
+                  </button>
+                )}
               </div>
             </motion.div>}
 
@@ -1226,6 +1250,12 @@ export function CheckoutModal({
                   </div>
                 </div>
               </div>
+
+              {/* Bank transfer details — shown here so the customer can copy
+                  the IBAN before completing the (offline) payment. */}
+              {selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID && (
+                <BankTransferCard restaurant={restaurant} />
+              )}
 
               {/* Confirm Button */}
               <Button

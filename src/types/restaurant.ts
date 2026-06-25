@@ -287,6 +287,19 @@ export interface RestaurantData {
    * undefined → flat behaviour. See {@link DeliveryZone}.
    */
   deliveryZones?: DeliveryZone[];
+  /**
+   * "Bankaya Transfer" payment option. When `bankTransferEnabled` is true the
+   * checkout offers Bank Transfer; the customer copies the account details and
+   * pays offline (the order is created as a normal pending order — no instant
+   * collection). All four data fields are optional because the backend ships
+   * them progressively; a missing/false `bankTransferEnabled` hides the option
+   * entirely (graceful fallback for un-migrated restaurants).
+   */
+  bankTransferEnabled?: boolean;
+  bankName?: string;
+  bankAccountHolder?: string;
+  iban?: string;
+  bankTransferNote?: string | null;
   tenant: string;
   isSpecialPriceActive: boolean;
   specialPriceName: string;

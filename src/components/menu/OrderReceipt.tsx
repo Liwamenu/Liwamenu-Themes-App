@@ -27,6 +27,7 @@ import i18n from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { CallWaiterModal } from "./CallWaiterModal";
 import { ChangeTableModal } from "./ChangeTableModal";
+import { BankTransferCard, BANK_TRANSFER_PAYMENT_ID, isBankTransferAvailable } from "./BankTransferCard";
 import { toast } from "sonner";
 
 interface OrderReceiptProps {
@@ -398,6 +399,11 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
                 <span className="text-muted-foreground">{t("orderReceipt.paymentMethod")}</span>
                 <span className="font-medium">{order.paymentMethodName}</span>
               </div>
+              {/* Bank transfer is paid offline AFTER ordering, so surface the
+                  account details (with IBAN copy) here on the receipt too. */}
+              {order.paymentMethodId === BANK_TRANSFER_PAYMENT_ID && isBankTransferAvailable(restaurant) && (
+                <BankTransferCard restaurant={restaurant} className="mt-3" />
+              )}
             </div>
           )}
 
