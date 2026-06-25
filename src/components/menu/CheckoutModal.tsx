@@ -615,6 +615,13 @@ export function CheckoutModal({
       location: customerLocation || undefined,
       paymentMethodName: selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? messageT("order.bankTransfer") : selectedPayment?.name,
       total,
+      // Price breakdown so the WhatsApp message mirrors the paket summary.
+      // These component values are already resolved for the WhatsApp channel
+      // (whatsappDeliveryFee / whatsappDiscountRate) since orderType is whatsapp.
+      subtotal,
+      discountRate,
+      discountAmount,
+      deliveryFee,
       orderNote: composeOrderNote(messageT),
       t: messageT,
       moneySign: restaurant.moneySign || "₺",
