@@ -1275,6 +1275,13 @@ export function CheckoutModal({
           opacity: 1,
           x: 0
         }} className="space-y-4">
+              {/* Bank transfer details — shown ABOVE the order summary so the
+                  customer copies the account info before reviewing/completing
+                  the (offline) payment. */}
+              {selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID && (
+                <BankTransferCard restaurant={restaurant} amount={total} />
+              )}
+
               <h3 className="text-lg font-semibold mb-4">{t("order.orderSummary")}</h3>
 
               {/* Order Summary — off-white bg with dark text in both modes for maximum readability */}
@@ -1372,12 +1379,6 @@ export function CheckoutModal({
                   </div>
                 </div>
               </div>
-
-              {/* Bank transfer details — shown here so the customer can copy
-                  the IBAN before completing the (offline) payment. */}
-              {selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID && (
-                <BankTransferCard restaurant={restaurant} />
-              )}
 
               {/* Confirm Button */}
               <Button

@@ -397,7 +397,7 @@ export function OrderReceipt({ orderId, onBack, waiterCooldown, onWaiterSuccess 
               {/* Bank transfer is paid offline AFTER ordering, so surface the
                   account details (with IBAN copy) here on the receipt too. */}
               {order.paymentMethodId === BANK_TRANSFER_PAYMENT_ID && isBankTransferAvailable(restaurant) && (
-                <BankTransferCard restaurant={restaurant} className="mt-3" />
+                <BankTransferCard restaurant={restaurant} amount={order.totalAmount} className="mt-3" />
               )}
             </div>
           )}

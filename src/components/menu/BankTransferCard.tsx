@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Copy, Check, Landmark } from "lucide-react";
+import { Copy, Check, Landmark, CopyCheck } from "lucide-react";
 import type { RestaurantData } from "@/types/restaurant";
 
 /**
@@ -23,32 +23,40 @@ export function isBankTransferAvailable(
   return !!r?.bankTransferEnabled && !!(r.iban || r.bankName);
 }
 
-function CopyableField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
+/** Copy text to the clipboard, with a fallback for older / non-secure contexts. */
+async function writeClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
     try {
-      await navigator.clipboard.writeText(value);
+      document.execCommand("copy");
     } catch {
-      // Fallback for older browsers / non-secure contexts where the async
-      // Clipboard API is unavailable.
-      const ta = document.createElement("textarea");
-      ta.value = value;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try {
-        document.execCommand("copy");
-      } catch {
-        /* give up silently — the value is still visible to copy by hand */
-      }
-      ta.remove();
+      /* give up silently — the value is still visible to copy by hand */
     }
+    ta.remove();
+  }
+}
+
+/** Local "copied ✓" feedback state + handler shared by the field & copy-all buttons. */
+function useCopyFeedback(): [boolean, (text: string) => void] {
+  const [copied, setCopied] = useState(false);
+  const copy = (text: string) => {
+    void writeClipboard(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   };
+  return [copied, copy];
+}
+
+function CopyableField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  const { t } = useTranslation();
+  const [copied, copy] = useCopyFeedback();
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -60,7 +68,7 @@ function CopyableField({ label, value, mono }: { label: string; value: string; m
       </div>
       <button
         type="button"
-        onClick={copy}
+        onClick={() => copy(value)}
         aria-label={`${t("order.copy")} — ${label}`}
         className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
       >
@@ -82,13 +90,34 @@ function CopyableField({ label, value, mono }: { label: string; value: string; m
  */
 export function BankTransferCard({
   restaurant,
+  amount,
   className,
 }: {
-  restaurant: Pick<RestaurantData, "bankName" | "bankAccountHolder" | "iban" | "bankTransferNote">;
+  restaurant: Pick<
+    RestaurantData,
+    "bankName" | "bankAccountHolder" | "iban" | "bankTransferNote" | "menuLang" | "moneySign"
+  >;
+  /** Total to pay — appended to the "copy all" block as "Ödenecek Tutar". */
+  amount?: number;
   className?: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { bankName, bankAccountHolder, iban, bankTransferNote } = restaurant;
+  const [copiedAll, copyAll] = useCopyFeedback();
+
+  // The "copy all" block is built in the restaurant's MENU language (like the
+  // WhatsApp order message): the customer pastes it as a payment reference the
+  // restaurant reconciles, so it should read in the restaurant's own language.
+  const menuT = i18n.getFixedT((restaurant.menuLang || i18n.language || "tr").toLowerCase());
+  const moneySign = restaurant.moneySign || "₺";
+  const allText = [
+    bankName && `${menuT("order.bankName")}: ${bankName}`,
+    bankAccountHolder && `${menuT("order.accountHolder")}: ${bankAccountHolder}`,
+    iban && `${menuT("order.iban")}: ${iban}`,
+    typeof amount === "number" && `${menuT("order.amountToPay")} : ${moneySign} ${amount.toFixed(2)}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   return (
     <div className={`bg-stone-100 rounded-2xl p-4 space-y-3 text-stone-800 ${className ?? ""}`}>
@@ -105,6 +134,16 @@ export function BankTransferCard({
         ) : null}
         {iban ? <CopyableField label={t("order.iban")} value={iban} mono /> : null}
       </div>
+
+      {/* Copy every detail at once. */}
+      <button
+        type="button"
+        onClick={() => copyAll(allText)}
+        className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 text-white text-sm font-semibold hover:bg-stone-700 active:scale-[0.99] transition-all"
+      >
+        {copiedAll ? <CopyCheck className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+        {copiedAll ? t("order.copied") : t("order.copyAll")}
+      </button>
 
       {bankTransferNote ? (
         <p className="text-xs text-stone-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5">
