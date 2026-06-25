@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "Xüsusi qeyd əlavə edin..."
   },
   "order": {
-    "fulfillmentTitle": "Sifarişi necə almaq istəyirsiniz?",
-    "deliverToAddressDesc": "Ünvanınıza çatdıraq (varsa xidmət haqqı əlavə olunur)",
-    "pickupSelfDesc": "Özünüz gəlib götürün (xidmət haqqı yoxdur)",
-    "deliverToAddress": "Ünvanıma Çatdırılsın",
+    "pickupSelfDesc": "Xidmət haqqı və minimum sifariş yoxdur",
     "pickupSelf": "Özüm Gəlib Götürəcəyəm",
+    "pickupCardHint": "Gəl-götür — özünüz təhvil alacaqsınız",
     "whatsappOrder": "WhatsApp ilə sifariş",
     "whatsappOrderDescription": "Sifarişinizi WhatsApp vasitəsilə göndərin",
     "sendToWhatsapp": "WhatsApp ilə göndər",

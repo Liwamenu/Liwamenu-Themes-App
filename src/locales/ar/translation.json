@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "أضف ملاحظة مخصصة..."
   },
   "order": {
-    "fulfillmentTitle": "كيف تريد استلام طلبك؟",
-    "deliverToAddressDesc": "نوصله إلى عنوانك (قد تُضاف رسوم خدمة)",
-    "pickupSelfDesc": "استلمه بنفسك (بدون رسوم خدمة)",
-    "deliverToAddress": "التوصيل إلى عنواني",
+    "pickupSelfDesc": "بدون رسوم خدمة أو حد أدنى للطلب",
     "pickupSelf": "سآتي لاستلامه بنفسي",
+    "pickupCardHint": "استلام — ستستلمه بنفسك",
     "whatsappOrder": "اطلب عبر واتساب",
     "whatsappOrderDescription": "أرسل طلبك عبر واتساب",
     "sendToWhatsapp": "إرسال عبر واتساب",

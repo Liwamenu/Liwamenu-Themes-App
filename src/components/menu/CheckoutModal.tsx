@@ -30,7 +30,7 @@ interface CheckoutModalProps {
   onShowSoundPermission: () => void;
 }
 type OrderType = "inPerson" | "online" | "whatsapp";
-type CheckoutStep = "type" | "fulfillment" | "details" | "payment" | "confirm";
+type CheckoutStep = "type" | "details" | "payment" | "confirm";
 export function CheckoutModal({
   onClose,
   onOrderComplete,
@@ -495,7 +495,9 @@ export function CheckoutModal({
   const handleSelectOrderType = async (type: OrderType) => {
     setOrderType(type);
     if (type === "inPerson") {
-      // Dine-in: optional table-distance gate, then straight to details.
+      // Dine-in ignores the self-pickup checkbox (you're eating in the venue).
+      setPickupSelf(false);
+      // Optional table-distance gate, then straight to details.
       if (restaurant.checkTableOrderDistance) {
         if (await isLocationPermissionGranted()) {
           proceedWithLocationCheck(type);
@@ -507,24 +509,16 @@ export function CheckoutModal({
       }
       return;
     }
-    // Paket (online) / WhatsApp: ask delivery-vs-pickup BEFORE any location or
-    // minimum-order gate. A customer coming to collect the order shouldn't have
-    // to share their location or clear a delivery minimum.
-    setPickupSelf(false);
-    setStep("fulfillment");
-  };
-
-  // Fulfillment step — "deliver to my address": run the normal delivery gate.
-  const handleChooseDelivery = () => {
-    setPickupSelf(false);
-    if (orderType) startDeliveryGate(orderType);
-  };
-
-  // Fulfillment step — "I'll pick it up myself": no delivery fee, no location,
-  // no delivery minimum. Straight to the contact-details step.
-  const handleChoosePickup = () => {
-    setPickupSelf(true);
-    setStep("details");
+    // Paket (online) / WhatsApp. The "Kendim gelip alacağım" checkbox on this
+    // screen decides the path:
+    //   • ticked   → self-pickup: no location, no coverage/min gate, no fee —
+    //                straight to contact details.
+    //   • unticked → run the normal delivery gate.
+    if (pickupSelf) {
+      setStep("details");
+    } else {
+      startDeliveryGate(type);
+    }
   };
 
   // Called when user taps "Allow" in the custom location-permission modal.
@@ -592,18 +586,10 @@ export function CheckoutModal({
   };
   const handleBack = () => {
     if (step === "details") {
-      // Paket/WhatsApp reached details via the fulfillment choice; dine-in
-      // came straight from the type screen.
-      if (orderType === "online" || orderType === "whatsapp") {
-        setStep("fulfillment");
-      } else {
-        setStep("type");
-        setOrderType(null);
-      }
-    } else if (step === "fulfillment") {
+      // Back to the type screen. Keep pickupSelf so the checkbox still reflects
+      // the customer's choice if they re-pick a channel.
       setStep("type");
       setOrderType(null);
-      setPickupSelf(false);
     } else if (step === "payment") {
       setStep("details");
     } else if (step === "confirm") {
@@ -1032,11 +1018,33 @@ export function CheckoutModal({
                   </div>
                 </button>}
 
+              {/* Self-pickup checkbox — modifies the paket / WhatsApp choice
+                  (NOT dine-in). When ticked, picking either channel skips the
+                  location/coverage/minimum gate and the delivery fee. */}
+              {(canOrderOnline || canOrderWhatsapp) && (
+                <button
+                  type="button"
+                  onClick={() => setPickupSelf(v => !v)}
+                  aria-pressed={pickupSelf}
+                  className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-colors ${pickupSelf ? "border-primary bg-primary/5" : "border-border bg-secondary/40 hover:bg-secondary/60"}`}
+                >
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${pickupSelf ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/40"}`}>
+                    {pickupSelf && <Check className="w-4 h-4" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm">{t("order.pickupSelf")}</p>
+                    <p className="text-xs text-muted-foreground">{t("order.pickupSelfDesc")}</p>
+                  </div>
+                  <ShoppingBag className="w-5 h-5 text-primary shrink-0" />
+                </button>
+              )}
+
               {canOrderOnline && <div className="space-y-2">
                   {/* Minimum Order Warning for Online Orders. With zones this is
                       a pre-location hint showing the base-tier floor; the real
-                      per-zone gate runs after the GPS fix in the flow above. */}
-                  {subtotal < onlineMinOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
+                      per-zone gate runs after the GPS fix in the flow above.
+                      Hidden in self-pickup mode — no minimum applies then. */}
+                  {!pickupSelf && subtotal < onlineMinOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
                       <span className="text-destructive font-medium min-w-0 break-words text-xs leading-snug">
                         {t('order.minOrderProgress', {
                   remaining: formatPrice(onlineMinOrderAmount - subtotal)
@@ -1049,12 +1057,12 @@ export function CheckoutModal({
                     </div>}
                   <button onClick={() => handleSelectOrderType("online")} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                      {locationLoading && orderType === "online" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Home className="w-7 h-7 text-primary" />}
+                      {locationLoading && orderType === "online" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : pickupSelf ? <ShoppingBag className="w-7 h-7 text-primary" /> : <Home className="w-7 h-7 text-primary" />}
                     </div>
                     <div className="text-left flex-1">
                       <h4 className="font-semibold text-lg">{t("order.online")}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {t("order.onlineDesc", {
+                        {pickupSelf ? t("order.pickupCardHint") : t("order.onlineDesc", {
                     distance: onlineMaxDistance
                   })}
                       </p>
@@ -1072,7 +1080,7 @@ export function CheckoutModal({
                   </div>
                   <div className="text-left flex-1">
                     <h4 className="font-semibold text-lg">{t("order.whatsappOrder")}</h4>
-                    <p className="text-sm text-muted-foreground">{t("order.whatsappOrderDescription")}</p>
+                    <p className="text-sm text-muted-foreground">{pickupSelf ? t("order.pickupCardHint") : t("order.whatsappOrderDescription")}</p>
                   </div>
                 </button>
               )}
@@ -1082,38 +1090,6 @@ export function CheckoutModal({
                   <p className="text-sm">{t("order.noOrdersAvailable")}</p>
                 </div>}
               </>)}
-            </motion.div>}
-
-          {/* Step: Fulfillment — deliver vs self-pickup (paket / WhatsApp).
-              Shown BEFORE the location/min gate so pickup can skip it. */}
-          {step === "fulfillment" && <motion.div initial={{
-          opacity: 0,
-          x: 20
-        }} animate={{
-          opacity: 1,
-          x: 0
-        }} className="space-y-4">
-              <h3 className="text-lg font-semibold mb-4">{t("order.fulfillmentTitle")}</h3>
-
-              <button onClick={handleChooseDelivery} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                  {locationLoading ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Home className="w-7 h-7 text-primary" />}
-                </div>
-                <div className="text-left flex-1">
-                  <h4 className="font-semibold text-lg">{t("order.deliverToAddress")}</h4>
-                  <p className="text-sm text-muted-foreground">{t("order.deliverToAddressDesc")}</p>
-                </div>
-              </button>
-
-              <button onClick={handleChoosePickup} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <ShoppingBag className="w-7 h-7 text-primary" />
-                </div>
-                <div className="text-left flex-1">
-                  <h4 className="font-semibold text-lg">{t("order.pickupSelf")}</h4>
-                  <p className="text-sm text-muted-foreground">{t("order.pickupSelfDesc")}</p>
-                </div>
-              </button>
             </motion.div>}
 
           {/* Step: Details */}

@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "Eigene Anmerkung hinzufügen..."
   },
   "order": {
-    "fulfillmentTitle": "Wie möchten Sie Ihre Bestellung erhalten?",
-    "deliverToAddressDesc": "Wir liefern an Ihre Adresse (ggf. zzgl. Servicegebühr)",
-    "pickupSelfDesc": "Selbst abholen (keine Servicegebühr)",
-    "deliverToAddress": "An meine Adresse liefern",
+    "pickupSelfDesc": "Keine Servicegebühr, kein Mindestbestellwert",
     "pickupSelf": "Ich hole es selbst ab",
+    "pickupCardHint": "Abholung — Sie holen es selbst ab",
     "whatsappOrder": "Bestellung über WhatsApp",
     "whatsappOrderDescription": "Senden Sie Ihre Bestellung über WhatsApp",
     "sendToWhatsapp": "Über WhatsApp senden",

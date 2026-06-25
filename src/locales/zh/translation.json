@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "添加自定义备注..."
   },
   "order": {
-    "fulfillmentTitle": "您想如何收到订单？",
-    "deliverToAddressDesc": "送到您的地址（可能收取服务费）",
-    "pickupSelfDesc": "自行取餐（无服务费）",
-    "deliverToAddress": "送货上门",
+    "pickupSelfDesc": "无服务费，无最低消费",
     "pickupSelf": "我自己来取",
+    "pickupCardHint": "自取 — 您将自行取餐",
     "whatsappOrder": "通过 WhatsApp 下单",
     "whatsappOrderDescription": "通过 WhatsApp 发送订单",
     "sendToWhatsapp": "通过 WhatsApp 发送",

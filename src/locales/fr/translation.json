@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "Ajoutez une note personnalisée..."
   },
   "order": {
-    "fulfillmentTitle": "Comment souhaitez-vous recevoir votre commande ?",
-    "deliverToAddressDesc": "Livraison à votre adresse (des frais de service peuvent s'appliquer)",
-    "pickupSelfDesc": "Venez le chercher vous-même (sans frais de service)",
-    "deliverToAddress": "Livrer à mon adresse",
+    "pickupSelfDesc": "Sans frais de service ni minimum de commande",
     "pickupSelf": "Je viendrai le chercher",
+    "pickupCardHint": "Retrait — vous venez le chercher",
     "whatsappOrder": "Commander via WhatsApp",
     "whatsappOrderDescription": "Envoyez votre commande via WhatsApp",
     "sendToWhatsapp": "Envoyer via WhatsApp",

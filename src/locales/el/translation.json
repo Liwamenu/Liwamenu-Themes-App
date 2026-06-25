@@ -100,11 +100,9 @@
     "freeTagPlaceholder": "Προσθέστε προσαρμοσμένη σημείωση..."
   },
   "order": {
-    "fulfillmentTitle": "Πώς θέλετε να παραλάβετε την παραγγελία σας;",
-    "deliverToAddressDesc": "Παράδοση στη διεύθυνσή σας (ενδέχεται να ισχύει χρέωση υπηρεσίας)",
-    "pickupSelfDesc": "Παραλαβή από το κατάστημα (χωρίς χρέωση υπηρεσίας)",
-    "deliverToAddress": "Παράδοση στη διεύθυνσή μου",
+    "pickupSelfDesc": "Χωρίς χρέωση υπηρεσίας ή ελάχιστη παραγγελία",
     "pickupSelf": "Θα το παραλάβω ο ίδιος",
+    "pickupCardHint": "Παραλαβή — θα το παραλάβετε εσείς",
     "whatsappOrder": "Παραγγελία μέσω WhatsApp",
     "whatsappOrderDescription": "Στείλτε την παραγγελία σας μέσω WhatsApp",
     "sendToWhatsapp": "Αποστολή μέσω WhatsApp",
