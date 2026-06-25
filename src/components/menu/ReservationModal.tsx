@@ -795,7 +795,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
   if (embedded) {
     return (
       <div className="w-full">
-        <div className="relative w-full max-w-md mx-auto bg-card rounded-2xl border border-border shadow-sm">
+        <div className="relative w-full max-w-md mx-auto bg-card text-card-foreground rounded-2xl border border-border shadow-sm">
           {inner}
         </div>
       </div>
@@ -816,7 +816,7 @@ export function ReservationModal({ isOpen, onClose, embedded = false }: Reservat
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-md bg-card rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
+          className="relative w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-xl my-4 max-h-[calc(100vh-2rem)] overflow-y-auto"
         >
           {inner}
         </motion.div>
