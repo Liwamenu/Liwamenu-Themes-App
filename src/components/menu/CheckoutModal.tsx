@@ -140,6 +140,12 @@ export function CheckoutModal({
     purpose?: 'order' | 'pricing';
   }>({ isOpen: false, reason: 'online' });
 
+  // Flips true once we've FINISHED trying to resolve the location for
+  // zone-based pricing (granted+fetched, declined, or errored). Until then the
+  // order-type screen is held behind a spinner, so the customer decides on the
+  // permission prompt first and never sees the base (wrong) minimum behind it.
+  const [pricingLocationResolved, setPricingLocationResolved] = useState(false);
+
   // Backend 409 PRICE_MISMATCH: a structured list of every cart line
   // (or tag option) whose live price doesn't match what the customer
   // saw at add-time. Rendering this puts the checkout into a
@@ -246,35 +252,52 @@ export function CheckoutModal({
   // Zone-based pricing needs the customer's location to resolve the right
   // minimum-order floor. The moment they reach checkout (they tapped "complete
   // order" in the cart) we proactively resolve their location so the minimum
-  // shown reflects their delivery zone instead of the base default. We only do
-  // this when it can actually matter — delivery zones configured, a delivery
-  // channel offered, location not known yet, and the cart still below the
-  // HIGHEST zone minimum (otherwise the minimum is already met in every zone).
-  // If permission is already granted we read it silently; otherwise we show the
-  // explainer so the customer can grant it (they can dismiss it and still pick
-  // dine-in). Runs once — we never re-prompt after a dismissal.
+  // shown reflects their delivery zone instead of the base default. This only
+  // matters when delivery zones are configured, a delivery channel is offered,
+  // we don't have the location yet, and the cart is still below the HIGHEST
+  // zone minimum (otherwise the minimum is already met in every zone).
+  const maxZoneMinimum = hasDeliveryZones
+    ? Math.max(...deliveryZones.map((z) => z.minOrderAmount ?? 0))
+    : 0;
+  // Derived (not effect-driven) so the order-type screen starts hidden on the
+  // very first render — no flash of the base minimum behind the prompt. Goes
+  // false the instant we have a location OR the customer finishes deciding.
+  const awaitingPricingLocation =
+    hasDeliveryZones &&
+    !customerLocation &&
+    !pricingLocationResolved &&
+    (canOrderOnline || canOrderWhatsapp) &&
+    subtotal < maxZoneMinimum;
   const pricingLocationRequested = useRef(false);
   useEffect(() => {
     if (pricingLocationRequested.current) return;
-    if (!hasDeliveryZones || customerLocation) return;
-    if (!(canOrderOnline || canOrderWhatsapp)) return;
-    const maxZoneMin = Math.max(...deliveryZones.map((z) => z.minOrderAmount ?? 0));
-    if (subtotal >= maxZoneMin) return;
+    if (!awaitingPricingLocation) return;
     pricingLocationRequested.current = true;
     (async () => {
+      let granted = false;
       try {
-        if (await isLocationPermissionGranted()) {
+        granted = await isLocationPermissionGranted();
+      } catch {
+        granted = false;
+      }
+      if (granted) {
+        // Already granted → fetch silently, then reveal the screen.
+        try {
           const coords = await getLocation();
           setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        } else {
-          setLocationPermission({ isOpen: true, reason: 'online', purpose: 'pricing' });
+        } catch {
+          /* ignore — fall back to the base minimum on screen */
+        } finally {
+          setPricingLocationResolved(true);
         }
-      } catch {
-        /* ignore — fall back to the base minimum on screen */
+      } else {
+        // Show the explainer; the allow/deny handlers mark resolution once the
+        // customer decides (allow → after the fix, deny → base minimum).
+        setLocationPermission({ isOpen: true, reason: 'online', purpose: 'pricing' });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasDeliveryZones, customerLocation, canOrderOnline, canOrderWhatsapp, subtotal]);
+  }, [awaitingPricingLocation]);
 
   // Calculate discount and final total.
   const getDiscountRate = () => {
@@ -492,12 +515,15 @@ export function CheckoutModal({
     if (purpose === 'pricing') {
       // Resolve the location only to price the order (so the zone's minimum and
       // delivery fee display correctly). Don't advance the flow — the customer
-      // still chooses their order type next.
+      // still chooses their order type next. Reveal the order-type screen once
+      // we have the fix (or fail) so the minimum shown is the zone's.
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
       } catch {
         /* ignore — keep the base minimum on screen */
+      } finally {
+        setPricingLocationResolved(true);
       }
       return;
     }
@@ -508,6 +534,10 @@ export function CheckoutModal({
 
   const handleLocationPermissionDeny = () => {
     setLocationPermission(prev => ({ ...prev, isOpen: false }));
+    // If the prompt was the pricing pre-fetch, reveal the order-type screen now.
+    // The customer chose not to share location, so the base minimum is shown —
+    // the honest fallback (and delivery itself still re-asks for location).
+    setPricingLocationResolved(true);
   };
   const handleDetailsSubmit = () => {
     if (orderType === "inPerson") {
@@ -916,6 +946,16 @@ export function CheckoutModal({
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">{t("order.selectType")}</h3>
 
+              {/* Gate the order-type options while we resolve the customer's
+                  location for zone-based pricing — otherwise the base (wrong)
+                  minimum flashes behind the permission prompt. Once location is
+                  known (or declined) the options appear with the correct min. */}
+              {awaitingPricingLocation ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-12 text-muted-foreground">
+                  <Loader2 className="w-7 h-7 animate-spin text-primary" />
+                  <span className="text-sm">{t("common.loading")}</span>
+                </div>
+              ) : (<>
               {canOrderInPerson && <button onClick={() => {
                   if (!tableNumber) {
                     setIsChangeTableOpen(true);
@@ -981,6 +1021,7 @@ export function CheckoutModal({
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-sm">{t("order.noOrdersAvailable")}</p>
                 </div>}
+              </>)}
             </motion.div>}
 
           {/* Step: Details */}
