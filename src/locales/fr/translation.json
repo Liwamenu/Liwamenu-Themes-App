@@ -314,7 +314,7 @@
   "locationPermission": {
     "title": "Autorisation de localisation requise",
     "reason_online": "Nous devons vérifier que vous êtes dans la zone de livraison du restaurant pour passer une commande de livraison.",
-    "reason_inPerson": "Nous devons vérifier que vous êtes au restaurant pour passer une commande sur place.",
+    "reason_inPerson": "Pour commander à table, nous devons confirmer que vous êtes au restaurant. Veuillez autoriser l’accès à votre position.",
     "reason_callWaiter": "Nous devons vérifier que vous êtes au restaurant pour appeler un serveur.",
     "privacyNote": "Votre localisation est uniquement utilisée pour vérifier la distance et n'est ni stockée ni partagée avec des tiers.",
     "allow": "Autoriser",

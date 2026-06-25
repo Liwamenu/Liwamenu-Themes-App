@@ -314,7 +314,7 @@
   "locationPermission": {
     "title": "Məkan icazəsi tələb olunur",
     "reason_online": "Çatdırılma sifarişi vermək üçün restoranın çatdırılma zonasında olub-olmadığınızı yoxlamalıyıq.",
-    "reason_inPerson": "Masa sifarişi vermək üçün restoranda olduğunuzu təsdiqləməliyik.",
+    "reason_inPerson": "Masada sifariş vermək üçün restoranda olduğunuzu təsdiqləməliyik. Zəhmət olmasa bunun üçün məkana girişə icazə verin.",
     "reason_callWaiter": "Ofisiant çağırmaq üçün restoranda olduğunuzu təsdiqləməliyik.",
     "privacyNote": "Məkanınız yalnız məsafə yoxlaması üçün istifadə olunur və saxlanmır və ya üçüncü tərəflərlə paylaşılmır.",
     "allow": "İcazə ver",
