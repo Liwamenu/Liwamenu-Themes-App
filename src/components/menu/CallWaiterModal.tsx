@@ -184,10 +184,10 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
   return (
     <AnimatePresence>
       {showSuccessAnimation && (
-        <WaiterSuccessAnimation onComplete={handleAnimationComplete} />
+        <WaiterSuccessAnimation key="waiter-success" onComplete={handleAnimationComplete} />
       )}
       {isOpen && !showSuccessAnimation && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+        <div key="waiter-modal" className="fixed inset-0 z-50 overflow-hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -319,12 +319,14 @@ export function CallWaiterModal({ isOpen, onClose, onSuccess }: CallWaiterModalP
         </div>
       )}
       <ChangeTableModal
+        key="change-table"
         isOpen={showChangeTableModal}
         onClose={() => setShowChangeTableModal(false)}
         onTableChange={handleTableChange}
         currentTable={restaurant.tableNumber}
       />
       <LocationPermissionModal
+        key="location-permission"
         isOpen={showLocationPermission}
         reason="callWaiter"
         onAllow={handleLocationAllow}
