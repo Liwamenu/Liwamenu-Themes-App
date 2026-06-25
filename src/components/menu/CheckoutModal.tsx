@@ -1193,17 +1193,18 @@ export function CheckoutModal({
                           aria-label={t("order.tipAmountPlaceholder")}
                           value={tipAmount}
                           onChange={(e) => setTipAmount(e.target.value)}
-                          className="rounded-xl w-full text-right"
+                          className="rounded-xl w-full text-center"
                         />
-                        {/* Custom two-line placeholder at ~50% font so the long
-                            "Tutar (opsiyonel)" hint fits this narrow field: the
-                            "(optional)" part wraps to a second line. Split on the
-                            parenthesis — handles the full-width "（" used by zh. */}
+                        {/* Custom two-line placeholder so the long "Tutar
+                            (opsiyonel)" hint fits this narrow field: the
+                            "(optional)" part wraps to a second line, centered in
+                            the input. Split on the parenthesis — handles the
+                            full-width "（" used by zh. */}
                         {!tipAmount && (() => {
                           const ph = t("order.tipAmountPlaceholder");
                           const m = ph.match(/^(.*?)\s*([（(].*)$/);
                           return (
-                            <div className="pointer-events-none absolute inset-y-0 right-3 flex flex-col items-end justify-center leading-tight text-[0.5rem] text-muted-foreground">
+                            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center leading-tight text-[0.65rem] text-muted-foreground">
                               <span>{m ? m[1] : ph}</span>
                               {m && <span>{m[2]}</span>}
                             </div>
