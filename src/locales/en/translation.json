@@ -101,6 +101,9 @@
     "freeTagPlaceholder": "Add a custom note..."
   },
   "order": {
+    "pickupSelfDesc": "No service fee or minimum order",
+    "pickupSelf": "I'll Pick It Up Myself",
+    "pickupCardHint": "Pickup — you'll collect it yourself",
     "whatsappOrder": "Order via WhatsApp",
     "whatsappOrderDescription": "Send your order through WhatsApp",
     "sendToWhatsapp": "Send via WhatsApp",

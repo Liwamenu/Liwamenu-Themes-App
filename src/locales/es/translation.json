@@ -100,6 +100,9 @@
     "freeTagPlaceholder": "Añade una nota personalizada..."
   },
   "order": {
+    "pickupSelfDesc": "Sin cargo por servicio ni pedido mínimo",
+    "pickupSelf": "Lo recogeré yo mismo",
+    "pickupCardHint": "Recogida — lo recoges tú mismo",
     "whatsappOrder": "Pedir por WhatsApp",
     "whatsappOrderDescription": "Envía tu pedido a través de WhatsApp",
     "sendToWhatsapp": "Enviar por WhatsApp",

@@ -100,6 +100,9 @@
     "freeTagPlaceholder": "Özel notunuzu yazabilirsiniz..."
   },
   "order": {
+    "pickupSelfDesc": "Servis ücreti ve minimum tutar yok",
+    "pickupSelf": "Kendim Gelip Alacağım",
+    "pickupCardHint": "Gel-al — kendiniz teslim alacaksınız",
     "whatsappOrder": "WhatsApp ile Sipariş",
     "whatsappOrderDescription": "Siparişinizi WhatsApp üzerinden iletirsiniz",
     "sendToWhatsapp": "WhatsApp ile Gönder",

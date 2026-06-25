@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle, Landmark } from "lucide-react";
+import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle, Landmark, ShoppingBag } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore, refreshRestaurantData } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
@@ -110,6 +110,11 @@ export function CheckoutModal({
   }, [restaurant.phoneNumber]);
 
   const [orderNote, setOrderNote] = useState("");
+  // Delivery vs self-pickup choice for paket / WhatsApp orders. When the
+  // customer picks "Kendim Gelip Alacağım" (self-pickup) we charge no delivery
+  // fee, skip the delivery address, and stamp the choice onto the order (note +
+  // address field) so the restaurant knows not to dispatch a courier.
+  const [pickupSelf, setPickupSelf] = useState(false);
   // Tip (paket only). We don't touch the total — the amount (if any) is
   // sent as a sentence prepended to orderNote so the kitchen/courier sees
   // "Bahşiş vereceğim: ₺50" alongside the customer's own note. Toggle alone
@@ -182,15 +187,23 @@ export function CheckoutModal({
    * language as the rest of the WhatsApp message.
    */
   const composeOrderNote = (tFn: typeof t = t): string | undefined => {
-    if ((orderType === "online" || orderType === "whatsapp") && tipEnabled) {
+    const isDelivery = orderType === "online" || orderType === "whatsapp";
+    const parts: string[] = [];
+    // Self-pickup marker first, so the restaurant immediately sees "no courier".
+    if (isDelivery && pickupSelf) {
+      parts.push(tFn("order.pickupSelf"));
+    }
+    if (isDelivery && tipEnabled) {
       const moneySign = restaurant.moneySign || "₺";
       const stripped = tipAmount.trim().replace(moneySign, "").trim();
-      const tipNote = stripped
-        ? tFn("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
-        : tFn("order.tipNotePrefix");
-      return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
+      parts.push(
+        stripped
+          ? tFn("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
+          : tFn("order.tipNotePrefix"),
+      );
     }
-    return orderNote || undefined;
+    if (orderNote && orderNote.trim()) parts.push(orderNote.trim());
+    return parts.length ? parts.join(" | ") : undefined;
   };
 
   // Phone validation
@@ -312,6 +325,7 @@ export function CheckoutModal({
   const discountRate = getDiscountRate();
   const discountAmount = subtotal * discountRate / 100;
   const deliveryFee =
+    pickupSelf ? 0 :
     orderType === "online" ? onlineDeliveryFee :
     orderType === "whatsapp" ? whatsappDeliveryFee :
     0;
@@ -451,30 +465,39 @@ export function CheckoutModal({
     }
   };
 
+  // Delivery-channel gate (paket / WhatsApp): the flat minimum-order check up
+  // front, then the GPS + coverage gate (proceedWithLocationCheck) that resolves
+  // the per-zone minimum/fee. Only reached when the customer chose "deliver to
+  // my address" — self-pickup skips this entirely.
+  const startDeliveryGate = async (type: OrderType) => {
+    // With distance tiers the floor depends on the customer's zone (resolved
+    // after the GPS fix), so defer that to proceedWithLocationCheck and only run
+    // the flat up-front check for restaurants without zones.
+    const flatMin = type === "whatsapp" ? whatsappMinAmount : restaurant.minOrderAmount;
+    if (!hasDeliveryZones && subtotal < flatMin) {
+      toast.error(
+        <Trans
+          i18nKey="order.minOrderError"
+          values={{ min: formatPrice(flatMin) }}
+          components={{ br: <br />, b: <b /> }}
+        />
+      );
+      return;
+    }
+    // If the browser already granted location, skip the explainer modal.
+    if (await isLocationPermissionGranted()) {
+      proceedWithLocationCheck(type);
+    } else {
+      setLocationPermission({ isOpen: true, reason: 'online' });
+    }
+  };
+
   const handleSelectOrderType = async (type: OrderType) => {
     setOrderType(type);
-    if (type === "online") {
-      // Check minimum order amount first. With distance tiers the floor
-      // depends on the customer's zone, which we don't know until after the
-      // GPS fix — so defer that gate to proceedWithLocationCheck and only run
-      // the flat up-front check for restaurants without zones.
-      if (!hasDeliveryZones && subtotal < restaurant.minOrderAmount) {
-        toast.error(
-          <Trans
-            i18nKey="order.minOrderError"
-            values={{ min: formatPrice(restaurant.minOrderAmount) }}
-            components={{ br: <br />, b: <b /> }}
-          />
-        );
-        return;
-      }
-      // If browser already granted location, skip the explainer modal
-      if (await isLocationPermissionGranted()) {
-        proceedWithLocationCheck(type);
-      } else {
-        setLocationPermission({ isOpen: true, reason: 'online' });
-      }
-    } else if (type === "inPerson") {
+    if (type === "inPerson") {
+      // Dine-in ignores the self-pickup checkbox (you're eating in the venue).
+      setPickupSelf(false);
+      // Optional table-distance gate, then straight to details.
       if (restaurant.checkTableOrderDistance) {
         if (await isLocationPermissionGranted()) {
           proceedWithLocationCheck(type);
@@ -484,30 +507,17 @@ export function CheckoutModal({
       } else {
         setStep("details");
       }
-    } else if (type === "whatsapp") {
-      // Minimum-order gate. With distance tiers the floor depends on the
-      // customer's zone (resolved after the GPS fix), so defer it to
-      // proceedWithLocationCheck and only run the flat up-front check for
-      // restaurants without zones — mirroring the paket flow exactly.
-      if (!hasDeliveryZones && subtotal < whatsappMinAmount) {
-        toast.error(
-          <Trans
-            i18nKey="order.minOrderError"
-            values={{ min: formatPrice(whatsappMinAmount) }}
-            components={{ br: <br />, b: <b /> }}
-          />
-        );
-        return;
-      }
-      // Location check now matches paket: route through proceedWithLocationCheck
-      // so WhatsApp enforces the coverage gate (and captures the GPS pin for
-      // the courier). If permission is already granted we run it directly;
-      // otherwise show the same explainer modal as paket.
-      if (await isLocationPermissionGranted()) {
-        proceedWithLocationCheck(type);
-      } else {
-        setLocationPermission({ isOpen: true, reason: 'online' });
-      }
+      return;
+    }
+    // Paket (online) / WhatsApp. The "Kendim gelip alacağım" checkbox on this
+    // screen decides the path:
+    //   • ticked   → self-pickup: no location, no coverage/min gate, no fee —
+    //                straight to contact details.
+    //   • unticked → run the normal delivery gate.
+    if (pickupSelf) {
+      setStep("details");
+    } else {
+      startDeliveryGate(type);
     }
   };
 
@@ -558,7 +568,8 @@ export function CheckoutModal({
       }
       setStep("payment");
     } else {
-      if (!customerInfo.name.trim() || !phoneSubscriber.trim() || !customerInfo.address.trim()) {
+      // Self-pickup needs no delivery address; name + phone are always required.
+      if (!customerInfo.name.trim() || !phoneSubscriber.trim() || (!pickupSelf && !customerInfo.address.trim())) {
         toast.error(t("order.fillAllFields"));
         return;
       }
@@ -575,6 +586,8 @@ export function CheckoutModal({
   };
   const handleBack = () => {
     if (step === "details") {
+      // Back to the type screen. Keep pickupSelf so the checkbox still reflects
+      // the customer's choice if they re-pick a channel.
       setStep("type");
       setOrderType(null);
     } else if (step === "payment") {
@@ -610,7 +623,9 @@ export function CheckoutModal({
       customer: {
         name: customerInfo.name,
         phone: buildE164Phone(phoneCountry, phoneSubscriber),
-        address: customerInfo.address || undefined,
+        // Self-pickup → stamp the choice (in the restaurant's menu language) in
+        // place of a delivery address.
+        address: pickupSelf ? messageT("order.pickupSelf") : (customerInfo.address || undefined),
       },
       location: customerLocation || undefined,
       paymentMethodName: selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? messageT("order.bankTransfer") : selectedPayment?.name,
@@ -741,7 +756,9 @@ export function CheckoutModal({
       ...(orderType === "inPerson" ? {
         tableNumber
       } : {
-        customerInfo,
+        // Self-pickup: no delivery address — stamp the choice in the address
+        // field so the restaurant sees it where they'd look for "where to send".
+        customerInfo: pickupSelf ? { ...customerInfo, address: t("order.pickupSelf") } : customerInfo,
         paymentMethodId: selectedPaymentMethod!,
         paymentMethodName: orderPaymentName
       })
@@ -985,13 +1002,16 @@ export function CheckoutModal({
                   </div>
                 )
               ) : (<>
-              {canOrderInPerson && <button onClick={() => {
+              {/* Dine-in is mutually exclusive with self-pickup (you can't both
+                  collect a takeaway AND eat at a table), so the checkbox disables
+                  this button. */}
+              {canOrderInPerson && <button disabled={pickupSelf} onClick={() => {
                   if (!tableNumber) {
                     setIsChangeTableOpen(true);
                     return;
                   }
                   handleSelectOrderType("inPerson");
-                }} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+                }} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-secondary">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                     {locationLoading && orderType === "inPerson" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Bell className="w-7 h-7 text-primary" />}
                   </div>
@@ -1001,11 +1021,33 @@ export function CheckoutModal({
                   </div>
                 </button>}
 
+              {/* Self-pickup checkbox — modifies the paket / WhatsApp choice
+                  (NOT dine-in). When ticked, picking either channel skips the
+                  location/coverage/minimum gate and the delivery fee. */}
+              {(canOrderOnline || canOrderWhatsapp) && (
+                <button
+                  type="button"
+                  onClick={() => setPickupSelf(v => !v)}
+                  aria-pressed={pickupSelf}
+                  className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-colors ${pickupSelf ? "border-primary bg-primary/5" : "border-border bg-secondary/40 hover:bg-secondary/60"}`}
+                >
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${pickupSelf ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/40"}`}>
+                    {pickupSelf && <Check className="w-4 h-4" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm">{t("order.pickupSelf")}</p>
+                    <p className="text-xs text-muted-foreground">{t("order.pickupSelfDesc")}</p>
+                  </div>
+                  <ShoppingBag className="w-5 h-5 text-primary shrink-0" />
+                </button>
+              )}
+
               {canOrderOnline && <div className="space-y-2">
                   {/* Minimum Order Warning for Online Orders. With zones this is
                       a pre-location hint showing the base-tier floor; the real
-                      per-zone gate runs after the GPS fix in the flow above. */}
-                  {subtotal < onlineMinOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
+                      per-zone gate runs after the GPS fix in the flow above.
+                      Hidden in self-pickup mode — no minimum applies then. */}
+                  {!pickupSelf && subtotal < onlineMinOrderAmount && <div className="flex items-center justify-between gap-2 p-3 bg-destructive/10 dark:bg-white rounded-xl text-sm">
                       <span className="text-destructive font-medium min-w-0 break-words text-xs leading-snug">
                         {t('order.minOrderProgress', {
                   remaining: formatPrice(onlineMinOrderAmount - subtotal)
@@ -1018,12 +1060,12 @@ export function CheckoutModal({
                     </div>}
                   <button onClick={() => handleSelectOrderType("online")} disabled={locationLoading} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50">
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                      {locationLoading && orderType === "online" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Home className="w-7 h-7 text-primary" />}
+                      {locationLoading && orderType === "online" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : pickupSelf ? <ShoppingBag className="w-7 h-7 text-primary" /> : <Home className="w-7 h-7 text-primary" />}
                     </div>
                     <div className="text-left flex-1">
                       <h4 className="font-semibold text-lg">{t("order.online")}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {t("order.onlineDesc", {
+                        {pickupSelf ? t("order.pickupCardHint") : t("order.onlineDesc", {
                     distance: onlineMaxDistance
                   })}
                       </p>
@@ -1041,7 +1083,7 @@ export function CheckoutModal({
                   </div>
                   <div className="text-left flex-1">
                     <h4 className="font-semibold text-lg">{t("order.whatsappOrder")}</h4>
-                    <p className="text-sm text-muted-foreground">{t("order.whatsappOrderDescription")}</p>
+                    <p className="text-sm text-muted-foreground">{pickupSelf ? t("order.pickupCardHint") : t("order.whatsappOrderDescription")}</p>
                   </div>
                 </button>
               )}
@@ -1062,7 +1104,7 @@ export function CheckoutModal({
           x: 0
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">
-                {orderType === "inPerson" ? t("order.orderInfo") : t("order.deliveryInfo")}
+                {orderType === "inPerson" || pickupSelf ? t("order.orderInfo") : t("order.deliveryInfo")}
               </h3>
 
               {orderType === "inPerson" ? <div className="space-y-4">
@@ -1111,7 +1153,7 @@ export function CheckoutModal({
                   }} subscriberPlaceholder="XXXXXXXXXX" />
                       </div>
                     </div>
-                  <div>
+                  {!pickupSelf && <div>
                     <Label htmlFor="address" className="flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
                       {t("order.deliveryAddress")}
@@ -1122,7 +1164,7 @@ export function CheckoutModal({
                   address: e.target.value
                 }))} className="w-full min-h-[100px] p-4 rounded-xl bg-secondary border-0 resize-none" />
                     </div>
-                  </div>
+                  </div>}
                 </div>}
 
               {/* Tip (paket + WhatsApp) — toggle + optional amount. Sent as
