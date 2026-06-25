@@ -153,6 +153,9 @@ export interface PaymentMethod {
   id: string;
   name: string;
   enabled: boolean;
+  /** Display order (ascending) from the admin panel. Optional until the
+   *  backend ships it; when absent the API's array order is preserved. */
+  sortOrder?: number;
 }
 
 export interface AnnouncementSettings {
