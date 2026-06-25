@@ -1002,13 +1002,16 @@ export function CheckoutModal({
                   </div>
                 )
               ) : (<>
-              {canOrderInPerson && <button onClick={() => {
+              {/* Dine-in is mutually exclusive with self-pickup (you can't both
+                  collect a takeaway AND eat at a table), so the checkbox disables
+                  this button. */}
+              {canOrderInPerson && <button disabled={pickupSelf} onClick={() => {
                   if (!tableNumber) {
                     setIsChangeTableOpen(true);
                     return;
                   }
                   handleSelectOrderType("inPerson");
-                }} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors">
+                }} className="w-full flex items-center gap-4 p-5 bg-secondary rounded-2xl hover:bg-secondary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-secondary">
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                     {locationLoading && orderType === "inPerson" ? <Loader2 className="w-7 h-7 text-primary animate-spin" /> : <Bell className="w-7 h-7 text-primary" />}
                   </div>
