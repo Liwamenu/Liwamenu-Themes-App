@@ -100,6 +100,8 @@
     "freeTagPlaceholder": "添加自定义备注..."
   },
   "order": {
+    "deliverToAddress": "送货上门",
+    "pickupSelf": "我自己来取",
     "whatsappOrder": "通过 WhatsApp 下单",
     "whatsappOrderDescription": "通过 WhatsApp 发送订单",
     "sendToWhatsapp": "通过 WhatsApp 发送",

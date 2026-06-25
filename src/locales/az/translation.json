@@ -100,6 +100,8 @@
     "freeTagPlaceholder": "Xüsusi qeyd əlavə edin..."
   },
   "order": {
+    "deliverToAddress": "Ünvanıma Çatdırılsın",
+    "pickupSelf": "Özüm Gəlib Götürəcəyəm",
     "whatsappOrder": "WhatsApp ilə sifariş",
     "whatsappOrderDescription": "Sifarişinizi WhatsApp vasitəsilə göndərin",
     "sendToWhatsapp": "WhatsApp ilə göndər",

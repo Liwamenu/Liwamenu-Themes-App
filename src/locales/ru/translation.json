@@ -100,6 +100,8 @@
     "freeTagPlaceholder": "Добавьте особое примечание..."
   },
   "order": {
+    "deliverToAddress": "Доставить по моему адресу",
+    "pickupSelf": "Заберу сам",
     "whatsappOrder": "Заказ через WhatsApp",
     "whatsappOrderDescription": "Отправьте заказ через WhatsApp",
     "sendToWhatsapp": "Отправить через WhatsApp",

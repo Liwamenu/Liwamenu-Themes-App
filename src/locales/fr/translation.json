@@ -100,6 +100,8 @@
     "freeTagPlaceholder": "Ajoutez une note personnalisée..."
   },
   "order": {
+    "deliverToAddress": "Livrer à mon adresse",
+    "pickupSelf": "Je viendrai le chercher",
     "whatsappOrder": "Commander via WhatsApp",
     "whatsappOrderDescription": "Envoyez votre commande via WhatsApp",
     "sendToWhatsapp": "Envoyer via WhatsApp",

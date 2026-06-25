@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { Country } from "react-phone-number-input";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle, Landmark } from "lucide-react";
+import { X, MapPin, User, Phone, CreditCard, Banknote, AlertCircle, Loader2, Bell, Check, Home, ArrowLeft, FileText, QrCode, MessageCircle, Landmark, ShoppingBag } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { useRestaurant, useRestaurantStore, refreshRestaurantData } from "@/hooks/useRestaurant";
 import { useCart, getCartItemDisplayPrice } from "@/hooks/useCart";
@@ -110,6 +110,11 @@ export function CheckoutModal({
   }, [restaurant.phoneNumber]);
 
   const [orderNote, setOrderNote] = useState("");
+  // Delivery vs self-pickup choice for paket / WhatsApp orders. When the
+  // customer picks "Kendim Gelip Alacağım" (self-pickup) we charge no delivery
+  // fee, skip the delivery address, and stamp the choice onto the order (note +
+  // address field) so the restaurant knows not to dispatch a courier.
+  const [pickupSelf, setPickupSelf] = useState(false);
   // Tip (paket only). We don't touch the total — the amount (if any) is
   // sent as a sentence prepended to orderNote so the kitchen/courier sees
   // "Bahşiş vereceğim: ₺50" alongside the customer's own note. Toggle alone
@@ -182,15 +187,23 @@ export function CheckoutModal({
    * language as the rest of the WhatsApp message.
    */
   const composeOrderNote = (tFn: typeof t = t): string | undefined => {
-    if ((orderType === "online" || orderType === "whatsapp") && tipEnabled) {
+    const isDelivery = orderType === "online" || orderType === "whatsapp";
+    const parts: string[] = [];
+    // Self-pickup marker first, so the restaurant immediately sees "no courier".
+    if (isDelivery && pickupSelf) {
+      parts.push(tFn("order.pickupSelf"));
+    }
+    if (isDelivery && tipEnabled) {
       const moneySign = restaurant.moneySign || "₺";
       const stripped = tipAmount.trim().replace(moneySign, "").trim();
-      const tipNote = stripped
-        ? tFn("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
-        : tFn("order.tipNotePrefix");
-      return orderNote ? `${tipNote} | ${orderNote}` : tipNote;
+      parts.push(
+        stripped
+          ? tFn("order.tipNoteWithAmount", { amount: `${moneySign} ${stripped}` })
+          : tFn("order.tipNotePrefix"),
+      );
     }
-    return orderNote || undefined;
+    if (orderNote && orderNote.trim()) parts.push(orderNote.trim());
+    return parts.length ? parts.join(" | ") : undefined;
   };
 
   // Phone validation
@@ -312,6 +325,7 @@ export function CheckoutModal({
   const discountRate = getDiscountRate();
   const discountAmount = subtotal * discountRate / 100;
   const deliveryFee =
+    pickupSelf ? 0 :
     orderType === "online" ? onlineDeliveryFee :
     orderType === "whatsapp" ? whatsappDeliveryFee :
     0;
@@ -558,7 +572,8 @@ export function CheckoutModal({
       }
       setStep("payment");
     } else {
-      if (!customerInfo.name.trim() || !phoneSubscriber.trim() || !customerInfo.address.trim()) {
+      // Self-pickup needs no delivery address; name + phone are always required.
+      if (!customerInfo.name.trim() || !phoneSubscriber.trim() || (!pickupSelf && !customerInfo.address.trim())) {
         toast.error(t("order.fillAllFields"));
         return;
       }
@@ -610,7 +625,9 @@ export function CheckoutModal({
       customer: {
         name: customerInfo.name,
         phone: buildE164Phone(phoneCountry, phoneSubscriber),
-        address: customerInfo.address || undefined,
+        // Self-pickup → stamp the choice (in the restaurant's menu language) in
+        // place of a delivery address.
+        address: pickupSelf ? messageT("order.pickupSelf") : (customerInfo.address || undefined),
       },
       location: customerLocation || undefined,
       paymentMethodName: selectedPaymentMethod === BANK_TRANSFER_PAYMENT_ID ? messageT("order.bankTransfer") : selectedPayment?.name,
@@ -741,7 +758,9 @@ export function CheckoutModal({
       ...(orderType === "inPerson" ? {
         tableNumber
       } : {
-        customerInfo,
+        // Self-pickup: no delivery address — stamp the choice in the address
+        // field so the restaurant sees it where they'd look for "where to send".
+        customerInfo: pickupSelf ? { ...customerInfo, address: t("order.pickupSelf") } : customerInfo,
         paymentMethodId: selectedPaymentMethod!,
         paymentMethodName: orderPaymentName
       })
@@ -1084,6 +1103,30 @@ export function CheckoutModal({
                     </div>
                   </div>
                 </div> : <div className="space-y-4">
+                  {/* Delivery vs self-pickup (paket / WhatsApp). Picking up
+                      drops the delivery fee and replaces the address with the
+                      pickup note; name + phone stay required either way so the
+                      restaurant knows whose order it is. */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPickupSelf(false)}
+                      className={`flex items-center gap-2.5 p-3 rounded-xl border-2 text-sm font-medium text-left transition-all ${!pickupSelf ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                    >
+                      <Home className="w-5 h-5 text-primary shrink-0" />
+                      <span className="flex-1">{t("order.deliverToAddress")}</span>
+                      {!pickupSelf && <Check className="w-5 h-5 text-primary shrink-0" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPickupSelf(true)}
+                      className={`flex items-center gap-2.5 p-3 rounded-xl border-2 text-sm font-medium text-left transition-all ${pickupSelf ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                    >
+                      <ShoppingBag className="w-5 h-5 text-primary shrink-0" />
+                      <span className="flex-1">{t("order.pickupSelf")}</span>
+                      {pickupSelf && <Check className="w-5 h-5 text-primary shrink-0" />}
+                    </button>
+                  </div>
                   <div>
                     <Label htmlFor="name">{t("order.fullName")}</Label>
                     <div className="relative mt-2">
@@ -1111,7 +1154,7 @@ export function CheckoutModal({
                   }} subscriberPlaceholder="XXXXXXXXXX" />
                       </div>
                     </div>
-                  <div>
+                  {!pickupSelf && <div>
                     <Label htmlFor="address" className="flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
                       {t("order.deliveryAddress")}
@@ -1122,7 +1165,7 @@ export function CheckoutModal({
                   address: e.target.value
                 }))} className="w-full min-h-[100px] p-4 rounded-xl bg-secondary border-0 resize-none" />
                     </div>
-                  </div>
+                  </div>}
                 </div>}
 
               {/* Tip (paket + WhatsApp) — toggle + optional amount. Sent as

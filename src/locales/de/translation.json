@@ -100,6 +100,8 @@
     "freeTagPlaceholder": "Eigene Anmerkung hinzufügen..."
   },
   "order": {
+    "deliverToAddress": "An meine Adresse liefern",
+    "pickupSelf": "Ich hole es selbst ab",
     "whatsappOrder": "Bestellung über WhatsApp",
     "whatsappOrderDescription": "Senden Sie Ihre Bestellung über WhatsApp",
     "sendToWhatsapp": "Über WhatsApp senden",
