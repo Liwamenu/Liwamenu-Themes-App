@@ -141,11 +141,12 @@ export function CheckoutModal({
     purpose?: 'order' | 'pricing';
   }>({ isOpen: false, reason: 'online' });
 
-  // Flips true once we've FINISHED trying to resolve the location for
-  // zone-based pricing (granted+fetched, declined, or errored). Until then the
-  // order-type screen is held behind a spinner, so the customer decides on the
-  // permission prompt first and never sees the base (wrong) minimum behind it.
-  const [pricingLocationResolved, setPricingLocationResolved] = useState(false);
+  // Set true when the customer declines (or we fail to obtain) the location
+  // needed for zone-based pricing. While zones are active and we have no
+  // location, the order-type options are NEVER shown — the customer sees a
+  // spinner (resolving) or, once declined, a "location required" retry prompt.
+  // This guarantees the base (wrong) minimum is never displayed.
+  const [pricingLocationDeclined, setPricingLocationDeclined] = useState(false);
 
   // Backend 409 PRICE_MISMATCH: a structured list of every cart line
   // (or tag option) whose live price doesn't match what the customer
@@ -250,25 +251,20 @@ export function CheckoutModal({
   const whatsappMinAmount = restaurant.whatsappOrderMinAmount ?? onlineMinOrderAmount;
   const whatsappMaxDistance = restaurant.whatsappOrderMaxDistance || onlineMaxDistance;
 
-  // Zone-based pricing needs the customer's location to resolve the right
-  // minimum-order floor. The moment they reach checkout (they tapped "complete
-  // order" in the cart) we proactively resolve their location so the minimum
-  // shown reflects their delivery zone instead of the base default. This only
-  // matters when delivery zones are configured, a delivery channel is offered,
-  // we don't have the location yet, and the cart is still below the HIGHEST
-  // zone minimum (otherwise the minimum is already met in every zone).
-  const maxZoneMinimum = hasDeliveryZones
-    ? Math.max(...deliveryZones.map((z) => z.minOrderAmount ?? 0))
-    : 0;
-  // Derived (not effect-driven) so the order-type screen starts hidden on the
-  // very first render — no flash of the base minimum behind the prompt. Goes
-  // false the instant we have a location OR the customer finishes deciding.
-  const awaitingPricingLocation =
-    hasDeliveryZones &&
-    !customerLocation &&
-    !pricingLocationResolved &&
-    (canOrderOnline || canOrderWhatsapp) &&
-    subtotal < maxZoneMinimum;
+  // Zone-based pricing needs the customer's location to resolve BOTH the right
+  // minimum-order floor AND the delivery fee for their zone. When zones are
+  // configured and a delivery channel is offered, location is REQUIRED before
+  // the order-type options are shown — otherwise the base (wrong) minimum would
+  // be visible. Applies for ANY cart size (a delivery order needs the location
+  // regardless, and the fee varies by zone even when the cart clears every min).
+  const needsZonePricingLocation =
+    hasDeliveryZones && (canOrderOnline || canOrderWhatsapp);
+  // We don't have the location yet → the order-type options stay hidden. While
+  // this is true we either show a spinner (still resolving) or, once declined,
+  // a "location required" retry prompt — never the options with a base minimum.
+  const blockingForPricingLocation = needsZonePricingLocation && !customerLocation;
+  // Still actively resolving (prompt open / fetching) vs declined.
+  const awaitingPricingLocation = blockingForPricingLocation && !pricingLocationDeclined;
   const pricingLocationRequested = useRef(false);
   useEffect(() => {
     if (pricingLocationRequested.current) return;
@@ -282,23 +278,29 @@ export function CheckoutModal({
         granted = false;
       }
       if (granted) {
-        // Already granted → fetch silently, then reveal the screen.
+        // Already granted → fetch silently; success reveals the options, a
+        // failure drops to the retry prompt (we still have no location).
         try {
           const coords = await getLocation();
           setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
         } catch {
-          /* ignore — fall back to the base minimum on screen */
-        } finally {
-          setPricingLocationResolved(true);
+          setPricingLocationDeclined(true);
         }
       } else {
-        // Show the explainer; the allow/deny handlers mark resolution once the
-        // customer decides (allow → after the fix, deny → base minimum).
+        // Show the explainer; allow → fetch (reveals options), deny → retry
+        // prompt. Either way the options never appear without a location.
         setLocationPermission({ isOpen: true, reason: 'online', purpose: 'pricing' });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [awaitingPricingLocation]);
+
+  // Retry from the "location required" prompt — re-arm the request so the
+  // effect re-runs and re-opens the permission flow.
+  const retryPricingLocation = () => {
+    pricingLocationRequested.current = false;
+    setPricingLocationDeclined(false);
+  };
 
   // Calculate discount and final total.
   const getDiscountRate = () => {
@@ -514,17 +516,15 @@ export function CheckoutModal({
     const purpose = locationPermission.purpose ?? 'order';
     setLocationPermission(prev => ({ ...prev, isOpen: false }));
     if (purpose === 'pricing') {
-      // Resolve the location only to price the order (so the zone's minimum and
-      // delivery fee display correctly). Don't advance the flow — the customer
-      // still chooses their order type next. Reveal the order-type screen once
-      // we have the fix (or fail) so the minimum shown is the zone's.
+      // Resolve the location to price the order (zone minimum + delivery fee).
+      // Success reveals the order-type options with the correct values; a
+      // failure drops to the "location required" retry prompt — we never reveal
+      // the options with a base minimum.
       try {
         const coords = await getLocation();
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
       } catch {
-        /* ignore — keep the base minimum on screen */
-      } finally {
-        setPricingLocationResolved(true);
+        setPricingLocationDeclined(true);
       }
       return;
     }
@@ -534,11 +534,11 @@ export function CheckoutModal({
   };
 
   const handleLocationPermissionDeny = () => {
+    const wasPricing = locationPermission.purpose === 'pricing';
     setLocationPermission(prev => ({ ...prev, isOpen: false }));
-    // If the prompt was the pricing pre-fetch, reveal the order-type screen now.
-    // The customer chose not to share location, so the base minimum is shown —
-    // the honest fallback (and delivery itself still re-asks for location).
-    setPricingLocationResolved(true);
+    // Pricing prompt declined → DON'T reveal the order-type options (they'd show
+    // the wrong base minimum). Show the "location required" retry prompt instead.
+    if (wasPricing) setPricingLocationDeclined(true);
   };
   const handleDetailsSubmit = () => {
     if (orderType === "inPerson") {
@@ -953,15 +953,30 @@ export function CheckoutModal({
         }} className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">{t("order.selectType")}</h3>
 
-              {/* Gate the order-type options while we resolve the customer's
-                  location for zone-based pricing — otherwise the base (wrong)
-                  minimum flashes behind the permission prompt. Once location is
-                  known (or declined) the options appear with the correct min. */}
-              {awaitingPricingLocation ? (
-                <div className="flex flex-col items-center justify-center gap-3 py-12 text-muted-foreground">
-                  <Loader2 className="w-7 h-7 animate-spin text-primary" />
-                  <span className="text-sm">{t("common.loading")}</span>
-                </div>
+              {/* Zone-based pricing requires the customer's location BEFORE the
+                  order-type options are shown — otherwise the base (wrong)
+                  minimum would be visible. While we have no location we show a
+                  spinner (resolving) or, once declined, a retry prompt — never
+                  the options. The options appear only once location is known
+                  (or when there are no zones, where the base min is correct). */}
+              {blockingForPricingLocation ? (
+                pricingLocationDeclined ? (
+                  <div className="flex flex-col items-center justify-center gap-4 py-10 text-center">
+                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                      <MapPin className="w-7 h-7 text-primary" />
+                    </div>
+                    <p className="text-sm text-muted-foreground px-2">{t("locationPermission.reason_online")}</p>
+                    <Button onClick={retryPricingLocation} className="h-12 rounded-2xl px-6">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {t("order.retryLocation")}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-3 py-12 text-muted-foreground">
+                    <Loader2 className="w-7 h-7 animate-spin text-primary" />
+                    <span className="text-sm">{t("common.loading")}</span>
+                  </div>
+                )
               ) : (<>
               {canOrderInPerson && <button onClick={() => {
                   if (!tableNumber) {
