@@ -1172,29 +1172,46 @@ export function CheckoutModal({
                   either channel; the order total is untouched. */}
               {(orderType === "online" || orderType === "whatsapp") && (
                 <div className="rounded-2xl border border-border p-4 bg-secondary/50">
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={tipEnabled}
-                      onChange={(e) => setTipEnabled(e.target.checked)}
-                      className="mt-1 w-4 h-4 accent-primary cursor-pointer"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium">{t("order.leaveTip")}</div>
-                      <div className="text-sm text-muted-foreground">{t("order.tipDescription")}</div>
-                    </div>
-                  </label>
-                  {tipEnabled && (
-                    <div className="mt-3">
-                      <Input
-                        inputMode="decimal"
-                        placeholder={t("order.tipAmountPlaceholder")}
-                        value={tipAmount}
-                        onChange={(e) => setTipAmount(e.target.value)}
-                        className="rounded-xl"
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-start gap-3 cursor-pointer flex-1 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={tipEnabled}
+                        onChange={(e) => setTipEnabled(e.target.checked)}
+                        className="mt-1 w-4 h-4 accent-primary cursor-pointer"
                       />
-                    </div>
-                  )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{t("order.leaveTip")}</div>
+                        <div className="text-sm text-muted-foreground">{t("order.tipDescription")}</div>
+                      </div>
+                    </label>
+                    {/* Amount opens inline on the right of the same row (not below). */}
+                    {tipEnabled && (
+                      <div className="relative w-28 shrink-0">
+                        <Input
+                          inputMode="decimal"
+                          aria-label={t("order.tipAmountPlaceholder")}
+                          value={tipAmount}
+                          onChange={(e) => setTipAmount(e.target.value)}
+                          className="rounded-xl w-full text-right"
+                        />
+                        {/* Custom two-line placeholder at ~50% font so the long
+                            "Tutar (opsiyonel)" hint fits this narrow field: the
+                            "(optional)" part wraps to a second line. Split on the
+                            parenthesis — handles the full-width "（" used by zh. */}
+                        {!tipAmount && (() => {
+                          const ph = t("order.tipAmountPlaceholder");
+                          const m = ph.match(/^(.*?)\s*([（(].*)$/);
+                          return (
+                            <div className="pointer-events-none absolute inset-y-0 right-3 flex flex-col items-end justify-center leading-tight text-[0.5rem] text-muted-foreground">
+                              <span>{m ? m[1] : ph}</span>
+                              {m && <span>{m[2]}</span>}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
