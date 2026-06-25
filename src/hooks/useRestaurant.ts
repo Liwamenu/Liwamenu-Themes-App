@@ -612,7 +612,13 @@ export function useRestaurant() {
   }, [data]);
 
   const enabledPaymentMethods = useMemo(() => {
-    return data.paymentMethods.filter(pm => pm.enabled);
+    // Show payment methods in the restaurant's configured order. The backend
+    // sends `sortOrder` (ascending) per method; until it does, every method
+    // falls back to 0 and JS's stable sort preserves the API's array order —
+    // so this is a no-op until the field ships, then it takes effect on its own.
+    return data.paymentMethods
+      .filter(pm => pm.enabled)
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   }, [data]);
 
   const canOrderOnline = data.onlineOrder && isRestaurantActive && isCurrentlyOpen;
