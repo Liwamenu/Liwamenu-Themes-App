@@ -43,34 +43,51 @@ const themeComponents: Record<number, React.LazyExoticComponent<React.ComponentT
 
 const DEFAULT_THEME_ID = 0;
 
-const HIDDEN_MESSAGES: Record<string, { title: string; desc: string }> = {
-  tr: { title: "Menü Şu Anda Kullanılamıyor", desc: "Bu restoranın menüsü şu anda kullanıma kapalıdır. Lütfen daha sonra tekrar deneyin." },
-  en: { title: "Menu Unavailable", desc: "This restaurant's menu is currently unavailable. Please check back later." },
-  de: { title: "Menü Nicht Verfügbar", desc: "Das Menü dieses Restaurants ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut." },
-  fr: { title: "Menu Indisponible", desc: "Le menu de ce restaurant est actuellement indisponible. Veuillez réessayer plus tard." },
-  it: { title: "Menu Non Disponibile", desc: "Il menu di questo ristorante non è attualmente disponibile. Si prega di riprovare più tardi." },
-  es: { title: "Menú No Disponible", desc: "El menú de este restaurante no está disponible en este momento. Por favor, inténtelo más tarde." },
-  ar: { title: "القائمة غير متوفرة", desc: "قائمة هذا المطعم غير متوفرة حاليًا. يرجى المحاولة لاحقًا." },
-  az: { title: "Menyu Əlçatan Deyil", desc: "Bu restoranın menyusu hazırda əlçatan deyil. Zəhmət olmasa daha sonra yenidən cəhd edin." },
-  ru: { title: "Меню Недоступно", desc: "Меню этого ресторана в настоящее время недоступно. Пожалуйста, зайдите позже." },
-  el: { title: "Το Μενού Δεν Είναι Διαθέσιμο", desc: "Το μενού αυτού του εστιατορίου δεν είναι διαθέσιμο αυτή τη στιγμή. Παρακαλώ δοκιμάστε ξανά αργότερα." },
-  zh: { title: "菜单不可用", desc: "该餐厅的菜单目前不可用。请稍后再试。" },
+const HIDDEN_MESSAGES: Record<string, { title: string; desc: string; regards: string }> = {
+  tr: { title: "Şu anda hizmet veremiyoruz", desc: "Bu durumdan dolayı üzgünüz. Lütfen daha sonra tekrar deneyin.", regards: "Saygılarımızla." },
+  en: { title: "We're currently unable to serve you", desc: "We apologize for the inconvenience. Please try again later.", regards: "Best regards." },
+  de: { title: "Wir können Sie derzeit nicht bedienen", desc: "Wir entschuldigen uns für die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.", regards: "Mit freundlichen Grüßen." },
+  fr: { title: "Nous ne pouvons pas vous servir pour le moment", desc: "Nous nous excusons pour la gêne occasionnée. Veuillez réessayer plus tard.", regards: "Cordialement." },
+  it: { title: "Al momento non possiamo servirvi", desc: "Ci scusiamo per il disagio. Si prega di riprovare più tardi.", regards: "Cordiali saluti." },
+  es: { title: "En este momento no podemos atenderle", desc: "Lamentamos las molestias. Por favor, inténtelo de nuevo más tarde.", regards: "Atentamente." },
+  ar: { title: "لا يمكننا تقديم الخدمة في الوقت الحالي", desc: "نعتذر عن الإزعاج. يرجى المحاولة مرة أخرى لاحقًا.", regards: "مع خالص التحية." },
+  az: { title: "Hazırda xidmət göstərə bilmirik", desc: "Yaranan narahatçılığa görə üzr istəyirik. Zəhmət olmasa daha sonra yenidən cəhd edin.", regards: "Hörmətlə." },
+  ru: { title: "В данный момент мы не можем вас обслужить", desc: "Приносим извинения за неудобства. Пожалуйста, попробуйте позже.", regards: "С уважением." },
+  el: { title: "Αυτή τη στιγμή δεν μπορούμε να σας εξυπηρετήσουμε", desc: "Ζητούμε συγγνώμη για την αναστάτωση. Παρακαλώ δοκιμάστε ξανά αργότερα.", regards: "Με εκτίμηση." },
+  zh: { title: "我们目前无法为您服务", desc: "对此带来的不便，我们深表歉意。请稍后再试。", regards: "此致敬礼。" },
 };
 
-function HiddenRestaurantFallback({ menuLang }: { menuLang?: string }) {
+function HiddenRestaurantFallback({
+  menuLang,
+  name,
+  logoUrl,
+}: {
+  menuLang?: string;
+  name?: string;
+  logoUrl?: string;
+}) {
   const browserLang = (typeof navigator !== "undefined" ? navigator.language : "").slice(0, 2).toLowerCase();
   const fallbackLang = (menuLang ?? "tr").toLowerCase();
   const msg =
     HIDDEN_MESSAGES[browserLang] ?? HIDDEN_MESSAGES[fallbackLang] ?? HIDDEN_MESSAGES.en;
   const dir = browserLang === "ar" ? "rtl" : "ltr";
+  const initial = (name ?? "?").trim().charAt(0).toUpperCase();
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6" dir={dir}>
-      <div className="text-center space-y-6 max-w-md">
-        <div className="text-6xl">🚫</div>
-        <div className="space-y-2">
-          <h1 className="text-xl font-semibold text-foreground">{msg.title}</h1>
-          <p className="text-muted-foreground text-sm">{msg.desc}</p>
+      <div className="w-full max-w-sm rounded-3xl border border-border bg-card shadow-xl p-8 text-center">
+        {/* Restaurant logo (falls back to the name's initial) */}
+        <div className="mx-auto mb-4 w-24 h-24 rounded-full overflow-hidden border border-border bg-muted shadow-sm flex items-center justify-center">
+          {logoUrl ? (
+            <img src={logoUrl} alt={name ?? ""} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-3xl font-bold text-muted-foreground">{initial}</span>
+          )}
         </div>
+        {name && <h1 className="text-xl font-bold text-foreground">{name}</h1>}
+        <div className="mx-auto my-5 w-10 h-0.5 rounded-full bg-border" />
+        <p className="text-base font-semibold text-foreground">{msg.title}</p>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{msg.desc}</p>
+        <p className="mt-4 text-sm font-medium text-foreground/70">{msg.regards}</p>
       </div>
     </div>
   );
@@ -144,7 +161,7 @@ function EmptyMenuFallback() {
 
 export function ThemeRouter() {
   const { isLoading, error } = useInitializeRestaurant();
-  const { themeId, products, hide, menuLang, isActive, qrLicenseIsActive, userIsActive, googleAnalytics } =
+  const { themeId, products, hide, menuLang, isActive, qrLicenseIsActive, userIsActive, googleAnalytics, name, logoUrl } =
     useRestaurantStore(
       useShallow((s) => ({
         themeId: s.restaurantData.themeId,
@@ -155,6 +172,8 @@ export function ThemeRouter() {
         qrLicenseIsActive: s.restaurantData.qrLicenseIsActive,
         userIsActive: s.restaurantData.userIsActive,
         googleAnalytics: s.restaurantData.googleAnalytics,
+        name: s.restaurantData.name,
+        logoUrl: s.restaurantData.logoImageUrl || s.restaurantData.imageAbsoluteUrl,
       }))
     );
 
@@ -173,7 +192,7 @@ export function ThemeRouter() {
     isActive === false ||
     qrLicenseIsActive === false ||
     userIsActive === false;
-  if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} />;
+  if (isBlocked) return <HiddenRestaurantFallback menuLang={menuLang} name={name} logoUrl={logoUrl} />;
   if (!products || products.length === 0) return <EmptyMenuFallback />;
 
   const resolvedThemeId = themeId ?? DEFAULT_THEME_ID;
