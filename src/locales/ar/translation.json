@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "بدون رسوم خدمة أو حد أدنى للطلب",
+    "pickupCardHint": "الاستلام من المطعم",
     "pickupSelf": "سآتي لاستلامه بنفسي",
     "whatsappOrder": "اطلب عبر واتساب",
     "whatsappOrderDescription": "أرسل طلبك عبر واتساب",

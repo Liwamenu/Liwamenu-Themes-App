@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Χωρίς χρέωση υπηρεσίας ή ελάχιστη παραγγελία",
+    "pickupCardHint": "Παραλαβή από το εστιατόριο",
     "pickupSelf": "Θα το παραλάβω ο ίδιος",
     "whatsappOrder": "Παραγγελία μέσω WhatsApp",
     "whatsappOrderDescription": "Στείλτε την παραγγελία σας μέσω WhatsApp",

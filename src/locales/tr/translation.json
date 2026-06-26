@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Servis ücreti ve minimum tutar yok",
+    "pickupCardHint": "Restorandan Teslim Alın",
     "pickupSelf": "Kendim Gelip Alacağım",
     "whatsappOrder": "WhatsApp ile Sipariş",
     "whatsappOrderDescription": "Siparişinizi WhatsApp üzerinden iletirsiniz",

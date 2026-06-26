@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Nessun costo di servizio né minimo d'ordine",
+    "pickupCardHint": "Ritiro al ristorante",
     "pickupSelf": "Ritiro di persona",
     "whatsappOrder": "Ordina tramite WhatsApp",
     "whatsappOrderDescription": "Invia il tuo ordine tramite WhatsApp",
