@@ -408,6 +408,11 @@ export interface OrderPayload {
     longitude: number;
   };
   totalAmount: number;
+  /** Delivery fee the customer was shown (0 for self-pickup). */
+  deliveryFee?: number;
+  /** True when the customer chose "Kendim Gelip Alacağım" — the backend must
+   *  not add a delivery fee for these orders. */
+  isPickup?: boolean;
   orderNote?: string;
   createdAt: string;
 }
