@@ -102,7 +102,6 @@
   "order": {
     "pickupSelfDesc": "Nessun costo di servizio né minimo d'ordine",
     "pickupSelf": "Ritiro di persona",
-    "pickupCardHint": "Ritiro — lo prendi di persona",
     "whatsappOrder": "Ordina tramite WhatsApp",
     "whatsappOrderDescription": "Invia il tuo ordine tramite WhatsApp",
     "sendToWhatsapp": "Invia tramite WhatsApp",

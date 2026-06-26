@@ -102,7 +102,6 @@
   "order": {
     "pickupSelfDesc": "بدون رسوم خدمة أو حد أدنى للطلب",
     "pickupSelf": "سآتي لاستلامه بنفسي",
-    "pickupCardHint": "استلام — ستستلمه بنفسك",
     "whatsappOrder": "اطلب عبر واتساب",
     "whatsappOrderDescription": "أرسل طلبك عبر واتساب",
     "sendToWhatsapp": "إرسال عبر واتساب",
