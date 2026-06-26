@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "بدون رسوم خدمة أو حد أدنى للطلب",
     "pickupCardHint": "الاستلام من المطعم",
+    "pickupTooFar": "أنت بعيد جدًا للاستلام ({{distance}} كم). الاستلام متاح ضمن {{max}} كم.",
     "pickupSelf": "سآتي لاستلامه بنفسي",
     "whatsappOrder": "اطلب عبر واتساب",
     "whatsappOrderDescription": "أرسل طلبك عبر واتساب",

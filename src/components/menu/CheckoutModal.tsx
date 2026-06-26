@@ -31,6 +31,12 @@ interface CheckoutModalProps {
 }
 type OrderType = "inPerson" | "online" | "whatsapp";
 type CheckoutStep = "type" | "details" | "payment" | "confirm";
+
+// Self-pickup skips the delivery-radius gate, but a customer hundreds of km
+// away realistically isn't coming to collect — so pickup still enforces a
+// generous distance cap (instead of the restaurant's small delivery radius).
+const PICKUP_MAX_DISTANCE_KM = 100;
+
 export function CheckoutModal({
   onClose,
   onOrderComplete,
@@ -674,7 +680,7 @@ export function CheckoutModal({
         const coords = await getLocation();
         const maxKm =
           orderType === "online"
-            ? onlineMaxDistance
+            ? (pickupSelf ? PICKUP_MAX_DISTANCE_KM : onlineMaxDistance)
             : restaurant.maxTableOrderDistanceMeter / 1000;
         const inRange = checkDistanceWithCoords(
           coords.latitude,
@@ -692,10 +698,15 @@ export function CheckoutModal({
           );
           if (orderType === "online") {
             toast.error(
-              t("order.outOfRange", {
-                distance: distance.toFixed(1),
-                max: onlineMaxDistance,
-              }),
+              pickupSelf
+                ? t("order.pickupTooFar", {
+                    distance: distance.toFixed(1),
+                    max: PICKUP_MAX_DISTANCE_KM,
+                  })
+                : t("order.outOfRange", {
+                    distance: distance.toFixed(1),
+                    max: onlineMaxDistance,
+                  }),
             );
           } else {
             const meters = distance * 1000;

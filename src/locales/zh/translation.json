@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "无服务费，无最低消费",
     "pickupCardHint": "到店自取",
+    "pickupTooFar": "您距离太远，无法自取（{{distance}} 公里）。自取范围为 {{max}} 公里以内。",
     "pickupSelf": "我自己来取",
     "whatsappOrder": "通过 WhatsApp 下单",
     "whatsappOrderDescription": "通过 WhatsApp 发送订单",

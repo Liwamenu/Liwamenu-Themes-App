@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Χωρίς χρέωση υπηρεσίας ή ελάχιστη παραγγελία",
     "pickupCardHint": "Παραλαβή από το εστιατόριο",
+    "pickupTooFar": "Είστε πολύ μακριά για παραλαβή ({{distance}} χλμ). Η παραλαβή είναι διαθέσιμη εντός {{max}} χλμ.",
     "pickupSelf": "Θα το παραλάβω ο ίδιος",
     "whatsappOrder": "Παραγγελία μέσω WhatsApp",
     "whatsappOrderDescription": "Στείλτε την παραγγελία σας μέσω WhatsApp",
