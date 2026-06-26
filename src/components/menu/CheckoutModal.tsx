@@ -750,6 +750,11 @@ export function CheckoutModal({
         };
       }),
       totalAmount: total,
+      // The delivery fee the customer actually saw (0 for self-pickup), plus an
+      // explicit pickup flag, so the backend can skip the delivery fee on pickup
+      // orders instead of always re-adding restaurant.deliveryFee.
+      deliveryFee,
+      isPickup: pickupSelf,
       orderNote: composeOrderNote(),
       createdAt: new Date().toISOString(),
       ...(customerLocation ? { customerLocation } : {}),
