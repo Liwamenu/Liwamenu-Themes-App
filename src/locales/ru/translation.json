@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Без сервисного сбора и минимальной суммы",
     "pickupCardHint": "Забрать из ресторана",
+    "pickupTooFar": "Вы слишком далеко для самовывоза ({{distance}} км). Самовывоз доступен в пределах {{max}} км.",
     "pickupSelf": "Заберу сам",
     "whatsappOrder": "Заказ через WhatsApp",
     "whatsappOrderDescription": "Отправьте заказ через WhatsApp",

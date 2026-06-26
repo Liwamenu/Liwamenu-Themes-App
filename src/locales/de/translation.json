@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Keine Servicegebühr, kein Mindestbestellwert",
     "pickupCardHint": "Im Restaurant abholen",
+    "pickupTooFar": "Sie sind für die Abholung zu weit entfernt ({{distance}} km). Abholung ist innerhalb von {{max}} km möglich.",
     "pickupSelf": "Ich hole es selbst ab",
     "whatsappOrder": "Bestellung über WhatsApp",
     "whatsappOrderDescription": "Senden Sie Ihre Bestellung über WhatsApp",

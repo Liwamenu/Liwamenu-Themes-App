@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Servis ücreti ve minimum tutar yok",
     "pickupCardHint": "Restorandan Teslim Alın",
+    "pickupTooFar": "Gel-al için konumunuz çok uzak ({{distance}} km). En fazla {{max}} km mesafeden gelip alabilirsiniz.",
     "pickupSelf": "Kendim Gelip Alacağım",
     "whatsappOrder": "WhatsApp ile Sipariş",
     "whatsappOrderDescription": "Siparişinizi WhatsApp üzerinden iletirsiniz",

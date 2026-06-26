@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Sin cargo por servicio ni pedido mínimo",
     "pickupCardHint": "Recoger en el restaurante",
+    "pickupTooFar": "Estás demasiado lejos para recoger ({{distance}} km). La recogida está disponible dentro de {{max}} km.",
     "pickupSelf": "Lo recogeré yo mismo",
     "whatsappOrder": "Pedir por WhatsApp",
     "whatsappOrderDescription": "Envía tu pedido a través de WhatsApp",

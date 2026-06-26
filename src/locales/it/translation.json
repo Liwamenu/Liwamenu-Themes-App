@@ -102,6 +102,7 @@
   "order": {
     "pickupSelfDesc": "Nessun costo di servizio né minimo d'ordine",
     "pickupCardHint": "Ritiro al ristorante",
+    "pickupTooFar": "Sei troppo lontano per il ritiro ({{distance}} km). Il ritiro è disponibile entro {{max}} km.",
     "pickupSelf": "Ritiro di persona",
     "whatsappOrder": "Ordina tramite WhatsApp",
     "whatsappOrderDescription": "Invia il tuo ordine tramite WhatsApp",
