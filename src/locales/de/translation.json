@@ -102,7 +102,6 @@
   "order": {
     "pickupSelfDesc": "Keine Servicegebühr, kein Mindestbestellwert",
     "pickupSelf": "Ich hole es selbst ab",
-    "pickupCardHint": "Abholung — Sie holen es selbst ab",
     "whatsappOrder": "Bestellung über WhatsApp",
     "whatsappOrderDescription": "Senden Sie Ihre Bestellung über WhatsApp",
     "sendToWhatsapp": "Über WhatsApp senden",

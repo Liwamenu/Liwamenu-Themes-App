@@ -102,7 +102,6 @@
   "order": {
     "pickupSelfDesc": "Χωρίς χρέωση υπηρεσίας ή ελάχιστη παραγγελία",
     "pickupSelf": "Θα το παραλάβω ο ίδιος",
-    "pickupCardHint": "Παραλαβή — θα το παραλάβετε εσείς",
     "whatsappOrder": "Παραγγελία μέσω WhatsApp",
     "whatsappOrderDescription": "Στείλτε την παραγγελία σας μέσω WhatsApp",
     "sendToWhatsapp": "Αποστολή μέσω WhatsApp",

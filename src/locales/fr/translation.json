@@ -102,7 +102,6 @@
   "order": {
     "pickupSelfDesc": "Sans frais de service ni minimum de commande",
     "pickupSelf": "Je viendrai le chercher",
-    "pickupCardHint": "Retrait — vous venez le chercher",
     "whatsappOrder": "Commander via WhatsApp",
     "whatsappOrderDescription": "Envoyez votre commande via WhatsApp",
     "sendToWhatsapp": "Envoyer via WhatsApp",
