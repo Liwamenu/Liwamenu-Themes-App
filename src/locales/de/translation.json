@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Keine Servicegebühr, kein Mindestbestellwert",
+    "pickupCardHint": "Im Restaurant abholen",
     "pickupSelf": "Ich hole es selbst ab",
     "whatsappOrder": "Bestellung über WhatsApp",
     "whatsappOrderDescription": "Senden Sie Ihre Bestellung über WhatsApp",

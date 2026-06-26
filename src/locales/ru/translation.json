@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Без сервисного сбора и минимальной суммы",
+    "pickupCardHint": "Забрать из ресторана",
     "pickupSelf": "Заберу сам",
     "whatsappOrder": "Заказ через WhatsApp",
     "whatsappOrderDescription": "Отправьте заказ через WhatsApp",

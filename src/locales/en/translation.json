@@ -102,6 +102,7 @@
   },
   "order": {
     "pickupSelfDesc": "No service fee or minimum order",
+    "pickupCardHint": "Pick up from the restaurant",
     "pickupSelf": "I'll Pick It Up Myself",
     "whatsappOrder": "Order via WhatsApp",
     "whatsappOrderDescription": "Send your order through WhatsApp",

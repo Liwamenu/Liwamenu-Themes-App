@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "无服务费，无最低消费",
+    "pickupCardHint": "到店自取",
     "pickupSelf": "我自己来取",
     "whatsappOrder": "通过 WhatsApp 下单",
     "whatsappOrderDescription": "通过 WhatsApp 发送订单",

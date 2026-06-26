@@ -1077,7 +1077,7 @@ export function CheckoutModal({
                     <div className="text-left flex-1">
                       <h4 className="font-semibold text-lg">{t("order.online")}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {t("order.onlineDesc", {
+                        {pickupSelf ? t("order.pickupCardHint") : t("order.onlineDesc", {
                     distance: onlineMaxDistance
                   })}
                       </p>
@@ -1095,7 +1095,7 @@ export function CheckoutModal({
                   </div>
                   <div className="text-left flex-1">
                     <h4 className="font-semibold text-lg">{t("order.whatsappOrder")}</h4>
-                    <p className="text-sm text-muted-foreground">{t("order.whatsappOrderDescription")}</p>
+                    <p className="text-sm text-muted-foreground">{pickupSelf ? t("order.pickupCardHint") : t("order.whatsappOrderDescription")}</p>
                   </div>
                 </button>
               )}

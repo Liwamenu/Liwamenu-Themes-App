@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Sin cargo por servicio ni pedido mínimo",
+    "pickupCardHint": "Recoger en el restaurante",
     "pickupSelf": "Lo recogeré yo mismo",
     "whatsappOrder": "Pedir por WhatsApp",
     "whatsappOrderDescription": "Envía tu pedido a través de WhatsApp",

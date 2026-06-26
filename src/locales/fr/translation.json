@@ -101,6 +101,7 @@
   },
   "order": {
     "pickupSelfDesc": "Sans frais de service ni minimum de commande",
+    "pickupCardHint": "Retrait au restaurant",
     "pickupSelf": "Je viendrai le chercher",
     "whatsappOrder": "Commander via WhatsApp",
     "whatsappOrderDescription": "Envoyez votre commande via WhatsApp",
