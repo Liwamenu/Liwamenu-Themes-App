@@ -137,6 +137,10 @@ export function CheckoutModal({
     message: string;
     errorType: "permission" | "outOfRange" | "tableOutOfRange";
     orderTypeAttempted: OrderType | null;
+    // true → the error was raised by the submit-time re-check (handleConfirmOrder
+    // / handleConfirmWhatsappOrder), so "retry" should re-run the confirm rather
+    // than the early order-type gate.
+    fromConfirm?: boolean;
   }>({
     isOpen: false,
     message: "",
@@ -614,6 +618,22 @@ export function CheckoutModal({
    * with the message prefilled, clears the cart, and closes the modal. No
    * backend order is created; the restaurant intakes the order over WhatsApp.
    */
+  // Surface a submit-time location problem (too far / permission) as the shared
+  // location-error MODAL instead of a transient toast. `fromConfirm` routes the
+  // modal's "retry" back through the confirm flow.
+  const showConfirmLocationError = (
+    message: string,
+    errorType: "permission" | "outOfRange" | "tableOutOfRange",
+  ) => {
+    setLocationErrorModal({
+      isOpen: true,
+      message,
+      errorType,
+      orderTypeAttempted: orderType,
+      fromConfirm: true,
+    });
+  };
+
   const handleConfirmWhatsappOrder = async () => {
     // Self-pickup is capped at PICKUP_MAX_DISTANCE_KM on WhatsApp too, matching
     // the paket/online path. Non-pickup WhatsApp was already gated for coverage
@@ -638,16 +658,17 @@ export function CheckoutModal({
             restaurant.latitude,
             restaurant.longitude,
           );
-          toast.error(
+          showConfirmLocationError(
             t("order.pickupTooFar", {
               distance: distance.toFixed(1),
               max: PICKUP_MAX_DISTANCE_KM,
             }),
+            "outOfRange",
           );
           return;
         }
       } catch {
-        toast.error(t("order.locationError"));
+        showConfirmLocationError(t("order.locationError"), "permission");
         return;
       }
     }
@@ -733,7 +754,7 @@ export function CheckoutModal({
             restaurant.longitude,
           );
           if (orderType === "online") {
-            toast.error(
+            showConfirmLocationError(
               pickupSelf
                 ? t("order.pickupTooFar", {
                     distance: distance.toFixed(1),
@@ -743,6 +764,7 @@ export function CheckoutModal({
                     distance: distance.toFixed(1),
                     max: onlineMaxDistance,
                   }),
+              "outOfRange",
             );
           } else {
             const meters = distance * 1000;
@@ -751,11 +773,12 @@ export function CheckoutModal({
               m >= 1000
                 ? `${(m / 1000).toFixed(1)} km`
                 : `${Math.round(m)} ${t("common.meters")}`;
-            toast.error(
+            showConfirmLocationError(
               t("order.tableOrderOutOfRangeDistance", {
                 distance: fmt(meters),
                 max: fmt(maxMeters),
               }),
+              "tableOutOfRange",
             );
           }
           setIsSubmitting(false);
@@ -764,7 +787,7 @@ export function CheckoutModal({
         // Refresh the stored snapshot used in the order payload below
         setCustomerLocation({ latitude: coords.latitude, longitude: coords.longitude });
       } catch {
-        toast.error(t("order.locationError"));
+        showConfirmLocationError(t("order.locationError"), "permission");
         setIsSubmitting(false);
         return;
       }
@@ -1510,6 +1533,7 @@ export function CheckoutModal({
                   <div className="w-full flex flex-col gap-2">
                     {/* Retry button — goes straight to browser geolocation (skip the explainer modal) */}
                     <Button onClick={() => {
+                  const wasFromConfirm = locationErrorModal.fromConfirm;
                   setLocationErrorModal({
                     isOpen: false,
                     message: "",
@@ -1517,8 +1541,14 @@ export function CheckoutModal({
                     orderTypeAttempted: null
                   });
                   // User already understands why location is needed (they're
-                  // retrying), so call the geolocation flow directly.
-                  handleLocationPermissionAllow();
+                  // retrying), so re-run the relevant flow directly. A submit-time
+                  // error re-runs the confirm (which knows about pickup caps etc.);
+                  // an early-gate error re-runs the order-type location check.
+                  if (wasFromConfirm) {
+                    handleConfirmOrder();
+                  } else {
+                    handleLocationPermissionAllow();
+                  }
                 }} className="w-full h-12 rounded-xl">
                       {t("order.retryLocation")}
                     </Button>
