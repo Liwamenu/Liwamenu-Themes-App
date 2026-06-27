@@ -615,6 +615,42 @@ export function CheckoutModal({
    * backend order is created; the restaurant intakes the order over WhatsApp.
    */
   const handleConfirmWhatsappOrder = async () => {
+    // Self-pickup is capped at PICKUP_MAX_DISTANCE_KM on WhatsApp too, matching
+    // the paket/online path. Non-pickup WhatsApp was already gated for coverage
+    // when the channel was chosen; self-pickup skips that early gate (it jumps
+    // straight to details), so the only place to enforce the pickup cap is here
+    // at confirm time. Without this, a WhatsApp self-pickup order could be sent
+    // from any distance.
+    if (pickupSelf) {
+      try {
+        const coords = await getLocation();
+        const inRange = checkDistanceWithCoords(
+          coords.latitude,
+          coords.longitude,
+          restaurant.latitude,
+          restaurant.longitude,
+          PICKUP_MAX_DISTANCE_KM,
+        );
+        if (!inRange) {
+          const distance = getDistanceWithCoords(
+            coords.latitude,
+            coords.longitude,
+            restaurant.latitude,
+            restaurant.longitude,
+          );
+          toast.error(
+            t("order.pickupTooFar", {
+              distance: distance.toFixed(1),
+              max: PICKUP_MAX_DISTANCE_KM,
+            }),
+          );
+          return;
+        }
+      } catch {
+        toast.error(t("order.locationError"));
+        return;
+      }
+    }
     const { buildWhatsappOrderUrl } = await import("@/lib/whatsappOrder");
     // Lock the message to the restaurant's own menu language — the message
     // is read by the restaurant staff, not the customer, so a French diner
