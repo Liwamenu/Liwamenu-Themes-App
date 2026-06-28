@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -115,7 +116,8 @@ export const ProductCard = memo(function ProductCard({
          *  flush-left of the content column; the user asked for the price
          *  to sit at the bottom-right of each product card, so the inner
          *  column now uses items-end and the parent justifies to end. */}
-        <div className="flex items-center justify-end gap-2 mt-2">
+        <div className="flex items-center justify-between gap-2 mt-2">
+          <ProductBadges product={product} className="min-w-0" />
           <div className="flex flex-col items-end gap-0.5 min-w-0">
             {originalPrice && (
               <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">

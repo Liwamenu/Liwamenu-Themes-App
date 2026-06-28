@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -126,6 +127,7 @@ export const ProductCard = memo(function ProductCard({
             {specialPriceName}
           </span>
         )}
+        <ProductBadges product={product} className="mt-1.5 min-w-0" />
       </div>
 
       {/* Right: dietary indicators + price */}

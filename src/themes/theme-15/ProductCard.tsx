@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -124,6 +125,7 @@ export const ProductCard = memo(function ProductCard({
             {formatPrice(displayPrice)}
           </span>
         </div>
+        <ProductBadges product={product} className="justify-end min-w-0" />
       </div>
     </motion.div>
   );

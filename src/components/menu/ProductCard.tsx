@@ -1,11 +1,12 @@
 import { memo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Star, Plus, Flame, Clock } from "lucide-react";
+import { Star, Plus } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -102,33 +103,17 @@ export const ProductCard = memo(function ProductCard({
         <h3 className="font-semibold text-foreground text-lg mb-1 line-clamp-2 break-words">{product.name}</h3>
         <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{product.description}</p>
 
-        {/* Calorie / prep-time badges — only render when the backend supplied
-            a positive value (graceful: absent/null/0 → no badge). */}
-        {(Number(product.calorie) > 0 || Number(product.preparationTime) > 0) && (
-          <div className="flex flex-wrap items-center gap-1.5 mb-2">
-            {Number(product.calorie) > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-700 border border-orange-200 rounded-full text-[11px] font-medium">
-                <Flame className="w-3 h-3" />
-                {t("productCard.calorieBadge", { count: Number(product.calorie) })}
-              </span>
-            )}
-            {Number(product.preparationTime) > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-100 text-sky-700 border border-sky-200 rounded-full text-[11px] font-medium">
-                <Clock className="w-3 h-3" />
-                {t("productCard.prepTimeBadge", { count: Number(product.preparationTime) })}
-              </span>
-            )}
-          </div>
-        )}
-
+        {/* Price row — price on the left, calorie/prep badges pinned to the
+            opposite (right) side of the same row. Badges render only when the
+            backend supplied a positive value (graceful). */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
+          <div className="flex flex-col items-start gap-0.5 min-w-0">
             {originalPrice && (
               <span className="text-xs text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>
             )}
             <span className="text-xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(displayPrice)}</span>
           </div>
-
+          <ProductBadges product={product} className="justify-end min-w-0" />
         </div>
       </div>
     </motion.div>

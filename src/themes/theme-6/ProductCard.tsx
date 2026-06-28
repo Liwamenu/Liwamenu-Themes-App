@@ -3,6 +3,7 @@ import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -93,8 +94,10 @@ export const ProductCard = memo(function ProductCard({
           )}
         </div>
 
-        {/* Price */}
+        {/* Price — pinned right; calorie/prep badges sit on the same band,
+            pushed to the opposite (left) side via mr-auto. */}
         <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-0 mt-1 min-w-0">
+          <ProductBadges product={product} className="mr-auto min-w-0" />
           {originalPrice && (
             <span className="text-[8px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
               {formatPrice(originalPrice)}

@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -111,6 +112,7 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         <div className="mt-2 flex items-center gap-2">
+          <ProductBadges product={product} className="justify-start min-w-0" />
           <span className="flex-1 h-px bg-[hsl(var(--gold)/0.5)]" />
           <div className="flex flex-col items-center gap-0 min-w-0">
             {originalPrice && (

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Check, MessageSquare, Flame, Clock } from 'lucide-react';
+import { X, Plus, Minus, Check, MessageSquare } from 'lucide-react';
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from '@/types/restaurant';
 import { resolveActiveBasePrice } from '@/lib/priceList';
 import { AllergensSection } from '@/components/menu/AllergensSection';
+import { ProductBadges } from '@/components/menu/ProductBadges';
 import { useCart } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { useFlyingEmoji } from '@/hooks/useFlyingEmoji';
@@ -330,36 +331,21 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               {product.description}
             </p>
             
-            {/* Price */}
-            <div className="flex items-baseline gap-2 flex-wrap min-w-0">
-              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
-                {formatPrice(headerPrice)}
-              </span>
-              {originalPrice && (
-                <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
-                  {formatPrice(originalPrice)}
+            {/* Price row — price on the left, calorie/prep badges pinned to the
+                opposite (right) side of the same row (graceful: hidden at 0). */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
+                  {formatPrice(headerPrice)}
                 </span>
-              )}
-            </div>
-
-            {/* Calorie / prep-time badges — only render when the backend supplied
-                a positive value (graceful: absent/null/0 → no badge). */}
-            {(Number(product.calorie) > 0 || Number(product.preparationTime) > 0) && (
-              <div className="flex flex-wrap items-center gap-1.5 mt-3">
-                {Number(product.calorie) > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-100 text-orange-700 border border-orange-200 rounded-full text-xs font-medium">
-                    <Flame className="w-3.5 h-3.5" />
-                    {t("productCard.calorieBadge", { count: Number(product.calorie) })}
-                  </span>
-                )}
-                {Number(product.preparationTime) > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-sky-100 text-sky-700 border border-sky-200 rounded-full text-xs font-medium">
-                    <Clock className="w-3.5 h-3.5" />
-                    {t("productCard.prepTimeBadge", { count: Number(product.preparationTime) })}
+                {originalPrice && (
+                  <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
+                    {formatPrice(originalPrice)}
                   </span>
                 )}
               </div>
-            )}
+              <ProductBadges product={product} size="md" className="justify-end min-w-0" />
+            </div>
           </div>
 
           {/* Portion Selection */}
