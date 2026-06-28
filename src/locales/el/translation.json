@@ -79,6 +79,8 @@
     "tableInvalid": "Μη έγκυρες πληροφορίες τραπεζιού"
   },
   "productCard": {
+    "calorieBadge": "{{count}} kcal",
+    "prepTimeBadge": "{{count}} λεπτά",
     "recommended": "Προτεινόμενο",
     "campaign": "Προσφορά",
     "portion": "Μερίδα"

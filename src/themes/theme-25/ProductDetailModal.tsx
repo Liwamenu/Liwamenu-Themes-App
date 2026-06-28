@@ -5,6 +5,7 @@ import { X, Minus, Plus, Check } from "lucide-react";
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { AllergensSection } from "@/components/menu/AllergensSection";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 import { useCart } from "@/hooks/useCart";
 import { useRestaurant } from "@/hooks/useRestaurant";
 import { useFlyingEmoji } from "@/hooks/useFlyingEmoji";
@@ -361,6 +362,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               <Plus className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Calorie / prep-time badges — on the same price band as the
+              centered total above. The price here is centered between the
+              ± steppers (no left/right pin), so badges sit centered just
+              below it (graceful: hidden when both values are 0/absent). */}
+          <ProductBadges product={product} size="md" className="mt-3 justify-center" />
 
           {/* About */}
           {desc && (

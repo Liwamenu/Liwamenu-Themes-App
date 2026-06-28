@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -101,6 +102,9 @@ export const ProductCard = memo(function ProductCard({
             {product.description}
           </p>
         </div>
+        {/* Calorie/prep badges — same row band as the price, pinned to the
+            opposite (left) side since the price sits in the right column. */}
+        <ProductBadges product={product} className="min-w-0" />
       </div>
 
       {/* Price Column */}

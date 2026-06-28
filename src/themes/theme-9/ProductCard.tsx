@@ -6,6 +6,7 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
+import { ProductBadges } from "@/components/menu/ProductBadges";
 
 /**
  * Reduces a heading's font-size until the full text fits within `maxLines` lines.
@@ -139,7 +140,7 @@ export const ProductCard = memo(function ProductCard({
               {formatPrice(displayPrice)}
             </span>
           </div>
-
+          <ProductBadges product={product} className="justify-end min-w-0" />
         </div>
       </div>
     </motion.div>

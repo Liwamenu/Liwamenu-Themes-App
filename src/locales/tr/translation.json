@@ -79,6 +79,8 @@
     "tableInvalid": "Geçersiz masa bilgisi"
   },
   "productCard": {
+    "calorieBadge": "{{count}} kcal",
+    "prepTimeBadge": "{{count}} dk",
     "recommended": "Önerilen",
     "campaign": "Kampanya",
     "portion": "Porsiyon"

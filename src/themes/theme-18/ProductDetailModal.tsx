@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getProductImageSrc, handleProductImageError } from '@/lib/productImage';
 import { AllergensSection } from '@/components/menu/AllergensSection';
+import { ProductBadges } from '@/components/menu/ProductBadges';
 import { getEffectiveTagBounds, shouldShowTagItemPrice } from "@/lib/orderTag";
 
 interface ProductDetailModalProps {
@@ -192,9 +193,12 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
           <div className="bg-card rounded-2xl p-4 shadow-card mb-4">
             <h2 className="font-display text-2xl font-bold text-foreground mb-2">{product.name}</h2>
             <p className="text-muted-foreground text-sm mb-4">{product.description}</p>
-            <div className="flex items-baseline gap-2 flex-wrap min-w-0">
-              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(headerPrice)}</span>
-              {originalPrice && <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">{formatPrice(headerPrice)}</span>
+                {originalPrice && <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">{formatPrice(originalPrice)}</span>}
+              </div>
+              <ProductBadges product={product} size="md" className="justify-end min-w-0" />
             </div>
           </div>
 

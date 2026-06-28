@@ -5,6 +5,7 @@ import { X, Plus, Minus, Check, MessageSquare } from 'lucide-react';
 import { Product, Portion, OrderTag, OrderTagItem, SelectedTagItem } from '@/types/restaurant';
 import { resolveActiveBasePrice } from '@/lib/priceList';
 import { AllergensSection } from '@/components/menu/AllergensSection';
+import { ProductBadges } from '@/components/menu/ProductBadges';
 import { useCart } from '@/hooks/useCart';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { useFlyingEmoji } from '@/hooks/useFlyingEmoji';
@@ -330,16 +331,20 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               {product.description}
             </p>
             
-            {/* Price */}
-            <div className="flex items-baseline gap-2 flex-wrap min-w-0">
-              <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
-                {formatPrice(headerPrice)}
-              </span>
-              {originalPrice && (
-                <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
-                  {formatPrice(originalPrice)}
+            {/* Price row — price on the left, calorie/prep badges pinned to the
+                opposite (right) side of the same row (graceful: hidden at 0). */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-baseline gap-2 min-w-0">
+                <span className="text-2xl font-bold text-primary whitespace-nowrap truncate max-w-full">
+                  {formatPrice(headerPrice)}
                 </span>
-              )}
+                {originalPrice && (
+                  <span className="text-lg text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
+                    {formatPrice(originalPrice)}
+                  </span>
+                )}
+              </div>
+              <ProductBadges product={product} size="md" className="justify-end min-w-0" />
             </div>
           </div>
 
