@@ -25,17 +25,20 @@ export function ProductBadges({ product, size = "sm", className }: ProductBadges
 
   const chip = size === "md" ? "px-2.5 py-1 text-xs" : "px-2 py-0.5 text-[11px]";
   const icon = size === "md" ? "w-3.5 h-3.5" : "w-3 h-3";
+  // Anthracite (RAL 7016) pill with white text and a 4px corner radius —
+  // identical for both chips; they're told apart by icon + label.
+  const base = "inline-flex items-center gap-1 rounded font-medium whitespace-nowrap bg-[#293133] text-white";
 
   return (
     <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
       {calorie > 0 && (
-        <span className={cn("inline-flex items-center gap-1 rounded-full font-medium whitespace-nowrap bg-orange-100 text-orange-700 border border-orange-200", chip)}>
+        <span className={cn(base, chip)}>
           <Flame className={cn("shrink-0", icon)} />
           {t("productCard.calorieBadge", { count: calorie })}
         </span>
       )}
       {prep > 0 && (
-        <span className={cn("inline-flex items-center gap-1 rounded-full font-medium whitespace-nowrap bg-sky-100 text-sky-700 border border-sky-200", chip)}>
+        <span className={cn(base, chip)}>
           <Clock className={cn("shrink-0", icon)} />
           {t("productCard.prepTimeBadge", { count: prep })}
         </span>
