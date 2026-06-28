@@ -79,6 +79,8 @@
     "tableInvalid": "无效的餐桌信息"
   },
   "productCard": {
+    "calorieBadge": "{{count}} 千卡",
+    "prepTimeBadge": "{{count}} 分钟",
     "recommended": "推荐",
     "campaign": "促销",
     "portion": "份量"

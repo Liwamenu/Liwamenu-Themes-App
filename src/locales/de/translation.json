@@ -79,6 +79,8 @@
     "tableInvalid": "Ungültige Tischinformation"
   },
   "productCard": {
+    "calorieBadge": "{{count}} kcal",
+    "prepTimeBadge": "{{count}} Min.",
     "recommended": "Empfohlen",
     "campaign": "Aktion",
     "portion": "Portion"

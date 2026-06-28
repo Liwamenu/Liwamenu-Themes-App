@@ -79,6 +79,8 @@
     "tableInvalid": "Неверная информация о столе"
   },
   "productCard": {
+    "calorieBadge": "{{count}} ккал",
+    "prepTimeBadge": "{{count}} мин",
     "recommended": "Рекомендуем",
     "campaign": "Акция",
     "portion": "Порция"

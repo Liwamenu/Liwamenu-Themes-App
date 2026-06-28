@@ -79,6 +79,8 @@
     "tableInvalid": "معلومات الطاولة غير صالحة"
   },
   "productCard": {
+    "calorieBadge": "{{count}} سعرة",
+    "prepTimeBadge": "{{count}} دقيقة",
     "recommended": "موصى به",
     "campaign": "عرض",
     "portion": "حصة"

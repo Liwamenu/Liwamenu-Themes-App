@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Star, Plus } from "lucide-react";
+import { Star, Plus, Flame, Clock } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
@@ -101,6 +101,25 @@ export const ProductCard = memo(function ProductCard({
       <div className="p-4">
         <h3 className="font-semibold text-foreground text-lg mb-1 line-clamp-2 break-words">{product.name}</h3>
         <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{product.description}</p>
+
+        {/* Calorie / prep-time badges — only render when the backend supplied
+            a positive value (graceful: absent/null/0 → no badge). */}
+        {(Number(product.calorie) > 0 || Number(product.preparationTime) > 0) && (
+          <div className="flex flex-wrap items-center gap-1.5 mb-2">
+            {Number(product.calorie) > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-orange-700 border border-orange-200 rounded-full text-[11px] font-medium">
+                <Flame className="w-3 h-3" />
+                {t("productCard.calorieBadge", { count: Number(product.calorie) })}
+              </span>
+            )}
+            {Number(product.preparationTime) > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-100 text-sky-700 border border-sky-200 rounded-full text-[11px] font-medium">
+                <Clock className="w-3 h-3" />
+                {t("productCard.prepTimeBadge", { count: Number(product.preparationTime) })}
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">

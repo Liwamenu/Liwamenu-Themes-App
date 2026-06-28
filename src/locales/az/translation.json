@@ -79,6 +79,8 @@
     "tableInvalid": "Yanlış masa məlumatı"
   },
   "productCard": {
+    "calorieBadge": "{{count}} kkal",
+    "prepTimeBadge": "{{count}} dəq",
     "recommended": "Tövsiyə olunan",
     "campaign": "Kampaniya",
     "portion": "Porsiya"

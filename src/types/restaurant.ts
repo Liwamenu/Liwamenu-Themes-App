@@ -106,6 +106,10 @@ export interface Product {
   isCampaign?: boolean;
   /** EU 14 major allergens declared for this product (Annex II / Türk Gıda Kodeksi). */
   allergens?: ProductAllergen[];
+  /** Optional energy value in kcal. Backend may not send it yet (nullable) → no badge. */
+  calorie?: number | null;
+  /** Optional preparation time in minutes. Backend may not send it yet (nullable) → no badge. */
+  preparationTime?: number | null;
   portions: Portion[];
 }
 

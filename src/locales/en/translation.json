@@ -80,6 +80,8 @@
     "tableInvalid": "Invalid table info"
   },
   "productCard": {
+    "calorieBadge": "{{count}} kcal",
+    "prepTimeBadge": "{{count}} min",
     "recommended": "Recommended",
     "campaign": "Campaign",
     "portion": "Portion"
