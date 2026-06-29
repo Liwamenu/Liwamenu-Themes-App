@@ -5,7 +5,6 @@ import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -151,7 +150,6 @@ export const ProductCard = memo(function ProductCard({
               )}
             </div>
           )}
-          <ProductBadges product={product} />
         </div>
       </div>
     </motion.div>

@@ -4,7 +4,6 @@ import { Flame, Leaf } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
 
@@ -152,8 +151,6 @@ export const ProductCard = memo(function ProductCard({
               }}
             />
           )}
-
-          <ProductBadges product={product} className="ml-auto justify-end min-w-0" />
         </div>
       </div>
 

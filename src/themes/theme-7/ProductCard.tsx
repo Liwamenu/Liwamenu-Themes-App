@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -117,20 +116,15 @@ export const ProductCard = memo(function ProductCard({
             </p>
           )}
         </div>
-        {/* Price pinned bottom-right; calorie/prep badges share the band on
-            the opposite (left) side. */}
-        <div className="flex items-end justify-between gap-2 min-w-0">
-          <ProductBadges product={product} className="min-w-0" />
-          <div className="flex flex-col items-end gap-0.5 min-w-0 max-w-full">
-            {originalPrice && (
-              <span className="text-[12px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
-                {formatPrice(originalPrice)}
-              </span>
-            )}
-            <span className="font-bold text-primary text-[22px] whitespace-nowrap truncate max-w-full">
-              {formatPrice(displayPrice)}
+        <div className="flex flex-col items-end gap-0.5 min-w-0 max-w-full">
+          {originalPrice && (
+            <span className="text-[12px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
+              {formatPrice(originalPrice)}
             </span>
-          </div>
+          )}
+          <span className="font-bold text-primary text-[22px] whitespace-nowrap truncate max-w-full">
+            {formatPrice(displayPrice)}
+          </span>
         </div>
       </div>
     </motion.div>

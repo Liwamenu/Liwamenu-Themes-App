@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -102,23 +101,17 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </h3>
 
-        {/* Calorie/prep badges (left) on the same band as the price pill,
-            which stays pinned bottom-right. Badges render only when the backend
-            supplied a positive value (graceful). */}
-        <div className="flex items-end justify-between gap-2 min-w-0">
-          <ProductBadges product={product} className="min-w-0" />
-          {/* Price pill — darker than card, embossed, yellow text, bottom-right */}
-          <div className="inline-flex items-center ml-auto max-w-full bg-secondary rounded-[4px] px-3 py-1.5 shadow-inner">
-            <div className="flex items-baseline gap-2 min-w-0">
-              {originalPrice && (
-                <span className="text-[11px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
-                  {formatPrice(originalPrice)}
-                </span>
-              )}
-              <span className="text-[16px] font-bold text-primary whitespace-nowrap truncate max-w-full">
-                {formatPrice(displayPrice)}
+        {/* Price pill — darker than card, embossed, yellow text, bottom-right */}
+        <div className="inline-flex items-center self-end max-w-full bg-secondary rounded-[4px] px-3 py-1.5 shadow-inner">
+          <div className="flex items-baseline gap-2 min-w-0">
+            {originalPrice && (
+              <span className="text-[11px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
+                {formatPrice(originalPrice)}
               </span>
-            </div>
+            )}
+            <span className="text-[16px] font-bold text-primary whitespace-nowrap truncate max-w-full">
+              {formatPrice(displayPrice)}
+            </span>
           </div>
         </div>
       </div>

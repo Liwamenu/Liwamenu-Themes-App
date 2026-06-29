@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -114,11 +113,6 @@ export const ProductCard = memo(function ProductCard({
             {formatPrice(displayPrice)}
           </span>
         </div>
-
-        {/* Calorie/prep badges — centered directly under the price to match this
-            card's centered layout. Render only when the backend supplied a
-            positive value (graceful). */}
-        <ProductBadges product={product} className="justify-center mb-4" />
 
         {/* Green decorative bottom stripe */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-1 bg-secondary rounded-t-full" />
