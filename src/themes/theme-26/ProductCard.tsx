@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Flame, Leaf, Tag } from "lucide-react";
 import { Product, Portion } from "@/types/restaurant";
 import { resolveActiveBasePrice } from "@/lib/priceList";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 import { useTranslation } from "react-i18next";
 
 interface ProductCardProps {
@@ -229,7 +228,6 @@ export const ProductCard = memo(function ProductCard({
             )}
           </span>
         )}
-        <ProductBadges product={product} className="flex-none self-center" />
         <span className="menu-row-dots" aria-hidden="true" />
         <span className="menu-row-price">
           {formatPrice(displayPrice)}

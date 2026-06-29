@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 function useFitToLines(maxLines: number, dep: unknown) {
   const ref = useRef<HTMLElement | null>(null);
@@ -138,10 +137,6 @@ export const ProductCard = memo(function ProductCard({
         <span className="text-[22px] font-bold text-primary whitespace-nowrap truncate max-w-full font-display">
           {formatPrice(displayPrice)}
         </span>
-        {/* Calorie/prep badges — centered directly under the price to match this
-            card's centered layout. Render only when the backend supplied a
-            positive value (graceful). */}
-        <ProductBadges product={product} className="justify-center mt-1" />
       </div>
     </motion.div>
   );

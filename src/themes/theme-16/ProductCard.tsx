@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 function useFitToLines(maxLines: number, dep: unknown) {
   const ref = useRef<HTMLElement | null>(null);
@@ -123,21 +122,18 @@ export const ProductCard = memo(function ProductCard({
       </h3>
 
       {/* Price */}
-      <div className="mt-0.5 flex items-end justify-center gap-1.5 min-w-0">
-        <ProductBadges product={product} className="justify-start min-w-0" />
-        <div className="flex flex-col items-center gap-0 min-w-0">
-          {originalPrice && (
-            <span className="text-[9px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
-              {formatPrice(originalPrice)}
-            </span>
-          )}
-          <span className={cn(
-            "text-[13px] font-extrabold whitespace-nowrap truncate max-w-full leading-none",
-            priceType === "campaign" ? "text-campaign" : priceType === "special" ? "text-special" : "text-primary"
-          )}>
-            {formatPrice(displayPrice)}
+      <div className="mt-0.5 flex flex-col items-center gap-0 min-w-0">
+        {originalPrice && (
+          <span className="text-[9px] text-muted-foreground line-through whitespace-nowrap truncate max-w-full">
+            {formatPrice(originalPrice)}
           </span>
-        </div>
+        )}
+        <span className={cn(
+          "text-[13px] font-extrabold whitespace-nowrap truncate max-w-full leading-none",
+          priceType === "campaign" ? "text-campaign" : priceType === "special" ? "text-special" : "text-primary"
+        )}>
+          {formatPrice(displayPrice)}
+        </span>
       </div>
 
     </motion.div>

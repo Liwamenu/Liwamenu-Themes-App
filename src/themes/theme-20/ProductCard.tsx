@@ -6,7 +6,6 @@ import { resolveActiveBasePrice } from "@/lib/priceList";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { getProductImageSrc, handleProductImageError } from "@/lib/productImage";
-import { ProductBadges } from "@/components/menu/ProductBadges";
 
 interface ProductCardProps {
   product: Product;
@@ -109,22 +108,19 @@ export const ProductCard = memo(function ProductCard({
       )}
 
       {/* Price */}
-      <div className="mt-2 flex items-end justify-between gap-2">
-        <div className="flex flex-col min-w-0">
-          {originalPrice && (
-            <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap leading-none">
-              {formatPrice(originalPrice)}
-            </span>
-          )}
-          <span className={cn(
-            "font-display font-bold text-foreground whitespace-nowrap truncate text-lg leading-none",
-            priceType === "campaign" && "text-campaign",
-            priceType === "special" && "text-special"
-          )}>
-            {formatPrice(displayPrice)}
+      <div className="mt-2 flex flex-col">
+        {originalPrice && (
+          <span className="text-[10px] text-muted-foreground line-through whitespace-nowrap leading-none">
+            {formatPrice(originalPrice)}
           </span>
-        </div>
-        <ProductBadges product={product} className="justify-end min-w-0" />
+        )}
+        <span className={cn(
+          "font-display font-bold text-foreground whitespace-nowrap truncate text-lg leading-none",
+          priceType === "campaign" && "text-campaign",
+          priceType === "special" && "text-special"
+        )}>
+          {formatPrice(displayPrice)}
+        </span>
       </div>
     </motion.div>
   );
